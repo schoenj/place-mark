@@ -1,0 +1,19 @@
+{
+  "name": "@schoenj/place-mark",
+  "version": "1.0.0",
+  "description": "PlaceMark - A small web application for managing POIs, points of interests.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schoenj/place-mark.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schoenj/place-mark/issues"
+  },
+  "homepage": "https://github.com/schoenj/place-mark#readme"
+}
