@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "npm run generate-model",
     "generate-model": "npx prisma generate",
-    "dev": "ts-node server.ts"
+    "dev": "ts-node index.ts"
   },
   "author": "",
   "license": "ISC",

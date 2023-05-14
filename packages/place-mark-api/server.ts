@@ -1,20 +1,30 @@
-import Hapi from "@hapi/hapi";
+import {Server} from "@hapi/hapi";
 import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import {registerDependencyManagement} from "./core";
 
-const init = async () => {
-  const server = Hapi.server({
+/**
+ * Creates and configures a new Hapi Server
+ * @param prisma The Prisma Client
+ */
+export const createServer$ = async (prisma: PrismaClient) => {
+  const server: Server = new Server({
       port: 3000,
       host: 'localhost'
   });
 
-  await server.start();
-  console.log('Server running on %s', server.info.uri);
+  registerDependencyManagement(server, prisma);
+
+  return {
+      server,
+
+      start$: async () => {
+          await server.start();
+          console.log('Server running on %s', server.info.uri);
+      }
+  };
 };
 
 process.on('unhandledRejection', (err) => {
     console.error(err);
     process.exit(1);
 });
-
-init();
