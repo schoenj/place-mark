@@ -8,6 +8,7 @@
     "packages/place-mark-core"
   ],
   "scripts": {
+    "dev:api": "npm run dev -w packages/place-mark-api",
     "build:web": "npm run build -w packages/place-mark-web",
     "dev:web": "npm run dev -w packages/place-mark-web",
     "check:web": "npm run check -w packages/place-mark-web",
