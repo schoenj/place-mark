@@ -2,13 +2,21 @@
   "name": "@schoenj/place-mark-api",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
-    "dev": "node server.js"
+    "postinstall": "npm run generate-model",
+    "generate-model": "npx prisma generate",
+    "dev": "ts-node server.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hapi/hapi": "^21.3.2"
+    "@hapi/hapi": "^21.3.2",
+    "@prisma/client": "^4.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.4",
+    "prisma": "^4.14.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   }
 }
