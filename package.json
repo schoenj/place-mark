@@ -8,7 +8,11 @@
     "packages/place-mark-core"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:web": "npm run build -w packages/place-mark-web",
+    "dev:web": "npm run dev -w packages/place-mark-web",
+    "check:web": "npm run check -w packages/place-mark-web",
+    "preview:web": "npm run preview -w packages/place-mark-web",
+    "test": "npm run test --workspaces --if-present"
   },
   "repository": {
     "type": "git",
