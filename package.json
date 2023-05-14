@@ -2,7 +2,11 @@
   "name": "@schoenj/place-mark",
   "version": "1.0.0",
   "description": "PlaceMark - A small web application for managing POIs, points of interests.",
-  "main": "index.js",
+  "workspaces": [
+    "packages/place-mark-api",
+    "packages/place-mark-web",
+    "packages/place-mark-core"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
