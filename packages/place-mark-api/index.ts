@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { createServer$ } from "./server";
-import { getConfig, IApplicationConfig } from "./core";
+import { createServer$ } from "./app/server";
+import { getConfig, IApplicationConfig } from "./app/core";
 
 const config: IApplicationConfig = getConfig();
 const prisma = new PrismaClient();
