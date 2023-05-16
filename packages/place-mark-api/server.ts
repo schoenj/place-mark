@@ -1,15 +1,17 @@
 import { Server } from "@hapi/hapi";
 import { PrismaClient } from "@prisma/client";
-import { registerDependencyManagement } from "./core";
+import { IApplicationConfig, registerDependencyManagement } from "./core";
 
 /**
  * Creates and configures a new Hapi Server
  * @param prisma The Prisma Client
+ * @param config The Application config
+ * @return { server: Server, start$: Promise<void> } The configured webserver and a function to start it
  */
-export const createServer$ = async (prisma: PrismaClient) => {
+export const createServer$ = async (prisma: PrismaClient, config: IApplicationConfig) => {
   const server: Server = new Server({
-    port: 3000,
-    host: "localhost",
+    host: config.webServer.host,
+    port: config.webServer.port,
   });
 
   registerDependencyManagement(server, prisma);
