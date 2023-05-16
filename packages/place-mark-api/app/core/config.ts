@@ -32,11 +32,11 @@ function getWebServerConfig(): IWebServerConfig {
   Object.freeze(webServerConfig);
 
   if (!webServerConfig.host || !webServerConfig.host.length) {
-    throw new Error("An invalid host is specified for the webserver.");
+    throw new Error(`An invalid host is specified for the webserver. Given: ${process.env.WEBSERVER_HOST}`);
   }
 
   if (!Number.isInteger(webServerConfig.port) || webServerConfig.port < 0 || webServerConfig.port > 65535) {
-    throw new Error("An invalid port is specified for the webserver.");
+    throw new Error(`An invalid port is specified for the webserver. Given: ${process.env.WEBSERVER_PORT}`);
   }
 
   return webServerConfig;
