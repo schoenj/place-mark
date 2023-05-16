@@ -7,7 +7,7 @@
     "postinstall": "npm run generate-model",
     "generate-model": "npx prisma generate",
     "dev": "ts-node --esm index.ts",
-    "test": "ts-mocha app/**/*.spec.ts -- --ui tdd",
+    "test": "ts-mocha -n loader=ts-node/esm app/**/*.spec.ts -- --ui tdd",
     "lint": "eslint .",
     "lint-and-fix": "eslint . --fix"
   },
