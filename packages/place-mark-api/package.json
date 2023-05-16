@@ -5,7 +5,9 @@
   "scripts": {
     "postinstall": "npm run generate-model",
     "generate-model": "npx prisma generate",
-    "dev": "ts-node index.ts"
+    "dev": "ts-node index.ts",
+    "lint": "eslint .",
+    "lint-and-fix": "eslint . --fix"
   },
   "author": "",
   "license": "ISC",
