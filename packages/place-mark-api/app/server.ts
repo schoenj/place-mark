@@ -1,6 +1,11 @@
 import { Server } from "@hapi/hapi";
 import { PrismaClient } from "@prisma/client";
-import { IApplicationConfig, registerDependencyManagement } from "./core";
+import { fileURLToPath } from "url";
+import path from "path";
+import { IApplicationConfig, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
+
+const filename: string = fileURLToPath(import.meta.url);
+const dirname: string = path.dirname(filename);
 
 /**
  * Creates and configures a new Hapi Server
@@ -15,6 +20,7 @@ export const createServer$ = async (prisma: PrismaClient, config: IApplicationCo
   });
 
   registerDependencyManagement(server, prisma);
+  await registerRenderingEngine$(server, dirname);
 
   return {
     server,
