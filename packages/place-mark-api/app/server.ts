@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
-import { IApplicationConfig, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
+import { IApplicationConfig, registerCookieAuthentication$, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
 import { webRoutes } from "./web-routes.js";
 
 const filename: string = fileURLToPath(import.meta.url);
@@ -23,6 +23,7 @@ export const createServer$ = async (prisma: PrismaClient, config: IApplicationCo
 
   registerDependencyManagement(server, prisma);
   await registerRenderingEngine$(server, dirname);
+  await registerCookieAuthentication$(server, config);
   server.validator(Joi);
   server.route(webRoutes);
 
