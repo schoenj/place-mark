@@ -1,1 +1,1 @@
-export * from './dependency-management';
+export * from "./dependency-management";

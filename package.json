@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/schoenj/place-mark/issues"
   },
-  "homepage": "https://github.com/schoenj/place-mark#readme"
+  "homepage": "https://github.com/schoenj/place-mark#readme",
+  "devDependencies": {
+    "prettier": "^2.8.8"
+  }
 }
