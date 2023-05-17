@@ -2,6 +2,7 @@ import { Server } from "@hapi/hapi";
 import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import path from "path";
+import Joi from "joi";
 import { IApplicationConfig, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
 import { webRoutes } from "./web-routes.js";
 
@@ -22,6 +23,7 @@ export const createServer$ = async (prisma: PrismaClient, config: IApplicationCo
 
   registerDependencyManagement(server, prisma);
   await registerRenderingEngine$(server, dirname);
+  server.validator(Joi);
   server.route(webRoutes);
 
   return {
