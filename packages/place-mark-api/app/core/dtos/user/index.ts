@@ -1,2 +1,2 @@
-export * from "./ISignUpUserRequestDto.js";
-export * from "./ICreateUserReadWriteDto.js";
+export * from "./sign-up-user-request-dto.js";
+export * from "./create-user-read-write-dto.js";
