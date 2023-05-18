@@ -6,7 +6,7 @@ type AdditionalValidator<T extends AnySchema> = (schema: T) => T;
 export type StringValidator = AdditionalValidator<StringSchema<string>>;
 
 export type AdditionalValidators<T extends object> = {
-  [Property in KeyOf<T>]: T[Property] extends { type: "text" | "email" | "password" } ? StringValidator : AdditionalValidator<AnySchema>;
+  [Property in KeyOf<T>]: T[Property] extends string ? StringValidator : AdditionalValidator<AnySchema>;
 };
 
 function createStringSpec(def: ITextInput | IInputBase, additionalValidator?: StringValidator): Joi.StringSchema<string> {
@@ -31,7 +31,7 @@ function createStringSpec(def: ITextInput | IInputBase, additionalValidator?: St
   return schema;
 }
 
-export function createSpec<T extends object>(formDef: FormDefinition<T>, validators?: AdditionalValidators<T>): Joi.ObjectSchema<T> {
+export function createSpec<T extends object>(formDef: FormDefinition<T>, validators?: Partial<AdditionalValidators<T>>): Joi.ObjectSchema<T> {
   const properties: Extract<keyof T, string>[] = Object.keys(formDef.fields) as Extract<keyof T, string>[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const objectSchema: any = {};
