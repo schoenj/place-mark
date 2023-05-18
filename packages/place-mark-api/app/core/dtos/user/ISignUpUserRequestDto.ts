@@ -1,7 +1,5 @@
-export interface ISignUpUserRequestDto {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
+import { ICreateUserReadWriteDto } from "./ICreateUserReadWriteDto.js";
+
+export interface ISignUpUserRequestDto extends ICreateUserReadWriteDto {
   passwordAgain: string;
 }
