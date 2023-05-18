@@ -1,14 +1,17 @@
 import { Server } from "@hapi/hapi";
 import hapiVision from "@hapi/vision";
 import Handlebars from "handlebars";
+import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
 
-Handlebars.registerHelper("choose", (a, b) => a ?? b);
-Handlebars.registerHelper("attribute", (name, value, render = false) => {
+const insecureHandlebars = allowInsecurePrototypeAccess(Handlebars);
+
+insecureHandlebars.registerHelper("choose", (a, b) => a ?? b);
+insecureHandlebars.registerHelper("attribute", (name, value, render = false) => {
   if (render) {
-    return new Handlebars.SafeString(`${name}="${value}"`);
+    return new insecureHandlebars.SafeString(`${name}="${value}"`);
   }
 
-  return new Handlebars.SafeString("");
+  return new insecureHandlebars.SafeString("");
 });
 
 /**
@@ -20,7 +23,7 @@ export const registerRenderingEngine$ = async (server: Server, relativeTo: strin
   await server.register(hapiVision);
   server.views({
     engines: {
-      hbs: Handlebars,
+      hbs: insecureHandlebars,
     },
     relativeTo: relativeTo,
     path: "./views",
