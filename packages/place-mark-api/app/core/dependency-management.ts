@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, ResponseToolkit, Server } from "@hapi/hapi";
+import { IUserRepository, UserRepository } from "./repositories/index.js";
 
 /**
  * Declares methods and properties for managing dependencies.
@@ -9,12 +10,19 @@ export interface IContainer {
    * Gets the PrismaClient for interacting with the Database
    */
   get db(): PrismaClient;
+
+  /**
+   * Gets the User-Repository
+   */
+  get userRepository(): IUserRepository;
 }
 
 /**
  * Implements methods and properties for managing dependencies.
  */
 export class Container implements IContainer {
+  private _userRepository: IUserRepository | null;
+
   /**
    * Initializes a new instance of the Container-Class
    * @param _prisma The Prisma Client
@@ -26,6 +34,14 @@ export class Container implements IContainer {
    */
   public get db(): PrismaClient {
     return this._prisma;
+  }
+
+  /**
+   * Gets the User-Repository
+   */
+  public get userRepository(): IUserRepository {
+    this._userRepository = this._userRepository || new UserRepository(this.db);
+    return this._userRepository;
   }
 }
 

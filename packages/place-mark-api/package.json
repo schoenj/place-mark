@@ -7,7 +7,9 @@
     "postinstall": "npm run generate-model",
     "generate-model": "npx prisma generate",
     "dev": "ts-node --esm index.ts",
-    "test": "ts-mocha -n loader=ts-node/esm app/**/*.spec.ts -- --ui tdd",
+    "test": "npm run unit-test && npm run integration-test",
+    "integration-test": "ts-mocha -n loader=ts-node/esm tests/**/*.spec.ts -- --ui tdd --file tests/setup.ts",
+    "unit-test": "ts-mocha -n loader=ts-node/esm app/**/*.spec.ts -- --ui tdd",
     "lint": "eslint .",
     "lint-and-fix": "eslint . --fix"
   },
@@ -18,16 +20,20 @@
     "@hapi/vision": "^7.0.1",
     "@prisma/client": "^4.14.0",
     "dotenv": "^16.0.3",
-    "handlebars": "^4.7.7"
+    "handlebars": "^4.7.7",
+    "joi": "^17.9.2"
   },
   "devDependencies": {
+    "@prisma/migrate": "^4.14.1",
     "@types/chai": "^4.3.5",
+    "@types/chai-as-promised": "^7.1.5",
     "@types/hapi__vision": "^5.5.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.1.4",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
     "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^8.40.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.0.0",

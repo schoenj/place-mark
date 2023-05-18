@@ -51,7 +51,8 @@
       "error",
       {
         "devDependencies": [
-          "**/*.spec.ts"
+          "**/*.spec.ts",
+          "tests/setup.ts"
         ]
       }
     ]
