@@ -2,6 +2,15 @@ import { Server } from "@hapi/hapi";
 import hapiVision from "@hapi/vision";
 import Handlebars from "handlebars";
 
+Handlebars.registerHelper("choose", (a, b) => a ?? b);
+Handlebars.registerHelper("attribute", (name, value, render = false) => {
+  if (render) {
+    return new Handlebars.SafeString(`${name}="${value}"`);
+  }
+
+  return new Handlebars.SafeString("");
+});
+
 /**
  * Registers Handlebars and integrates with @hapi/vision into a @hapi server
  * @param server The server that should be configured

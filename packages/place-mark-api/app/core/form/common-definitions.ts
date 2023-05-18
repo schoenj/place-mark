@@ -33,14 +33,14 @@ export const emailInputFieldDef: ITextInput = {
 export const passwordInputFieldDef: ITextInput = {
   type: "password",
   required: true,
-  name: "Password",
+  name: "password",
   description: "Password",
   placeholder: "Enter password",
 };
 
 export const passwordAgainInputFieldDef: ITextInput = {
   ...passwordInputFieldDef,
-  name: "Password again",
+  name: "passwordAgain",
   description: "Password again",
   placeholder: "Enter password again",
 };

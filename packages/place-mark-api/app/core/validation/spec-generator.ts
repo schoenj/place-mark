@@ -11,6 +11,7 @@ export type AdditionalValidators<T extends object> = {
 
 function createStringSpec(def: ITextInput | IInputBase, additionalValidator?: StringValidator): Joi.StringSchema<string> {
   let schema: Joi.StringSchema<string> = Joi.string();
+  schema.label(def.description || def.name);
 
   if (def.type === "email") {
     schema = schema.email();

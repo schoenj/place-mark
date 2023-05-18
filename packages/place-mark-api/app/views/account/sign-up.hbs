@@ -1,27 +1,27 @@
 <section class="section">
     <h1 class="title">Sign up</h1>
-    <form action="/account/sign-up" method="POST">
+    <form action="{{registerForm.action}}" method="{{registerForm.method}}">
         <div class="columns">
             <div class="column">
-                {{> components/input-field fieldName="firstName" placeholder="Enter first name" description="First name" }}
+                {{> components/form-field formField=registerForm.fields.firstName }}
             </div>
             <div class="column">
-                {{> components/input-field fieldName="lastName" placeholder="Enter last name" description="Last name" }}
-            </div>
-        </div>
-        <div class="columns">
-            <div class="column">
-                {{> components/input-field fieldName="email" placeholder="Enter email name" description="Email" }}
+                {{> components/form-field formField=registerForm.fields.lastName }}
             </div>
         </div>
         <div class="columns">
             <div class="column">
-                {{> components/input-field fieldName="password" placeholder="Enter password" description="Password" inputType="password" }}
+                {{> components/form-field formField=registerForm.fields.email }}
             </div>
         </div>
         <div class="columns">
             <div class="column">
-                {{> components/input-field fieldName="passwordAgain" placeholder="Enter password again" description="Password again" inputType="password" }}
+                {{> components/form-field formField=registerForm.fields.password }}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                {{> components/form-field formField=registerForm.fields.passwordAgain }}
             </div>
         </div>
         <div class="columns">

@@ -1,12 +1,14 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { ValidationError, ValidationErrorItem } from "joi";
-import { EndpointDef, ISignUpUserRequestDto, SignUpUserRequestSpecification } from "../core/index.js";
+import { createFailedForm, createForm, EndpointDef, ISignUpUserRequestDto, signUpFormDefinition, SignUpUserRequestSpecification } from "../core/index.js";
+import { SignUpViewModel } from "../view-models/index.js";
 
 export const accountController = {
   showSignup: {
     auth: false,
     handler: function (_: Request, h: ResponseToolkit) {
-      return h.view("account/sign-up");
+      const model = new SignUpViewModel(createForm(signUpFormDefinition));
+      return h.view(model.view, model);
     },
   } as EndpointDef,
   signUp: {
@@ -14,21 +16,23 @@ export const accountController = {
     validate: {
       payload: SignUpUserRequestSpecification,
       failAction: function (request: Request, h: ResponseToolkit, error: ValidationError) {
-        return h.view("account/sign-up", { errors: error.details }).takeover().code(400);
+        const model = new SignUpViewModel(createFailedForm(signUpFormDefinition, request.payload as ISignUpUserRequestDto, error.details));
+        return h.view(model.view, model).takeover().code(400);
       },
     },
     handler: async function (request: Request, h: ResponseToolkit) {
       const user = request.payload as ISignUpUserRequestDto;
 
       if (await request.container.userRepository.getByEmail$(user.email)) {
-        return h.view("account/sign-up", {
-          errors: [
-            {
-              message: "Account already exists",
-              path: ["email"],
-            } as ValidationErrorItem,
-          ],
-        });
+        const errors: ValidationErrorItem[] = [
+          {
+            message: "Account already exists",
+            path: ["email"],
+          } as ValidationErrorItem,
+        ];
+
+        const model = new SignUpViewModel(createFailedForm(signUpFormDefinition, user, errors));
+        return h.view(model.view, model).code(400);
       }
 
       await request.container.userRepository.create$(user);
