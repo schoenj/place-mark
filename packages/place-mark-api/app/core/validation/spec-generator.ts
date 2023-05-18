@@ -1,15 +1,38 @@
-import Joi, { AnySchema } from "joi";
+import Joi, { StringSchema, AnySchema } from "joi";
 import { KeyOf } from "../types.js";
-import { FormDefinition } from "../form/index.js";
+import { FormDefinition, IInputBase, ITextInput } from "../form/index.js";
+
+type AdditionalValidator<T extends AnySchema> = (schema: T) => T;
+export type StringValidator = AdditionalValidator<StringSchema<string>>;
 
 export type AdditionalValidators<T extends object> = {
-  [Property in KeyOf<T>]: T[Property] extends { type: "text" | "email" | "password" }
-    ? (schema: Joi.StringSchema<string>) => Joi.StringSchema<string>
-    : (schema: AnySchema) => AnySchema;
+  [Property in KeyOf<T>]: T[Property] extends { type: "text" | "email" | "password" } ? StringValidator : AdditionalValidator<AnySchema>;
 };
 
+function createStringSpec(def: ITextInput | IInputBase, additionalValidator?: StringValidator): Joi.StringSchema<string> {
+  let schema: Joi.StringSchema<string> = Joi.string();
+
+  if (def.type === "email") {
+    schema = schema.email();
+  }
+
+  if ("min" in def && typeof def.min === "number" && Number.isInteger(def.min)) {
+    schema = schema.min(def.min);
+  }
+
+  if ("max" in def && typeof def.max === "number" && Number.isInteger(def.max)) {
+    schema = schema.max(def.max);
+  }
+
+  if (additionalValidator) {
+    schema = additionalValidator(schema);
+  }
+
+  return schema;
+}
+
 export function createSpec<T extends object>(formDef: FormDefinition<T>, validators?: AdditionalValidators<T>): Joi.ObjectSchema<T> {
-  const properties = Object.keys(formDef.fields) as Array<Extract<keyof T, string>>;
+  const properties: Extract<keyof T, string>[] = Object.keys(formDef.fields) as Extract<keyof T, string>[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const objectSchema: any = {};
 
@@ -19,23 +42,7 @@ export function createSpec<T extends object>(formDef: FormDefinition<T>, validat
 
     let schema: Joi.AnySchema<string>;
     if (def.type === "text" || def.type === "email" || def.type === "password") {
-      schema = Joi.string();
-
-      if (def.type === "email") {
-        schema = (schema as Joi.StringSchema<string>).email();
-      }
-
-      if ("min" in def && typeof def.min === "number" && Number.isInteger(def.min)) {
-        schema = (schema as Joi.StringSchema<string>).min(def.min);
-      }
-
-      if ("max" in def && typeof def.max === "number" && Number.isInteger(def.max)) {
-        schema = (schema as Joi.StringSchema<string>).max(def.max);
-      }
-
-      if (validators && property in validators) {
-        schema = validators[property](schema as Joi.StringSchema<string>);
-      }
+      schema = createStringSpec(def, validators ? (validators[property] as StringValidator | undefined) : undefined);
     } else {
       throw new Error("");
     }
