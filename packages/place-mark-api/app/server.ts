@@ -3,11 +3,13 @@ import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
+import Handlebars from "handlebars";
 import { IApplicationConfig, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
 import { webRoutes } from "./web-routes.js";
 
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
+Handlebars.registerHelper("choose", (a, b) => a ?? b);
 
 /**
  * Creates and configures a new Hapi Server

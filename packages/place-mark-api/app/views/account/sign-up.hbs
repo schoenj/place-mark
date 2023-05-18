@@ -3,50 +3,25 @@
     <form action="/account/sign-up" method="POST">
         <div class="columns">
             <div class="column">
-                <div class="field">
-                    <label class="label" for="firstName">First name</label>
-                    <div class="control">
-                        <input class="input" type="text" placeholder="Enter first name" name="firstName">
-                    </div>
-                </div>
+                {{> components/input-field fieldName="firstName" placeholder="Enter first name" description="First name" }}
             </div>
             <div class="column">
-                <div class="field">
-                    <label class="label" for="lastName">Last name</label>
-                    <div class="control">
-                        <input class="input" type="text" placeholder="Enter last name" name="lastName">
-                    </div>
-                </div>
+                {{> components/input-field fieldName="lastName" placeholder="Enter last name" description="Last name" }}
             </div>
         </div>
         <div class="columns">
             <div class="column">
-                <div class="field">
-                    <label class="label" for="email">Email</label>
-                    <div class="control">
-                        <input class="input" type="text" placeholder="Enter email" name="email">
-                    </div>
-                </div>
+                {{> components/input-field fieldName="email" placeholder="Enter email name" description="Email" }}
             </div>
         </div>
         <div class="columns">
             <div class="column">
-                <div class="field">
-                    <label class="label" for="password">Password</label>
-                    <div class="control">
-                        <input class="input" type="password" placeholder="Enter password" name="password">
-                    </div>
-                </div>
+                {{> components/input-field fieldName="password" placeholder="Enter password" description="Password" inputType="password" }}
             </div>
         </div>
         <div class="columns">
             <div class="column">
-                <div class="field">
-                    <label class="label" for="passwordAgain">Password again</label>
-                    <div class="control">
-                        <input class="input" type="password" placeholder="Enter password" name="passwordAgain">
-                    </div>
-                </div>
+                {{> components/input-field fieldName="passwordAgain" placeholder="Enter password again" description="Password again" inputType="password" }}
             </div>
         </div>
         <div class="columns">
