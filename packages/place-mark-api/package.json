@@ -25,6 +25,7 @@
     "joi": "^17.9.2"
   },
   "devDependencies": {
+    "@babel/code-frame": "^7.21.4",
     "@prisma/migrate": "^4.14.1",
     "@types/chai": "^4.3.5",
     "@types/chai-as-promised": "^7.1.5",
