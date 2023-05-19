@@ -9,3 +9,4 @@ export const SignUpUserRequestSpecification = createSpec(signUpFormDefinition, {
       .valid(Joi.ref("password"))
       .options({ messages: { any: "Passwords must match" } } as ValidationOptions),
 });
+
