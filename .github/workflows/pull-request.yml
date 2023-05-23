@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   lint-test-backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         node-version: [16.x, 18.x]
