@@ -14,10 +14,20 @@ export interface IWebServerConfig {
 }
 
 /**
+ * Declares properties for sharing the config for the cookie authentication
+ */
+export interface ICookieConfig {
+  name: string;
+  password: string;
+  isSecure: boolean;
+}
+
+/**
  * Declares properties for sharing the config for the general api
  */
 export interface IApplicationConfig {
   webServer: IWebServerConfig;
+  cookie: ICookieConfig;
 }
 
 /**
@@ -43,6 +53,25 @@ function getWebServerConfig(): IWebServerConfig {
 }
 
 /**
+ * Loads and validates the cookie config from the .env file
+ * @return ICookieConfig The cookie config
+ */
+function getCookieConfig(): ICookieConfig {
+  const cookieConfig: ICookieConfig = {
+    name: process.env.COOKIE_NAME || "auth",
+    password: process.env.COOKIE_PASSWORD || "place-mark",
+    isSecure: process.env.COOKIE_SECURE === "true" || process.env.COOKIE_SECURE === "1",
+  };
+  Object.freeze(cookieConfig);
+
+  if (!cookieConfig.password || !cookieConfig.password) {
+    throw new Error("A password for the cookie must be specified!");
+  }
+
+  return cookieConfig;
+}
+
+/**
  * Loads the config from the .env file
  * @return IApplicationConfig The application config
  */
@@ -53,6 +82,7 @@ export function getConfig(): IApplicationConfig {
 
   const config: IApplicationConfig = {
     webServer: getWebServerConfig(),
+    cookie: getCookieConfig(),
   };
   Object.freeze(config);
 

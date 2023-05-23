@@ -13,3 +13,4 @@ export const signUpFormDefinition: FormDefinition<ISignUpUserRequestDto> = {
     passwordAgain: passwordAgainInputFieldDef,
   },
 };
+

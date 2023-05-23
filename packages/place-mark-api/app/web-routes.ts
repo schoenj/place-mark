@@ -18,4 +18,14 @@ export const webRoutes: Route[] = [
     path: "/account/sign-up",
     options: accountController.signUp,
   },
+  {
+    method: "GET",
+    path: "/account/sign-in",
+    options: accountController.showSignIn,
+  },
+  {
+    method: "POST",
+    path: "/account/sign-in",
+    options: accountController.signIn,
+  },
 ];

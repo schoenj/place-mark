@@ -1,18 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { assert } from "chai";
 import { UserRepository } from "../../app/core/index.js";
 
 const createCookieMonster$ = async (client: PrismaClient) => {
-  const cookieMonsterMail = "cookie.monster@sesame-street.de";
-  await client.user.create({
+  const user: User = await client.user.create({
     data: {
       firstName: "Cookie",
       lastName: "Monster",
-      email: cookieMonsterMail,
+      email: "cookie.monster@sesame-street.de",
       password: "1234",
     },
   });
-  return cookieMonsterMail;
+  return [user.id, user.email];
 };
 
 suite("UserRepository Integration Tests", () => {
@@ -31,7 +30,7 @@ suite("UserRepository Integration Tests", () => {
   });
 
   test("getByEmail$ should work", async () => {
-    const cookieMonsterMail = await createCookieMonster$(prismaClient);
+    const [_, cookieMonsterMail] = await createCookieMonster$(prismaClient);
 
     const kermitTheFrogMail = "kermit.the-frog@the-muppets.com";
     await prismaClient.user.create({
@@ -63,8 +62,19 @@ suite("UserRepository Integration Tests", () => {
     assert.isNull(found);
   });
 
+  test("getById$ should work", async () => {
+    const [userId, _] = await createCookieMonster$(prismaClient);
+    const user = await repository.getById$(userId);
+    assert.isNotNull(user);
+    assert.equal(userId, user?.id);
+    assert.equal("Cookie", user?.firstName);
+    assert.equal("Monster", user?.lastName);
+    assert.equal("cookie.monster@sesame-street.de", user?.email);
+    assert.equal("1234", user?.password);
+  });
+
   test("create$ should work", async () => {
-    const cookieMonsterMail = await createCookieMonster$(prismaClient);
+    const [userId, cookieMonsterMail] = await createCookieMonster$(prismaClient);
     const user = await prismaClient.user.findUnique({
       where: {
         email: cookieMonsterMail,
@@ -72,6 +82,7 @@ suite("UserRepository Integration Tests", () => {
     });
 
     assert.isNotNull(user);
+    assert.equal(userId, user?.id);
     assert.equal("Cookie", user?.firstName);
     assert.equal("Monster", user?.lastName);
     assert.equal("cookie.monster@sesame-street.de", user?.email);

@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hapi/cookie": "^12.0.1",
     "@handlebars/allow-prototype-access": "^1.0.5",
     "@hapi/hapi": "^21.3.2",
     "@hapi/vision": "^7.0.1",
@@ -28,6 +29,7 @@
     "@babel/code-frame": "^7.21.4",
     "@prisma/migrate": "^4.14.1",
     "@types/chai": "^4.3.5",
+    "@types/hapi__cookie": "^12.0.2",
     "@types/chai-as-promised": "^7.1.5",
     "@types/hapi__vision": "^5.5.4",
     "@types/mocha": "^10.0.1",
