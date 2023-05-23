@@ -1,0 +1,39 @@
+name: pull request
+
+on: [pull_request]
+
+jobs:
+  lint-test-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        mongodb-version: ['4.2', '4.4', '5.0', '6.0']
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: NPM CI
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint:api
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-replica-set: test-rs
+          mongodb-port: 27018
+          mongodb-username: root
+          mongodb-password: example
+          mongodb-db: place-mark-integration-tests
+
+      - name: Tests
+        run: npm run test:api
