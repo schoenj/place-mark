@@ -38,7 +38,7 @@ jobs:
       - name: Create .env File
         uses: SpicyPizza/create-envfile@v1.3
         with:
-          envkey_DATABASEURL: "mongodb://root:example@localhost:27018/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
+          envkey_DATABASE_URL: "mongodb://root:example@localhost:27018/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
           envkey_COOKIE_PASSWORD: "A_Cookie_Password_That_Should_Be_Replaced_In_Production"
           directory: ./packages/place-mark-api
 
