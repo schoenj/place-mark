@@ -45,6 +45,7 @@ jobs:
         with:
           envkey_DATABASE_URL: "mongodb://root:prisma@localhost:27017/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
           directory: ./packages/place-mark-api
+          file_name: .env.testing
 
       - name: Tests
         run: npm run test:api
