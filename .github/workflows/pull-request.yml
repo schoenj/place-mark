@@ -37,8 +37,13 @@ jobs:
       - name: Create .env File
         uses: SpicyPizza/create-envfile@v1.3
         with:
-          envkey_DATABASE_URL: "mongodb://root:prisma@localhost:27017/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
           envkey_COOKIE_PASSWORD: "A_Cookie_Password_That_Should_Be_Replaced_In_Production"
+          directory: ./packages/place-mark-api
+
+      - name: Create .env.testing File
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DATABASE_URL: "mongodb://root:prisma@localhost:27017/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
           directory: ./packages/place-mark-api
 
       - name: Tests
