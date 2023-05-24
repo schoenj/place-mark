@@ -5,10 +5,19 @@ on: [pull_request]
 jobs:
   lint-test-backend:
     runs-on: ubuntu-20.04
+
     strategy:
       matrix:
         node-version: [16.x, 18.x]
-        mongodb-version: ['4.2', '4.4', '5.0', '6.0']
+
+    services:
+      mongodb:
+        image: prismagraphql/mongo-single-replica:4.4.3-bionic
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: prisma
+        ports:
+          - 27017:27017
 
     steps:
       - name: Git checkout
@@ -25,20 +34,10 @@ jobs:
       - name: Lint
         run: npm run lint:api
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-          mongodb-replica-set: test-rs
-          mongodb-port: 27018
-          mongodb-username: root
-          mongodb-password: example
-          mongodb-db: place-mark-integration-tests
-
       - name: Create .env File
         uses: SpicyPizza/create-envfile@v1.3
         with:
-          envkey_DATABASE_URL: "mongodb://root:example@localhost:27018/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
+          envkey_DATABASE_URL: "mongodb://root:prisma@localhost:27017/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
           envkey_COOKIE_PASSWORD: "A_Cookie_Password_That_Should_Be_Replaced_In_Production"
           directory: ./packages/place-mark-api
 
