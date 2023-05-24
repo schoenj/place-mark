@@ -8,7 +8,7 @@
     "generate-model": "npx prisma generate",
     "dev": "ts-node --esm index.ts",
     "test": "npm run unit-test && npm run integration-test",
-    "integration-test": "ts-mocha -n loader=ts-node/esm tests/**/*.spec.ts -- --ui tdd --file tests/setup.ts --timeout 60s",
+    "integration-test": "ts-mocha -n loader=ts-node/esm tests/**/*.spec.ts -- --ui tdd --file tests/setup.ts --timeout 5s",
     "unit-test": "ts-mocha -n loader=ts-node/esm app/**/*.spec.ts -- --ui tdd",
     "lint": "eslint .",
     "lint-and-fix": "eslint . --fix"
