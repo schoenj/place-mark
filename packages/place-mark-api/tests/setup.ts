@@ -2,7 +2,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import dotenv from "dotenv";
 import chai from "chai";
-import { before, after } from "mocha";
+import { before } from "mocha";
 import chaiAsPromised from "chai-as-promised";
 
 // @prisma/migrate seems to not export their types properly!
@@ -20,7 +20,6 @@ chai.use(chaiAsPromised);
  * Global Setup
  */
 before(async () => {
-  console.log("Global Setup");
   const filename: string = fileURLToPath(import.meta.url);
   const dirname: string = path.dirname(filename);
   const configFile: string = path.resolve(dirname, "..", ".env.testing");
@@ -39,12 +38,4 @@ before(async () => {
   // The DATABASE_URL will be determined through .env file and environment variables.
   const pushCommand: DbPush = DbPush.new();
   await pushCommand.parse([]);
-  console.log("Global Setup finished");
-});
-
-/**
- * Global Teardown
- */
-after(async () => {
-  console.log("GLOBAL TEARDOWN");
 });
