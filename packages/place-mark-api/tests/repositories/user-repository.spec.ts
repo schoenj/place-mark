@@ -30,7 +30,7 @@ suite("UserRepository Integration Tests", () => {
   });
 
   test("getByEmail$ should work", async () => {
-    const [_, cookieMonsterMail] = await createCookieMonster$(prismaClient);
+    const [, cookieMonsterMail] = await createCookieMonster$(prismaClient);
 
     const kermitTheFrogMail = "kermit.the-frog@the-muppets.com";
     await prismaClient.user.create({
@@ -63,7 +63,7 @@ suite("UserRepository Integration Tests", () => {
   });
 
   test("getById$ should work", async () => {
-    const [userId, _] = await createCookieMonster$(prismaClient);
+    const [userId] = await createCookieMonster$(prismaClient);
     const user = await repository.getById$(userId);
     assert.isNotNull(user);
     assert.equal(userId, user?.id);

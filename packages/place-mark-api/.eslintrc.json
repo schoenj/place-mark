@@ -20,8 +20,8 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:import/typescript",
     "airbnb-base",
     "airbnb-typescript/base",
@@ -41,12 +41,14 @@
     "import/extensions": "off",
     "import/prefer-default-export": "off",
     "object-shorthand": "off",
-    "no-unused-vars": [
-      "error",
-      {
-        "argsIngorePattern": "^_"
-      }
-    ],
+    "no-unused-vars": "off",
+    // Even though the options are from the official documentation, eslint reports that the options are invalid
+//    "@typescript-eslint/no-unused-vars": [
+//      "error",
+//      {
+//        "argsIngorePattern": "^_"
+//      }
+//    ],
     "no-underscore-dangle": "off",
     "no-param-reassign": "off",
     "no-undef": "off",
