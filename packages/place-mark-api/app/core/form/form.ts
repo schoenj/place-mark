@@ -22,7 +22,7 @@ function createFormInternal<T extends object>(formDef: FormDefinition<T>, data: 
         formDef.fields[x],
         success,
         formFieldErrors.map((y) => y.message),
-        value
+        formDef.fields[x].type !== "password" ? value : null
       );
       return rv;
     }, {} as { [x in KeyOf<T>]: IFormField }),
