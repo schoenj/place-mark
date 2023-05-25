@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
-import { IApplicationConfig, registerCookieAuthentication$, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
+import { IApplicationConfig, IContainer, registerCookieAuthentication$, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
 import { webRoutes } from "./web-routes.js";
 
 const filename: string = fileURLToPath(import.meta.url);
@@ -13,15 +13,16 @@ const dirname: string = path.dirname(filename);
  * Creates and configures a new Hapi Server
  * @param prisma The Prisma Client
  * @param config The Application config
+ * @param containerFactory A function that creates the Container
  * @return { server: Server, start$: Promise<void> } The configured webserver and a function to start it
  */
-export const createServer$ = async (prisma: PrismaClient, config: IApplicationConfig) => {
+export const createServer$ = async (prisma: PrismaClient, config: IApplicationConfig, containerFactory: (prisma: PrismaClient) => IContainer) => {
   const server: Server = new Server({
     host: config.webServer.host,
     port: config.webServer.port,
   });
 
-  registerDependencyManagement(server, prisma);
+  registerDependencyManagement(server, prisma, containerFactory);
   await registerRenderingEngine$(server, dirname);
   await registerCookieAuthentication$(server, config);
   server.validator(Joi);

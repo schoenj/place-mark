@@ -62,10 +62,11 @@ declare module "@hapi/hapi" {
  *
  * @param server The Server to configure
  * @param prisma The Prisma Client
+ * @param containerFactory A function that creates the Container
  */
-export function registerDependencyManagement(server: Server, prisma: PrismaClient): void {
+export function registerDependencyManagement(server: Server, prisma: PrismaClient, containerFactory: (prisma: PrismaClient) => IContainer): void {
   server.ext("onRequest", async (request: Request, h: ResponseToolkit) => {
-    request.container = new Container(prisma);
+    request.container = containerFactory(prisma);
     return h.continue;
   });
 }
