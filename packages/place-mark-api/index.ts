@@ -4,4 +4,4 @@ import { Container, getConfig, IApplicationConfig } from "./app/core/index.js";
 
 const config: IApplicationConfig = getConfig();
 const prisma = new PrismaClient();
-createServer$(prisma, config, (client) => new Container(client)).then(({ start$ }) => start$());
+createServer$(config, () => new Container(prisma)).then(({ start$ }) => start$());

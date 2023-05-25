@@ -1,5 +1,4 @@
 import { Server } from "@hapi/hapi";
-import { PrismaClient } from "@prisma/client";
 import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
@@ -11,18 +10,17 @@ const dirname: string = path.dirname(filename);
 
 /**
  * Creates and configures a new Hapi Server
- * @param prisma The Prisma Client
  * @param config The Application config
  * @param containerFactory A function that creates the Container
  * @return { server: Server, start$: Promise<void> } The configured webserver and a function to start it
  */
-export const createServer$ = async (prisma: PrismaClient, config: IApplicationConfig, containerFactory: (prisma: PrismaClient) => IContainer) => {
+export const createServer$ = async (config: IApplicationConfig, containerFactory: () => IContainer) => {
   const server: Server = new Server({
     host: config.webServer.host,
     port: config.webServer.port,
   });
 
-  registerDependencyManagement(server, prisma, containerFactory);
+  registerDependencyManagement(server, containerFactory);
   await registerRenderingEngine$(server, dirname);
   await registerCookieAuthentication$(server, config);
   server.validator(Joi);
