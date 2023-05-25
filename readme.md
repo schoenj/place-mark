@@ -73,4 +73,15 @@ Following "modifications" were made (and were approved by the professor):
   - During my second semester, I already had the idea to use [Sequelize](https://sequelize.org/) (a ORM too) in my project in the Medieninformatik course, but that would were a complete overkill.
   - Because Sequelize seems not to support Mongo as a database, I found Prisma and simply thought, that this could be funny to look at ^^
 
+### Things that I just try out
+
+Most developers are lazy and want to automize boring stuff. That plus my over engineering ego (as I said, I want to experiment a little 😁) are the reasons for some crazy things that I implement.
+
+- Form model state and validation
+  - I tried to automate and simplify the Joi Schema creation as well as managing forms when invalid inputs are given, so the user does not have to type everything again.
+  - For this, a ```FormDefintion``` can be created, where the ```action```, the ```method``` and the ```input```s are configured.
+  - The Joi Schema can be created from the ```FormDefintion```
+  - Validation attributes for ```input``` Html Tag can be generated from the ```FormDefintion```
+  - The form can be prefilled with values send before (validation were invalid)
+
 ---
