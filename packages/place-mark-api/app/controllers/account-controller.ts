@@ -46,7 +46,7 @@ export const accountController = {
       }
 
       await request.container.userRepository.create$(user);
-      return h.redirect("/account/login");
+      return h.redirect("/account/sign-in");
     },
   } as EndpointDef,
   showSignIn: {
