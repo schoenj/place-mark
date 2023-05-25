@@ -9,6 +9,7 @@ export async function registerCookieAuthentication$(server: Server, config: IApp
       name: config.cookie.name,
       password: config.cookie.password,
       isSecure: config.cookie.isSecure,
+      path: "/",
     },
     redirectTo: "/",
     validate: async (request, session) => {

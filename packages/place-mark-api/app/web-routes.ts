@@ -28,4 +28,9 @@ export const webRoutes: Route[] = [
     path: "/account/sign-in",
     options: accountController.signIn,
   },
+  {
+    method: "GET",
+    path: "/account/logout",
+    options: accountController.logout,
+  },
 ];
