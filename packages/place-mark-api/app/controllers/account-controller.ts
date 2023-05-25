@@ -82,4 +82,11 @@ export const accountController = {
       return h.redirect("/");
     },
   } as EndpointDef,
+  logout: {
+    auth: false,
+    handler: function (request: Request, h: ResponseToolkit) {
+      request.cookieAuth.clear();
+      return h.redirect("/");
+    },
+  } as EndpointDef,
 };
