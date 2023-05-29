@@ -1,13 +1,7 @@
-import { Route } from "./core/index.js";
-import { indexController } from "./controllers/index.js";
+import { ReqRef, ServerRoute } from "@hapi/hapi";
 import { accountController } from "./controllers/account-controller.js";
 
-export const webRoutes: Route[] = [
-  {
-    method: "GET",
-    path: "/",
-    options: indexController.index,
-  },
+export const webRoutes: ServerRoute<ReqRef>[] = [
   {
     method: "GET",
     path: "/account/sign-up",

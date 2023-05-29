@@ -1,11 +1,15 @@
-import { ResponseToolkit } from "@hapi/hapi";
-import { EndpointDef } from "../core/index.js";
+import { ResponseObject } from "@hapi/hapi";
+import { Controller, Route } from "../core/index.js";
 
-export const indexController = {
-  index: {
-    auth: false,
-    handler: function (_: Request, h: ResponseToolkit) {
-      return h.view("index");
+export class IndexController extends Controller {
+  @Route({
+    method: "GET",
+    path: "/",
+    options: {
+      auth: false,
     },
-  } as EndpointDef,
-};
+  })
+  public index(): ResponseObject {
+    return this.response.view("index");
+  }
+}
