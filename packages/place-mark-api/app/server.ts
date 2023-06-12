@@ -3,7 +3,8 @@ import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
 import { IApplicationConfig, IContainer, registerCookieAuthentication$, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
-import { webRoutes } from "./web-routes.js";
+import { registerController } from "./core/endpoints/utils.js";
+import { AccountController, IndexController } from "./controllers/index.js";
 
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
@@ -23,8 +24,9 @@ export const createServer$ = async (config: IApplicationConfig, containerFactory
   registerDependencyManagement(server, containerFactory);
   await registerRenderingEngine$(server, dirname);
   await registerCookieAuthentication$(server, config);
+  registerController(server, IndexController, () => new IndexController());
+  registerController(server, AccountController, () => new AccountController());
   server.validator(Joi);
-  server.route(webRoutes);
 
   return {
     server,
