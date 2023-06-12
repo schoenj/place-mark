@@ -1,5 +1,4 @@
 import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { ViewModel } from "../../view-models/index.js";
 
 export abstract class Controller {
   protected request: Request;
@@ -11,7 +10,7 @@ export abstract class Controller {
     this.response = response;
   }
 
-  protected render<T extends ViewModel>(model: T): ResponseObject {
+  protected render<T extends { view: string }>(model: T): ResponseObject {
     return this.response.view(model.view, model);
   }
 }
