@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, ResponseToolkit, Server } from "@hapi/hapi";
 import { IUserRepository, UserRepository } from "./repositories/index.js";
+import { IPlaceMarkRepository, PlaceMarkRepository } from "./repositories/place-mark-repository.js";
 
 /**
  * Declares methods and properties for managing dependencies.
@@ -15,6 +16,11 @@ export interface IContainer {
    * Gets the User-Repository
    */
   get userRepository(): IUserRepository;
+
+  /**
+   * Gets the Place-Mark-Repository
+   */
+  get placeMarkRepository(): IPlaceMarkRepository;
 }
 
 /**
@@ -22,6 +28,8 @@ export interface IContainer {
  */
 export class Container implements IContainer {
   private _userRepository: IUserRepository | null;
+
+  private _placeMarkRepository: IPlaceMarkRepository | null;
 
   /**
    * Initializes a new instance of the Container-Class
@@ -42,6 +50,14 @@ export class Container implements IContainer {
   public get userRepository(): IUserRepository {
     this._userRepository = this._userRepository || new UserRepository(this.db);
     return this._userRepository;
+  }
+
+  /**
+   * Gets the Place-Mark-Repository
+   */
+  public get placeMarkRepository(): IPlaceMarkRepository {
+    this._placeMarkRepository = this._placeMarkRepository || new PlaceMarkRepository(this.db);
+    return this._placeMarkRepository;
   }
 }
 

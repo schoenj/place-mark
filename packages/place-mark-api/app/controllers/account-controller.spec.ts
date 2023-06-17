@@ -4,6 +4,7 @@ import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
 import { createServer$ } from "../server.js";
 import { IApplicationConfig, IContainer, ICreateUserReadWriteDto, IUserRepository } from "../core/index.js";
+import { IPlaceMarkRepository } from "../core/repositories/place-mark-repository.js";
 
 const testConfig: IApplicationConfig = {
   webServer: {
@@ -31,6 +32,11 @@ class ContainerMock implements IContainer {
     }
 
     return this.userRepoMock;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public get placeMarkRepository(): IPlaceMarkRepository {
+    throw new Error("PlaceMarkRepository should not be used in this tests.");
   }
 }
 
