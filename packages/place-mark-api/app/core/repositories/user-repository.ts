@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
-import { ICreateUserReadWriteDto } from "../dtos/index.js";
+import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto } from "../dtos/index.js";
 import { Repository } from "./repository.js";
+import { userReadOnlyQuery } from "./queries/user-read-only.js";
 
 export interface IUserRepository {
   /**
@@ -20,9 +21,38 @@ export interface IUserRepository {
    * @param id The id
    */
   getById$(id: string): Promise<User | null>;
+
+  /**
+   * Loads a paginated list of users
+   * @param listRequest The List-Request
+   */
+  get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>>;
 }
 
 export class UserRepository extends Repository implements IUserRepository {
+  /**
+   * Loads a paginated list of users
+   * @param listRequest The List-Request
+   */
+  async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>> {
+    const result = await this.paginate$(
+      "user",
+      undefined,
+      [
+        {
+          firstName: "asc",
+          lastName: "asc",
+        },
+      ],
+      userReadOnlyQuery.select,
+      userReadOnlyQuery.transform,
+      listRequest.skip,
+      listRequest.take
+    );
+
+    return result;
+  }
+
   /**
    * Gets a user by its email address
    * @param email The email address
