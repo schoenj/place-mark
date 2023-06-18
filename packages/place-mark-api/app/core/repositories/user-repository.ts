@@ -41,6 +41,8 @@ export class UserRepository extends Repository implements IUserRepository {
       [
         {
           firstName: "asc",
+        },
+        {
           lastName: "asc",
         },
       ],

@@ -4,18 +4,7 @@ import { ContainerMock, testConfig } from "../controller-test-setup.spec.js";
 import { createServer$ } from "../../server.js";
 import { IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto, IUserRepository } from "../../core/index.js";
 import { IValidationResult } from "./user-api-controller.js";
-
-type QueryParams = { [key: string]: boolean | string | number | undefined | null };
-function toQueryString<T extends QueryParams>(object: T): string {
-  return Object.keys(object)
-    .filter((prop) => object[prop] !== undefined)
-    .map((prop) => ({
-      prop: prop,
-      value: (object[prop] === null ? "" : object[prop]) as boolean | string | number,
-    }))
-    .map((entry) => `${encodeURIComponent(entry.prop)}=${encodeURIComponent(entry.value)}`)
-    .join("&");
-}
+import { toQueryString, QueryParams } from "../../../tests/utils.js";
 
 suite("UserApiController Unit-Tests", () => {
   let server: Server;

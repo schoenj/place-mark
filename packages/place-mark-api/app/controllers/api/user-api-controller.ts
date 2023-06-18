@@ -81,7 +81,7 @@ export class UserApiController extends Controller {
       tags: ["api"],
       description: "Returns a user by its id",
       validate: {
-        params: { id: Joi.string() },
+        params: { id: Joi.alternatives().try(Joi.string(), Joi.object()).description("a valid ID") },
         failAction: defaultFailAction,
       },
       response: {
