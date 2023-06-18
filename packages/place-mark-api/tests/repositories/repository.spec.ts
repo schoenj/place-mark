@@ -18,6 +18,7 @@ suite("Repository Tests", () => {
   });
 
   teardown(async () => {
+    await prismaClient.user.deleteMany();
     await prismaClient.$disconnect();
   });
 
