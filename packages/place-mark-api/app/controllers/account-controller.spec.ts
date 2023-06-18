@@ -1,38 +1,10 @@
 import { Server } from "@hapi/hapi";
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
 import { createServer$ } from "../server.js";
-import { IApplicationConfig, IContainer, ICreateUserReadWriteDto, IUserRepository } from "../core/index.js";
-
-const testConfig: IApplicationConfig = {
-  webServer: {
-    host: "localhost",
-    port: 3000,
-  },
-  cookie: {
-    name: "Biscuit", // Cookies, but in british ^^
-    password: "SOME_LONG_PASSWORD_FOR_THE_COOKIE",
-    isSecure: false,
-  },
-};
-
-class ContainerMock implements IContainer {
-  public userRepoMock: IUserRepository | null;
-
-  // eslint-disable-next-line class-methods-use-this
-  public get db(): PrismaClient {
-    throw new Error("PrismaClient is not available during Unit-Tests");
-  }
-
-  public get userRepository(): IUserRepository {
-    if (this.userRepoMock === null) {
-      throw new Error("UserRepository were accessed before mocked.");
-    }
-
-    return this.userRepoMock;
-  }
-}
+import { ICreateUserReadWriteDto, IUserRepository } from "../core/index.js";
+import { testConfig, ContainerMock } from "./controller-test-setup.spec.js";
 
 suite("AccountController Unit-Tests", () => {
   let server: Server;
