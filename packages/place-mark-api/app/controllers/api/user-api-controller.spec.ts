@@ -109,7 +109,7 @@ suite("UserApiController Unit-Tests", () => {
         assert.equal(response.result?.length, Object.keys(validationErrors).length);
         Object.keys(validationErrors).forEach((key: string) => {
           // eslint-disable-next-line @typescript-eslint/dot-notation
-          const tmp = response.result!.find((x) => x["property"] === key) as IValidationResult | null;
+          const tmp = response.result?.find((x) => x["property"] === key) as IValidationResult | null;
           assert.isNotNull(tmp);
           assert.include(tmp?.message, validationErrors[key] as string);
         });
