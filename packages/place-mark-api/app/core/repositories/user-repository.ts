@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto } from "../dtos/index.js";
 import { Repository } from "./repository.js";
-import { userReadOnlyQuery } from "./queries/user-read-only.js";
+import { userReadOnlyQuery, UserReadOnlySelectType } from "./queries/user-read-only.js";
 
 export interface IUserRepository {
   /**
@@ -20,7 +20,7 @@ export interface IUserRepository {
    * Gets a user by its id
    * @param id The id
    */
-  getById$(id: string): Promise<User | null>;
+  getById$(id: string): Promise<IUserReadOnlyDto | null>;
 
   /**
    * Loads a paginated list of users
@@ -72,14 +72,15 @@ export class UserRepository extends Repository implements IUserRepository {
    * Gets a user by its id
    * @param id The id
    */
-  async getById$(id: string): Promise<User | null> {
-    const user: User | null = await this.db.user.findUnique({
+  async getById$(id: string): Promise<IUserReadOnlyDto | null> {
+    const user: UserReadOnlySelectType | null = await this.db.user.findUnique({
       where: {
         id: id,
       },
+      select: userReadOnlyQuery.select,
     });
 
-    return user;
+    return user ? userReadOnlyQuery.transform(user) : null;
   }
 
   /**

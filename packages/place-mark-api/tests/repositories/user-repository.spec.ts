@@ -56,7 +56,6 @@ suite("UserRepository Integration Tests", () => {
     assert.equal(user?.firstName, cookieMonsterUser.firstName);
     assert.equal(user?.lastName, cookieMonsterUser.lastName);
     assert.equal(user?.email, cookieMonsterUser.email);
-    assert.equal(user?.password, cookieMonsterUser.password);
   });
 
   test("create$ should work", async () => {
