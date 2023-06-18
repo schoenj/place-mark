@@ -13,7 +13,7 @@ const dirname: string = path.dirname(filename);
  * Creates and configures a new Hapi Server
  * @param config The Application config
  * @param containerFactory A function that creates the Container
- * @return { server: Server, start$: Promise<void> } The configured webserver and a function to start it
+ * @return { server: Server, start$: (log: true) => Promise<void> } The configured webserver and a function to start it
  */
 export const createServer$ = async (config: IApplicationConfig, containerFactory: () => IContainer) => {
   const server: Server = new Server({
@@ -32,9 +32,11 @@ export const createServer$ = async (config: IApplicationConfig, containerFactory
   return {
     server,
 
-    start$: async () => {
+    start$: async (log = true) => {
       await server.start();
-      console.log("Server running on %s", server.info.uri);
+      if (log) {
+        console.log("Server running on %s", server.info.uri);
+      }
     },
   };
 };
