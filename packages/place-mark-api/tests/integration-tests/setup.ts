@@ -22,7 +22,7 @@ chai.use(chaiAsPromised);
 before(async () => {
   const filename: string = fileURLToPath(import.meta.url);
   const dirname: string = path.dirname(filename);
-  const configFile: string = path.resolve(dirname, "..", ".env.testing");
+  const configFile: string = path.resolve(dirname, "..", "..", ".env.testing");
 
   // Load and override configuration from .env.testing - File
   const dotenvResult = dotenv.config({

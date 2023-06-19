@@ -2,9 +2,9 @@ import { Server } from "@hapi/hapi";
 import { User } from "@prisma/client";
 import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
-import { createServer$ } from "../server.js";
-import { ICreateUserReadWriteDto, IUserRepository } from "../core/index.js";
-import { testConfig, ContainerMock } from "./controller-test-setup.spec.js";
+import { createServer$ } from "../../../app/server.js";
+import { ICreateUserReadWriteDto, IUserRepository } from "../../../app/core/index.js";
+import { testConfig, ContainerMock } from "./test-setup.js";
 
 suite("AccountController Unit-Tests", () => {
   let server: Server;

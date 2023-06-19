@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { getConfig, IApplicationConfig } from "./config.js";
+import { getConfig, IApplicationConfig } from "../../../app/core/config.js";
 
 suite("config-tests", () => {
   test("getConfig() should work", () => {

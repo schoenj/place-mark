@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { assert } from "chai";
-import { IApplicationConfig, IContainer, IUserRepository } from "../core/index.js";
+import { IApplicationConfig, IContainer, IUserRepository } from "../../../app/core/index.js";
 
 export const testConfig: IApplicationConfig = {
   webServer: {

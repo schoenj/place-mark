@@ -2,9 +2,9 @@ import { Server, ServerApplicationState } from "@hapi/hapi";
 import { PrismaClient } from "@prisma/client";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { assert } from "chai";
-import { createServer$ } from "../../app/server.js";
-import { Container, getConfig, IPaginatedListResponse, IUserReadOnlyDto } from "../../app/core/index.js";
-import { QueryParams } from "../utils.js";
+import { createServer$ } from "../../../app/server.js";
+import { Container, getConfig, IPaginatedListResponse, IUserReadOnlyDto } from "../../../app/core/index.js";
+import { QueryParams } from "../../utils.js";
 
 function pad(num: number, size: number) {
   let result = num.toString();

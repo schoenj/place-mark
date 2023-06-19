@@ -1,7 +1,7 @@
 import { PrismaClient, User, Prisma } from "@prisma/client";
 import { assert } from "chai";
-import { UserRepository } from "../../app/core/index.js";
-import { cookieMonsterUser, kermitTheFrogUser } from "./fixtures.js";
+import { UserRepository } from "../../../app/core/index.js";
+import { cookieMonsterUser, kermitTheFrogUser } from "../../fixtures.js";
 
 const createUser$ = async (client: PrismaClient, userData: Prisma.UserCreateInput) => {
   const user: User = await client.user.create({ data: userData });
