@@ -4,26 +4,30 @@ import { Controller, IPaginatedListRequest, IUserReadOnlyDto, Route, IValidation
 import { createResponseSpec, defaultFailAction } from "./utils.js";
 
 const paginatedListRequestSpec: Joi.ObjectSchema<IPaginatedListRequest> = Joi.object<IPaginatedListRequest>({
-  take: Joi.number().min(1).max(100).optional(),
-  skip: Joi.number().min(0).optional(),
-});
+  take: Joi.number().min(1).max(100).optional().description("The amount of entries to fetch."),
+  skip: Joi.number().min(0).optional().description("The amount of entries to skip"),
+})
+  .label("PaginatedListRequestDto")
+  .description("Implements properties for requesting a paginated list");
+
+const idSpec = Joi.string().required().label("ID").description("a valid ID");
 
 const userReadOnlySpec: Joi.ObjectSchema<IUserReadOnlyDto> = Joi.object<IUserReadOnlyDto>({
-  id: Joi.string().required(),
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email().required(),
-  admin: Joi.boolean().required(),
-  createdAt: Joi.date(),
-  updatedAt: Joi.date(),
-});
+  id: idSpec,
+  firstName: Joi.string().required().description("First name of a user"),
+  lastName: Joi.string().required().description("Last name of a user"),
+  email: Joi.string().email().required().description("Email of a user"),
+  admin: Joi.boolean().required().description("Value indicating whether a user is an admin"),
+  createdAt: Joi.date().required().description("The entry creation time"),
+  updatedAt: Joi.date().required().description("The last entry modification time"),
+}).label("UserReadOnlyDto");
 
-const validationResultSpec: Joi.ObjectSchema<IValidationResult> = Joi.object({
-  property: Joi.string(),
-  message: Joi.string(),
-});
+const validationResultItemSpec: Joi.ObjectSchema<IValidationResult> = Joi.object({
+  property: Joi.string().required().description("The path to an invalid property."),
+  message: Joi.string().required().description("A description of the rule that were not matched."),
+}).label("ValidationResultItem");
 
-const idSpec = Joi.alternatives().try(Joi.string(), Joi.object()).description("a valid ID");
+const validationResultSpec: Joi.ArraySchema<IValidationResult[]> = Joi.array().items(validationResultItemSpec).label("ValidationResult");
 
 export class UserApiController extends Controller {
   @Route({
@@ -40,7 +44,7 @@ export class UserApiController extends Controller {
       response: {
         status: {
           200: createResponseSpec(userReadOnlySpec),
-          400: Joi.array().items(validationResultSpec),
+          400: validationResultSpec,
         },
         // failAction: logFailAction,
       },
@@ -66,6 +70,7 @@ export class UserApiController extends Controller {
       response: {
         status: {
           200: userReadOnlySpec,
+          404: Joi.any(),
         },
         // failAction: logFailAction,
       },
@@ -88,8 +93,13 @@ export class UserApiController extends Controller {
       tags: ["api"],
       description: "Deletes an user by its id",
       validate: {
-        params: { id: idSpec },
+        params: Joi.object({ id: idSpec }),
         failAction: defaultFailAction,
+      },
+      response: {
+        status: {
+          204: Joi.any(),
+        },
       },
     },
   })
