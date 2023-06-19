@@ -27,6 +27,12 @@ export interface IUserRepository {
    * @param listRequest The List-Request
    */
   get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>>;
+
+  /**
+   * Deletes a user by its id
+   * @param id The id
+   */
+  deleteById$(id: string): Promise<void>;
 }
 
 export class UserRepository extends Repository implements IUserRepository {
@@ -100,5 +106,17 @@ export class UserRepository extends Repository implements IUserRepository {
     });
 
     return created;
+  }
+
+  /**
+   * Deletes a user by its id
+   * @param id The id
+   */
+  async deleteById$(id: string): Promise<void> {
+    await this.db.user.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 }

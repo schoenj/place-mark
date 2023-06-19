@@ -74,4 +74,18 @@ suite("UserRepository Integration Tests", () => {
 
     await assert.isRejected(createUser$(prismaClient, cookieMonsterUser));
   });
+
+  test("deleteById$ should work", async () => {
+    const user = await prismaClient.user.create({
+      data: kermitTheFrogUser,
+    });
+
+    await repository.deleteById$(user.id);
+    const found = await prismaClient.user.findUnique({
+      where: {
+        id: user.id,
+      },
+    });
+    assert.isNull(found);
+  });
 });
