@@ -5,6 +5,7 @@ import { assert } from "chai";
 import { createServer$ } from "../../../app/server.js";
 import { Container, getConfig, IPaginatedListResponse, IUserReadOnlyDto } from "../../../app/core/index.js";
 import { QueryParams } from "../../utils.js";
+import { kermitTheFrogUser } from "../../fixtures.js";
 
 function pad(num: number, size: number) {
   let result = num.toString();
@@ -130,6 +131,22 @@ suite("UserApiController Integration Tests", () => {
       response.data.updatedAt = new Date(response.data.updatedAt);
       assert.equal(response.data.createdAt.toUTCString(), user.createdAt.toUTCString());
       assert.equal(response.data.updatedAt.toUTCString(), user.updatedAt.toUTCString());
+    });
+  });
+
+  suite("DELETE /api/user/{id}", () => {
+    test("Deleting a existing user should return 204", async () => {
+      const user = await prismaClient.user.create({ data: kermitTheFrogUser });
+      const response = await axios.delete(`${server.info.uri}/api/user/${user.id}`);
+      assert.equal(response.status, 204);
+
+      const found = await prismaClient.user.findUnique({ where: { id: user.id } });
+      assert.isNull(found);
+    });
+
+    test("Deleting a not existing user should return 204", async () => {
+      const response = await axios.delete(`${server.info.uri}/api/user/646634e51d85e59154d725c5`);
+      assert.equal(response.status, 204);
     });
   });
 });

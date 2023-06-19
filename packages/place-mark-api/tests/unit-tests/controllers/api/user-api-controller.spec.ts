@@ -165,4 +165,25 @@ suite("UserApiController Unit-Tests", () => {
       assert.equal(response.statusCode, 404);
     });
   });
+
+  suite("DELETE /api/user/{id} Tests", () => {
+    test("should work", async () => {
+      let repoCalled = false;
+      container.userRepoMock = {
+        deleteById$(id: string): Promise<void> {
+          assert.isFalse(repoCalled);
+          repoCalled = true;
+          assert.equal(id, "646634e51d85e59154d725c5");
+          return Promise.resolve();
+        },
+      } as IUserRepository;
+
+      const response = await server.inject({
+        method: "DELETE",
+        url: "/api/user/646634e51d85e59154d725c5",
+      });
+      assert.equal(response.statusCode, 204);
+      assert.isTrue(repoCalled);
+    });
+  });
 });

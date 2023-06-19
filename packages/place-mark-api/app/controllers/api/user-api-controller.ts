@@ -23,6 +23,8 @@ const validationResultSpec: Joi.ObjectSchema<IValidationResult> = Joi.object({
   message: Joi.string(),
 });
 
+const idSpec = Joi.alternatives().try(Joi.string(), Joi.object()).description("a valid ID");
+
 export class UserApiController extends Controller {
   @Route({
     method: "GET",
@@ -58,7 +60,7 @@ export class UserApiController extends Controller {
       tags: ["api"],
       description: "Returns a user by its id",
       validate: {
-        params: { id: Joi.alternatives().try(Joi.string(), Joi.object()).description("a valid ID") },
+        params: { id: idSpec },
         failAction: defaultFailAction,
       },
       response: {
@@ -76,5 +78,24 @@ export class UserApiController extends Controller {
       return this.response.response(result).code(200);
     }
     return this.response.response().code(404);
+  }
+
+  @Route({
+    method: "DELETE",
+    path: "/api/user/{id}",
+    options: {
+      auth: false, // ToDo
+      tags: ["api"],
+      description: "Deletes an user by its id",
+      validate: {
+        params: { id: idSpec },
+        failAction: defaultFailAction,
+      },
+    },
+  })
+  public async deleteById$(): Promise<ResponseObject> {
+    const id = this.request.params.id as string;
+    await this.request.container.userRepository.deleteById$(id);
+    return this.response.response().code(204);
   }
 }

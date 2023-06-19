@@ -113,10 +113,23 @@ export class UserRepository extends Repository implements IUserRepository {
    * @param id The id
    */
   async deleteById$(id: string): Promise<void> {
-    await this.db.user.delete({
-      where: {
-        id: id,
-      },
+    // See https://github.com/prisma/prisma/issues/4072
+    // tldr:
+    // - delete throws an error, if the object is not found
+    // - deleteMany does not throw any error, but cascades are a problem
+    // - deleteIfExists is planned
+    // => We need to check first, until deleteIfExists is implemented
+
+    const count = await this.db.user.count({
+      where: { id: id },
     });
+
+    if (count === 1) {
+      await this.db.user.delete({
+        where: {
+          id: id,
+        },
+      });
+    }
   }
 }
