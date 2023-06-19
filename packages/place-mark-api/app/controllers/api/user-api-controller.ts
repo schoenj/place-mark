@@ -1,18 +1,12 @@
-import Joi, { ValidationError } from "joi";
-import { ReqRefDefaults, Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { Controller, IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto, Route } from "../../core/index.js";
+import Joi from "joi";
+import { ResponseObject } from "@hapi/hapi";
+import { Controller, IPaginatedListRequest, IUserReadOnlyDto, Route, IValidationResult } from "../../core/index.js";
+import { createResponseSpec, defaultFailAction } from "./utils.js";
 
 const paginatedListRequestSpec: Joi.ObjectSchema<IPaginatedListRequest> = Joi.object<IPaginatedListRequest>({
   take: Joi.number().min(1).max(100).optional(),
   skip: Joi.number().min(0).optional(),
 });
-
-function createResponseSpec<T>(schema: Joi.ObjectSchema<T>): Joi.ObjectSchema<IPaginatedListResponse<T>> {
-  return Joi.object<IPaginatedListResponse<T>>({
-    total: Joi.number().min(0).required(),
-    data: Joi.array<T>().items(schema),
-  });
-}
 
 const userReadOnlySpec: Joi.ObjectSchema<IUserReadOnlyDto> = Joi.object<IUserReadOnlyDto>({
   id: Joi.string().required(),
@@ -24,27 +18,10 @@ const userReadOnlySpec: Joi.ObjectSchema<IUserReadOnlyDto> = Joi.object<IUserRea
   updatedAt: Joi.date(),
 });
 
-export interface IValidationResult {
-  property: string;
-  message: string;
-}
-
 const validationResultSpec: Joi.ObjectSchema<IValidationResult> = Joi.object({
   property: Joi.string(),
   message: Joi.string(),
 });
-
-export function defaultFailAction(request: Request<ReqRefDefaults>, h: ResponseToolkit<ReqRefDefaults>, err: Error | undefined): ResponseObject {
-  return h
-    .response((err as ValidationError).details.map((x) => ({ property: x.path.join("."), message: x.message } as IValidationResult)))
-    .code(400)
-    .takeover();
-}
-
-export function logFailAction(request: Request<ReqRefDefaults>, h: ResponseToolkit<ReqRefDefaults>, err: Error | undefined) {
-  console.log(err?.message);
-  return h;
-}
 
 export class UserApiController extends Controller {
   @Route({

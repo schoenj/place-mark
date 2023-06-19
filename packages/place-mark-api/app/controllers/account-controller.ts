@@ -1,11 +1,9 @@
-import { Lifecycle, ReqRefDefaults, Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { ValidationError, ValidationErrorItem } from "joi";
+import { ResponseObject } from "@hapi/hapi";
+import { ValidationErrorItem } from "joi";
 import {
   Controller,
   createFailedForm,
   createForm,
-  FormDefinition,
-  IForm,
   ISignInUserRequestDto,
   ISignUpUserRequestDto,
   Route,
@@ -14,16 +12,8 @@ import {
   signUpFormDefinition,
   SignUpUserRequestSpecification,
 } from "../core/index.js";
-import { SignUpViewModel, SignInViewModel, ViewModel } from "../view-models/index.js";
-import FailAction = Lifecycle.FailAction;
-
-export function createFailAction<TModel extends ViewModel, TDto extends object>(formDef: FormDefinition<TDto>, createModelFunc: (form: IForm<TDto>) => TModel): FailAction {
-  return (request: Request<ReqRefDefaults>, h: ResponseToolkit<ReqRefDefaults>, error: Error | undefined) => {
-    const form: IForm<TDto> = createFailedForm(formDef, request.payload as TDto, (error as ValidationError).details);
-    const model: TModel = createModelFunc(form);
-    return h.view(model.view, model).takeover().code(400);
-  };
-}
+import { SignUpViewModel, SignInViewModel } from "../view-models/index.js";
+import { createFailAction } from "./utils.js";
 
 export class AccountController extends Controller {
   @Route({
