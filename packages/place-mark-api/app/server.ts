@@ -17,6 +17,7 @@ const swaggerOptions = {
     title: "Place-Mark API",
     version: "0.1",
   },
+  grouping: "tags",
   // securityDefinitions: {
   //   jwt: {
   //     type: "apiKey",

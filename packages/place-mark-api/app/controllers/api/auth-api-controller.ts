@@ -10,7 +10,7 @@ export class AuthApiController extends Controller {
     path: "/api/auth/token",
     options: {
       auth: false,
-      tags: ["api"],
+      tags: ["api", "auth"],
       description: "Authenticates a user",
       validate: {
         payload: authCredentialsSpec,

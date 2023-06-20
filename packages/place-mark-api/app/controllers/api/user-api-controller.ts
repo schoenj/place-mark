@@ -9,7 +9,7 @@ export class UserApiController extends Controller {
     path: "/api/user",
     options: {
       auth: false, // ToDo: Setup Bearer Authentication
-      tags: ["api"],
+      tags: ["api", "user"],
       description: "Returns a paginated list of users",
       validate: {
         query: paginatedListRequestSpec,
@@ -35,7 +35,7 @@ export class UserApiController extends Controller {
     path: "/api/user/{id}",
     options: {
       auth: false, // ToDo
-      tags: ["api"],
+      tags: ["api", "user"],
       description: "Returns a user by its id",
       validate: {
         params: idParamSpec,
@@ -64,7 +64,7 @@ export class UserApiController extends Controller {
     path: "/api/user/{id}",
     options: {
       auth: false, // ToDo
-      tags: ["api"],
+      tags: ["api", "user"],
       description: "Deletes an user by its id",
       validate: {
         params: idParamSpec,
