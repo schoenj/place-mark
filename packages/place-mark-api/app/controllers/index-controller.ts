@@ -10,6 +10,6 @@ export class IndexController extends Controller {
     },
   })
   public index(): ResponseObject {
-    return this.response.view("index");
+    return this.h.view("index");
   }
 }

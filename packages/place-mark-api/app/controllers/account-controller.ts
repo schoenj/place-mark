@@ -41,7 +41,7 @@ export class AccountController extends Controller {
   public async signUp$(): Promise<ResponseObject> {
     const user = this.request.payload as ISignUpUserRequestDto;
 
-    if (await this.request.container.userRepository.getByEmail$(user.email)) {
+    if (await this.container.userRepository.getByEmail$(user.email)) {
       const errors: ValidationErrorItem[] = [
         {
           message: "Account already exists",
@@ -53,8 +53,8 @@ export class AccountController extends Controller {
       return this.render(model).code(400);
     }
 
-    await this.request.container.userRepository.create$(user);
-    return this.response.redirect("/account/sign-in");
+    await this.container.userRepository.create$(user);
+    return this.h.redirect("/account/sign-in");
   }
 
   @Route({
@@ -81,7 +81,7 @@ export class AccountController extends Controller {
   })
   public async signIn$(): Promise<ResponseObject> {
     const credentials = this.request.payload as ISignInUserRequestDto;
-    const result = await this.request.container.authService.authenticate$(credentials);
+    const result = await this.container.authService.authenticate$(credentials);
     if (!result.success) {
       const errors: ValidationErrorItem[] = [
         {
@@ -90,11 +90,11 @@ export class AccountController extends Controller {
         } as ValidationErrorItem,
       ];
       const model = new SignInViewModel(createFailedForm(signInFormDefinition, this.request.payload as ISignInUserRequestDto, errors));
-      return this.response.view(model.view, model).code(400);
+      return this.h.view(model.view, model).code(400);
     }
 
     this.request.cookieAuth.set({ id: result.user });
-    return this.response.redirect("/");
+    return this.h.redirect("/");
   }
 
   @Route({
@@ -106,6 +106,6 @@ export class AccountController extends Controller {
   })
   public logout(): ResponseObject {
     this.request.cookieAuth.clear();
-    return this.response.redirect("/");
+    return this.h.redirect("/");
   }
 }

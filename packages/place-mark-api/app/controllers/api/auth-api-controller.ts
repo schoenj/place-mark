@@ -43,12 +43,12 @@ export class AuthApiController extends Controller {
   })
   public async authenticate$(): Promise<ResponseObject> {
     const credentials = this.request.payload as IAuthCredentials;
-    const result = await this.request.container.authService.authenticate$(credentials);
+    const result = await this.container.authService.authenticate$(credentials);
     if (!result.success) {
-      return this.response.response({ success: false, message: "Invalid credentials" }).code(403);
+      return this.h.response({ success: false, message: "Invalid credentials" }).code(403);
     }
 
-    const token = this.request.container.authService.createToken(result.user);
-    return this.response.response({ success: true, token, message: "Successfully authenticated" }).code(200);
+    const token = this.container.authService.createToken(result.user);
+    return this.h.response({ success: true, token, message: "Successfully authenticated" }).code(200);
   }
 }

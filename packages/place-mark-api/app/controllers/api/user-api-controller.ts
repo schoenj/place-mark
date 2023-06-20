@@ -52,8 +52,8 @@ export class UserApiController extends Controller {
   })
   public async get$(): Promise<ResponseObject> {
     const listRequest = this.request.query as IPaginatedListRequest;
-    const result = await this.request.container.userRepository.get$(listRequest);
-    return this.response.response(result).code(200);
+    const result = await this.container.userRepository.get$(listRequest);
+    return this.h.response(result).code(200);
   }
 
   @Route({
@@ -78,11 +78,11 @@ export class UserApiController extends Controller {
   })
   public async getById$(): Promise<ResponseObject> {
     const id = this.request.params.id as string;
-    const result = await this.request.container.userRepository.getById$(id);
+    const result = await this.container.userRepository.getById$(id);
     if (result) {
-      return this.response.response(result).code(200);
+      return this.h.response(result).code(200);
     }
-    return this.response.response().code(404);
+    return this.h.response().code(404);
   }
 
   @Route({
@@ -105,7 +105,7 @@ export class UserApiController extends Controller {
   })
   public async deleteById$(): Promise<ResponseObject> {
     const id = this.request.params.id as string;
-    await this.request.container.userRepository.deleteById$(id);
-    return this.response.response().code(204);
+    await this.container.userRepository.deleteById$(id);
+    return this.h.response().code(204);
   }
 }
