@@ -1,7 +1,7 @@
 import { PrismaClient, User } from "@prisma/client";
 import { assert } from "chai";
-import { Repository } from "../../../app/core/repositories/repository.js";
-import { userReadOnlyQuery } from "../../../app/core/repositories/queries/user-read-only.js";
+import { Repository } from "../../../app/repositories/repository.js";
+import { userReadOnlyQuery } from "../../../app/repositories/queries/user-read-only.js";
 
 class TestRepository extends Repository {
   public testPaginate$ = this.paginate$;

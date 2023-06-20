@@ -1,34 +1,10 @@
 import dotenv from "dotenv";
+import { IApplicationConfig, ICookieConfig, IJwtConfig, IWebServerConfig } from "./interfaces/index.js";
 
 /**
  * Initialize dotenv
  */
 const result = dotenv.config();
-
-/**
- * Declares properties for sharing the config for the hapi web server
- */
-export interface IWebServerConfig {
-  host: string;
-  port: number;
-}
-
-/**
- * Declares properties for sharing the config for the cookie authentication
- */
-export interface ICookieConfig {
-  name: string;
-  password: string;
-  isSecure: boolean;
-}
-
-/**
- * Declares properties for sharing the config for the general api
- */
-export interface IApplicationConfig {
-  webServer: IWebServerConfig;
-  cookie: ICookieConfig;
-}
 
 /**
  * Loads and validates the webserver config from the .env file
@@ -59,16 +35,35 @@ function getWebServerConfig(): IWebServerConfig {
 function getCookieConfig(): ICookieConfig {
   const cookieConfig: ICookieConfig = {
     name: process.env.COOKIE_NAME || "auth",
-    password: process.env.COOKIE_PASSWORD || "place-mark",
+    password: process.env.COOKIE_PASSWORD || "",
     isSecure: process.env.COOKIE_SECURE === "true" || process.env.COOKIE_SECURE === "1",
   };
   Object.freeze(cookieConfig);
 
-  if (!cookieConfig.password || !cookieConfig.password) {
+  if (!cookieConfig.password || !cookieConfig.password.length) {
     throw new Error("A password for the cookie must be specified!");
   }
 
   return cookieConfig;
+}
+
+/**
+ * Loads and validates the jwt config from the .env file
+ * @return IJwtConfig The jwt config
+ */
+function getJwtConfig(): IJwtConfig {
+  const jwtConfig: IJwtConfig = {
+    algorithm: "HS256",
+    password: process.env.JWT_PASSWORD || process.env.COOKIE_PASSWORD || "",
+    expiresIn: 60 * 60,
+  };
+  Object.freeze(jwtConfig);
+
+  if (!jwtConfig.password || !jwtConfig.password.length) {
+    throw new Error("A password for the bearer token must be specified!");
+  }
+
+  return jwtConfig;
 }
 
 /**
@@ -83,6 +78,7 @@ export function getConfig(): IApplicationConfig {
   const config: IApplicationConfig = {
     webServer: getWebServerConfig(),
     cookie: getCookieConfig(),
+    jwt: getJwtConfig(),
   };
   Object.freeze(config);
 

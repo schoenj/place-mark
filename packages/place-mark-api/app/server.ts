@@ -4,9 +4,10 @@ import path from "path";
 import Joi from "joi";
 import Inert from "@hapi/inert";
 import HapiSwagger from "hapi-swagger";
-import { IApplicationConfig, IContainer, registerCookieAuthentication$, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
-import { registerController } from "./core/endpoints/utils.js";
-import { AccountController, IndexController, UserApiController } from "./controllers/index.js";
+import { registerController, registerCookieAuthentication$, registerDependencyManagement, registerJwtAuthentication$, registerRenderingEngine$ } from "./core/index.js";
+import { IApplicationConfig } from "./config/interfaces/index.js";
+import { AccountController, IndexController, UserApiController, AuthApiController } from "./controllers/index.js";
+import { IContainer } from "./dependencies/interfaces/index.js";
 
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
@@ -42,6 +43,7 @@ export const createServer$ = async (config: IApplicationConfig, containerFactory
   registerDependencyManagement(server, containerFactory);
   await registerRenderingEngine$(server, dirname);
   await registerCookieAuthentication$(server, config);
+  await registerJwtAuthentication$(server, config);
   server.validator(Joi);
   await server.register(Inert);
   await server.register({
@@ -51,6 +53,7 @@ export const createServer$ = async (config: IApplicationConfig, containerFactory
   registerController(server, IndexController, () => new IndexController());
   registerController(server, AccountController, () => new AccountController());
   registerController(server, UserApiController, () => new UserApiController());
+  registerController(server, AuthApiController, () => new AuthApiController());
 
   return {
     server,

@@ -81,8 +81,8 @@ export class AccountController extends Controller {
   })
   public async signIn$(): Promise<ResponseObject> {
     const credentials = this.request.payload as ISignInUserRequestDto;
-    const user = await this.request.container.userRepository.getByEmail$(credentials.email);
-    if (!user || user.password !== credentials.password) {
+    const result = await this.request.container.authService.authenticate$(credentials);
+    if (!result.success) {
       const errors: ValidationErrorItem[] = [
         {
           message: "Email or password is invalid",
@@ -92,7 +92,8 @@ export class AccountController extends Controller {
       const model = new SignInViewModel(createFailedForm(signInFormDefinition, this.request.payload as ISignInUserRequestDto, errors));
       return this.response.view(model.view, model).code(400);
     }
-    this.request.cookieAuth.set({ id: user.id });
+
+    this.request.cookieAuth.set({ id: result.user });
     return this.response.redirect("/");
   }
 

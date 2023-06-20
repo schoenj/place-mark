@@ -2,8 +2,9 @@ import { Server, ServerInjectResponse } from "@hapi/hapi";
 import { assert } from "chai";
 import { ContainerMock, testConfig } from "../test-setup.js";
 import { createServer$ } from "../../../../app/server.js";
-import { IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto, IUserRepository, IValidationResult } from "../../../../app/core/index.js";
+import { IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto, IValidationResult } from "../../../../app/core/index.js";
 import { toQueryString, QueryParams } from "../../../utils.js";
+import { IUserRepository } from "../../../../app/repositories/interfaces/index.js";
 
 suite("UserApiController Unit-Tests", () => {
   let server: Server;

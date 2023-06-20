@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { IUserReadOnlyDto } from "../../dtos/index.js";
+import { IUserReadOnlyDto } from "../../core/dtos/index.js";
 
 const userReadOnlySelect = {
   id: true,

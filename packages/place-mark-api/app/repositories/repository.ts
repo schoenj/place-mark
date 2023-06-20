@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { IPaginatedListResponse } from "../dtos/index.js";
+import { IPaginatedListResponse } from "../core/dtos/index.js";
 
 export abstract class Repository {
   /**

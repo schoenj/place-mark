@@ -3,9 +3,11 @@ import { PrismaClient } from "@prisma/client";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { assert } from "chai";
 import { createServer$ } from "../../../app/server.js";
-import { Container, getConfig, IPaginatedListResponse, IUserReadOnlyDto } from "../../../app/core/index.js";
+import { IPaginatedListResponse, IUserReadOnlyDto } from "../../../app/core/index.js";
 import { QueryParams } from "../../utils.js";
 import { kermitTheFrogUser } from "../../fixtures.js";
+import { getConfig } from "../../../app/config/index.js";
+import { Container } from "../../../app/dependencies/index.js";
 
 function pad(num: number, size: number) {
   let result = num.toString();
@@ -20,7 +22,8 @@ suite("UserApiController Integration Tests", () => {
   setup(async () => {
     prismaClient = new PrismaClient();
     await prismaClient.$connect();
-    const result = await createServer$(getConfig(), () => new Container(prismaClient));
+    const config = getConfig();
+    const result = await createServer$(config, () => new Container(config, prismaClient));
     server = result.server;
     await result.start$(false);
   });
