@@ -31,7 +31,9 @@ export async function registerJwtAuthentication$(server: Server, config: IApplic
       const authResult = await request?.container.authService.validate$(decoded);
       return authResult;
     },
-    verifyOptions: { algorithms: ["HS256"] },
+    verifyOptions: {
+      algorithms: [config.jwt.algorithm],
+    },
   };
   server.auth.strategy("jwt", "jwt", options);
 }
