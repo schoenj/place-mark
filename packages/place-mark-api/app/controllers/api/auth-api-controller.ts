@@ -1,14 +1,8 @@
 import { ResponseObject } from "@hapi/hapi";
-import Joi from "joi";
 import { Controller, Route } from "../../core/index.js";
 import { IAuthCredentials } from "../../services/interfaces/index.js";
 import { defaultFailAction } from "./utils.js";
-
-export interface IApiAuthenticationResultDto {
-  success: boolean;
-  token?: string;
-  message: string;
-}
+import { authCredentialsSpec, authFailedResultSpec, authSuccessResultSpec } from "../../schemas/index.js";
 
 export class AuthApiController extends Controller {
   @Route({
@@ -19,24 +13,13 @@ export class AuthApiController extends Controller {
       tags: ["api"],
       description: "Authenticates a user",
       validate: {
-        payload: Joi.object<IAuthCredentials>({
-          email: Joi.string().email().required(),
-          password: Joi.string().required(),
-        }).label("AuthCredentials"),
+        payload: authCredentialsSpec,
         failAction: defaultFailAction,
       },
       response: {
         status: {
-          200: Joi.object({
-            success: Joi.boolean().required().example(true),
-            message: Joi.string().required().example("Successfully authenticated"),
-            token: Joi.string().required().example(""),
-          }),
-          403: Joi.object({
-            success: Joi.boolean().required().example(false),
-            message: Joi.string().required().example("Invalid credentials"),
-            token: Joi.string().optional().example(""),
-          }),
+          200: authSuccessResultSpec,
+          401: authFailedResultSpec,
         },
       },
     },
@@ -45,7 +28,7 @@ export class AuthApiController extends Controller {
     const credentials = this.request.payload as IAuthCredentials;
     const result = await this.container.authService.authenticate$(credentials);
     if (!result.success) {
-      return this.h.response({ success: false, message: "Invalid credentials" }).code(403);
+      return this.h.response({ success: false, message: "Invalid credentials" }).code(401);
     }
 
     const token = this.container.authService.createToken(result.user);

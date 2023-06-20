@@ -3,8 +3,7 @@ import { assert } from "chai";
 import { ContainerMock, testConfig } from "../test-setup.js";
 import { createServer$ } from "../../../../app/server.js";
 import { AuthenticationResult, IAuthCredentials, IAuthenticatedUser, IAuthService } from "../../../../app/services/interfaces/index.js";
-import { IValidationResult } from "../../../../app/core/index.js";
-import { IApiAuthenticationResultDto } from "../../../../app/controllers/index.js";
+import { IAuthResultDto, IValidationResult } from "../../../../app/core/index.js";
 
 suite("AuthApiController Unit-Tests", () => {
   let server: Server;
@@ -36,7 +35,7 @@ suite("AuthApiController Unit-Tests", () => {
         },
       } as IAuthService;
 
-      const result: ServerInjectResponse<IApiAuthenticationResultDto> = await server.inject({
+      const result: ServerInjectResponse<IAuthResultDto> = await server.inject({
         method: "POST",
         url: "/api/auth/token",
         payload: testCredentials,
@@ -63,13 +62,13 @@ suite("AuthApiController Unit-Tests", () => {
         },
       } as IAuthService;
 
-      const result: ServerInjectResponse<IApiAuthenticationResultDto> = await server.inject({
+      const result: ServerInjectResponse<IAuthResultDto> = await server.inject({
         method: "POST",
         url: "/api/auth/token",
         payload: testCredentials,
       });
 
-      assert.equal(result.statusCode, 403);
+      assert.equal(result.statusCode, 401);
       assert.isFalse(result.result?.success);
       assert.equal(result.result?.message, "Invalid credentials");
       assert.isUndefined(result.result?.token);

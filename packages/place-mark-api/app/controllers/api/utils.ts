@@ -3,10 +3,17 @@ import { ReqRefDefaults, Request, ResponseObject, ResponseToolkit } from "@hapi/
 import { IPaginatedListResponse, IValidationResult } from "../../core/index.js";
 
 export function createResponseSpec<T>(schema: Joi.ObjectSchema<T>): Joi.ObjectSchema<IPaginatedListResponse<T>> {
+  const joiDescription = schema.describe();
+  const itemLabel = typeof joiDescription.flags === "object" && "label" in joiDescription.flags ? (joiDescription.flags.label as string) : null;
+
+  if (itemLabel === null) {
+    throw new Error("Label of children schema is not set.");
+  }
+
   return Joi.object<IPaginatedListResponse<T>>({
     total: Joi.number().min(0).required(),
-    data: Joi.array<T>().items(schema),
-  });
+    data: Joi.array().items(schema).label(`${itemLabel}Array`),
+  }).label(`PaginatedListRequestDto<${itemLabel}>`);
 }
 
 export function defaultFailAction(request: Request<ReqRefDefaults>, h: ResponseToolkit<ReqRefDefaults>, err: Error | undefined): ResponseObject {

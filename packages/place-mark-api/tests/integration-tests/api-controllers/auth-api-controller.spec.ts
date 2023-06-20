@@ -7,7 +7,7 @@ import { getConfig } from "../../../app/config/index.js";
 import { createServer$ } from "../../../app/server.js";
 import { Container } from "../../../app/dependencies/index.js";
 import { kermitTheFrogUser } from "../../fixtures.js";
-import { IApiAuthenticationResultDto } from "../../../app/controllers/index.js";
+import { IAuthResultDto } from "../../../app/core/index.js";
 
 suite("AuthApiController Integration Tests", () => {
   let prismaClient: PrismaClient;
@@ -32,8 +32,8 @@ suite("AuthApiController Integration Tests", () => {
     test("should return 403 if password does not match or user is not found", async () => {
       const validateError = (ex: unknown) => {
         assert.isTrue(isAxiosError(ex));
-        const axiosError = ex as AxiosError<IApiAuthenticationResultDto>;
-        assert.equal(axiosError.response?.status, 403);
+        const axiosError = ex as AxiosError<IAuthResultDto>;
+        assert.equal(axiosError.response?.status, 401);
         assert.isFalse(axiosError.response?.data.success);
         assert.equal(axiosError.response?.data.message, "Invalid credentials");
         assert.isUndefined(axiosError.response?.data.token);
@@ -57,7 +57,7 @@ suite("AuthApiController Integration Tests", () => {
 
     test("should work", async () => {
       const user = await prismaClient.user.create({ data: kermitTheFrogUser });
-      const response: AxiosResponse<IApiAuthenticationResultDto> = await axios.post(`${server.info.uri}/api/auth/token`, { email: user.email, password: user.password });
+      const response: AxiosResponse<IAuthResultDto> = await axios.post(`${server.info.uri}/api/auth/token`, { email: user.email, password: user.password });
       assert.equal(response.status, 200);
       assert.isTrue(response.data.success);
       assert.equal(response.data.message, "Successfully authenticated");
