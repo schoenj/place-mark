@@ -3,9 +3,7 @@ import { assert } from "chai";
 import { ContainerMock, testConfig } from "../test-setup.js";
 import { createServer$ } from "../../../../app/server.js";
 import { AuthenticationResult, IAuthCredentials, IAuthenticatedUser, IAuthService } from "../../../../app/services/interfaces/index.js";
-import { QueryParams, toQueryString } from "../../../utils.js";
 import { IValidationResult } from "../../../../app/core/index.js";
-import { AuthService } from "../../../../app/services/index.js";
 import { IApiAuthenticationResultDto } from "../../../../app/controllers/index.js";
 
 suite("AuthApiController Unit-Tests", () => {

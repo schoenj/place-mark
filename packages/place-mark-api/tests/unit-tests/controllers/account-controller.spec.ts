@@ -2,7 +2,6 @@ import { Server } from "@hapi/hapi";
 import { User } from "@prisma/client";
 import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
-import { ValidateResponse } from "@hapi/cookie";
 import { createServer$ } from "../../../app/server.js";
 import { ICreateUserReadWriteDto } from "../../../app/core/index.js";
 import { testConfig, ContainerMock } from "./test-setup.js";
