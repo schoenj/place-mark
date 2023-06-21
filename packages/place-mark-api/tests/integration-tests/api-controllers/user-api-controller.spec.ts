@@ -5,7 +5,7 @@ import { assert } from "chai";
 import { createServer$ } from "../../../app/server.js";
 import { IAuthResultDto, IPaginatedListResponse, IUserReadOnlyDto } from "../../../app/core/index.js";
 import { QueryParams } from "../../utils.js";
-import { cookieMonsterUser, kermitTheFrogUser } from "../../fixtures.js";
+import { kermitTheFrogUser } from "../../fixtures.js";
 import { getConfig } from "../../../app/config/index.js";
 import { Container } from "../../../app/dependencies/index.js";
 
