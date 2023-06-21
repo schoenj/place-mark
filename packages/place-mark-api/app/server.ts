@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
 import Inert from "@hapi/inert";
-import HapiSwagger from "hapi-swagger";
+import HapiSwagger, { RegisterOptions as SwaggerOptions } from "hapi-swagger";
 import { registerController, registerCookieAuthentication$, registerDependencyManagement, registerJwtAuthentication$, registerRenderingEngine$ } from "./core/index.js";
 import { IApplicationConfig } from "./config/interfaces/index.js";
 import { AccountController, IndexController, UserApiController, AuthApiController } from "./controllers/index.js";
@@ -12,20 +12,24 @@ import { IContainer } from "./dependencies/interfaces/index.js";
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
 
-const swaggerOptions = {
+const swaggerOptions: SwaggerOptions = {
   info: {
     title: "Place-Mark API",
     version: "0.1",
   },
   grouping: "tags",
-  // securityDefinitions: {
-  //   jwt: {
-  //     type: "apiKey",
-  //     name: "Authorization",
-  //     in: "header",
-  //   },
-  // },
-  // security: [{ jwt: [] }],
+  securityDefinitions: {
+    jwt: {
+      type: "apiKey",
+      name: "Authorization",
+      in: "header",
+    },
+  },
+  security: [
+    {
+      jwt: [],
+    },
+  ],
 };
 
 /**

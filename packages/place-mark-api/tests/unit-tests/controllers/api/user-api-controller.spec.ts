@@ -1,22 +1,46 @@
 import { Server, ServerInjectResponse } from "@hapi/hapi";
 import { assert } from "chai";
+import { ValidateResponse } from "@hapi/cookie";
+import jwt from "jsonwebtoken";
 import { ContainerMock, testConfig } from "../test-setup.js";
 import { createServer$ } from "../../../../app/server.js";
 import { IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto, IValidationResult } from "../../../../app/core/index.js";
 import { toQueryString, QueryParams } from "../../../utils.js";
 import { IUserRepository } from "../../../../app/repositories/interfaces/index.js";
+import { IAuthService } from "../../../../app/services/interfaces/index.js";
 
 suite("UserApiController Unit-Tests", () => {
   let server: Server;
   let container: ContainerMock;
+  let token: string;
 
   setup(async () => {
     container = new ContainerMock();
+    const user = { id: "some-id", email: "test@email.com", admin: false };
+    container.authServiceMock = {
+      validate$(cookieOrDecodedContent: object | undefined): Promise<ValidateResponse> {
+        if (cookieOrDecodedContent && typeof cookieOrDecodedContent === "object" && "id" in cookieOrDecodedContent && cookieOrDecodedContent.id === "some-id") {
+          return Promise.resolve({ isValid: true, credentials: { user: user } });
+        }
+
+        return Promise.resolve({ isValid: false });
+      },
+    } as IAuthService;
+    token = jwt.sign(user, testConfig.jwt.password, { algorithm: testConfig.jwt.algorithm, expiresIn: testConfig.jwt.expiresIn });
     const result = await createServer$(testConfig, () => container);
     server = result.server;
   });
 
   suite("GET /api/user Tests", () => {
+    test("auth should work", async () => {
+      const response = await server.inject({
+        method: "GET",
+        url: "/api/user",
+      });
+
+      assert.equal(response.statusCode, 401);
+    });
+
     test("empty params should work", async () => {
       const mockedResult: IPaginatedListResponse<IUserReadOnlyDto> = {
         total: 0,
@@ -39,6 +63,9 @@ suite("UserApiController Unit-Tests", () => {
       const response = await server.inject({
         method: "GET",
         url: "/api/user",
+        headers: {
+          authorization: token,
+        },
       });
 
       assert.equal(response.statusCode, 200);
@@ -84,6 +111,9 @@ suite("UserApiController Unit-Tests", () => {
         const response = await server.inject({
           method: "GET",
           url: `/api/user?${toQueryString(query)}`,
+          headers: {
+            authorization: token,
+          },
         });
 
         assert.equal(response.statusCode, 200);
@@ -102,6 +132,9 @@ suite("UserApiController Unit-Tests", () => {
         const response: ServerInjectResponse<IValidationResult[]> = await server.inject({
           method: "GET",
           url: `/api/user?${toQueryString(query)}`,
+          headers: {
+            Authorization: token,
+          },
         });
         assert.equal(response.statusCode, 400);
 
@@ -122,6 +155,15 @@ suite("UserApiController Unit-Tests", () => {
   });
 
   suite("GET /api/user/{id} Tests", () => {
+    test("auth should work", async () => {
+      const response = await server.inject({
+        method: "GET",
+        url: "/api/user/646634e51d85e59154d725c5",
+      });
+
+      assert.equal(response.statusCode, 401);
+    });
+
     test("should return 200 on success", async () => {
       const mockUser: IUserReadOnlyDto = {
         id: "646634e51d85e59154d725c5",
@@ -145,6 +187,9 @@ suite("UserApiController Unit-Tests", () => {
       const response: ServerInjectResponse<IUserReadOnlyDto> = await server.inject({
         method: "GET",
         url: "/api/user/646634e51d85e59154d725c5",
+        headers: {
+          authorization: token,
+        },
       });
 
       assert.equal(response.statusCode, 200);
@@ -161,6 +206,9 @@ suite("UserApiController Unit-Tests", () => {
       const response = await server.inject({
         method: "GET",
         url: "/api/user/646634e51d85e59154d725c5",
+        headers: {
+          authorization: token,
+        },
       });
 
       assert.equal(response.statusCode, 404);
@@ -168,6 +216,15 @@ suite("UserApiController Unit-Tests", () => {
   });
 
   suite("DELETE /api/user/{id} Tests", () => {
+    test("auth should work", async () => {
+      const response = await server.inject({
+        method: "DELETE",
+        url: "/api/user/646634e51d85e59154d725c5",
+      });
+
+      assert.equal(response.statusCode, 401);
+    });
+
     test("should work", async () => {
       let repoCalled = false;
       container.userRepoMock = {
@@ -182,6 +239,9 @@ suite("UserApiController Unit-Tests", () => {
       const response = await server.inject({
         method: "DELETE",
         url: "/api/user/646634e51d85e59154d725c5",
+        headers: {
+          authorization: token,
+        },
       });
       assert.equal(response.statusCode, 204);
       assert.isTrue(repoCalled);

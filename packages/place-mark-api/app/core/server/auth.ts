@@ -26,7 +26,7 @@ export async function registerCookieAuthentication$(server: Server, config: IApp
 export async function registerJwtAuthentication$(server: Server, config: IApplicationConfig): Promise<void> {
   await server.register(jwt);
   const options: HapiJwtOptions = {
-    key: config.cookie.password,
+    key: config.jwt.password,
     validate: async (decoded, request) => {
       const authResult = await request?.container.authService.validate$(decoded);
       return authResult;

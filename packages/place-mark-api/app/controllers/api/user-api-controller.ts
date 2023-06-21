@@ -8,7 +8,7 @@ export class UserApiController extends Controller {
     method: "GET",
     path: "/api/user",
     options: {
-      auth: false, // ToDo: Setup Bearer Authentication
+      auth: { strategy: "jwt" },
       tags: ["api", "user"],
       description: "Returns a paginated list of users",
       validate: {
@@ -19,6 +19,7 @@ export class UserApiController extends Controller {
         status: {
           200: createResponseSpec(userReadOnlySpec),
           400: validationResultSpec,
+          401: emptySpec,
         },
         // failAction: logFailAction,
       },
@@ -34,7 +35,7 @@ export class UserApiController extends Controller {
     method: "GET",
     path: "/api/user/{id}",
     options: {
-      auth: false, // ToDo
+      auth: { strategy: "jwt" },
       tags: ["api", "user"],
       description: "Returns a user by its id",
       validate: {
@@ -45,6 +46,7 @@ export class UserApiController extends Controller {
         status: {
           200: userReadOnlySpec,
           404: emptySpec,
+          401: emptySpec,
         },
         // failAction: logFailAction,
       },
@@ -63,7 +65,7 @@ export class UserApiController extends Controller {
     method: "DELETE",
     path: "/api/user/{id}",
     options: {
-      auth: false, // ToDo
+      auth: { strategy: "jwt" },
       tags: ["api", "user"],
       description: "Deletes an user by its id",
       validate: {
@@ -73,6 +75,7 @@ export class UserApiController extends Controller {
       response: {
         status: {
           204: emptySpec,
+          401: emptySpec,
         },
       },
     },
