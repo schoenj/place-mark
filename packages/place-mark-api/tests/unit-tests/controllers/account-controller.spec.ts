@@ -1,38 +1,12 @@
 import { Server } from "@hapi/hapi";
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
-import { createServer$ } from "../server.js";
-import { IApplicationConfig, IContainer, ICreateUserReadWriteDto, IUserRepository } from "../core/index.js";
-
-const testConfig: IApplicationConfig = {
-  webServer: {
-    host: "localhost",
-    port: 3000,
-  },
-  cookie: {
-    name: "Biscuit", // Cookies, but in british ^^
-    password: "SOME_LONG_PASSWORD_FOR_THE_COOKIE",
-    isSecure: false,
-  },
-};
-
-class ContainerMock implements IContainer {
-  public userRepoMock: IUserRepository | null;
-
-  // eslint-disable-next-line class-methods-use-this
-  public get db(): PrismaClient {
-    throw new Error("PrismaClient is not available during Unit-Tests");
-  }
-
-  public get userRepository(): IUserRepository {
-    if (this.userRepoMock === null) {
-      throw new Error("UserRepository were accessed before mocked.");
-    }
-
-    return this.userRepoMock;
-  }
-}
+import { createServer$ } from "../../../app/server.js";
+import { ICreateUserReadWriteDto } from "../../../app/core/index.js";
+import { testConfig, ContainerMock } from "./test-setup.js";
+import { IUserRepository } from "../../../app/repositories/interfaces/index.js";
+import { AuthenticationResult, IAuthCredentials, IAuthService } from "../../../app/services/interfaces/index.js";
 
 suite("AccountController Unit-Tests", () => {
   let server: Server;
@@ -106,19 +80,24 @@ suite("AccountController Unit-Tests", () => {
 
     test("POST should redirect to home on success", async () => {
       let userFetched = false;
-      container.userRepoMock = {
-        getByEmail$(email: string): Promise<User | null> {
+      container.authServiceMock = {
+        authenticate$(credentials: IAuthCredentials): Promise<AuthenticationResult> {
           assert.isFalse(userFetched);
           userFetched = true;
-          if (email !== "cookie.monster@sesame-street.de") {
-            return Promise.resolve(null);
+          if (credentials.email !== "cookie.monster@sesame-street.de") {
+            return Promise.resolve({ success: false });
           }
 
           return Promise.resolve({
-            password: "1234qwer",
-          } as User);
+            success: true,
+            user: {
+              id: "1234",
+              email: "cookie.monster@sesame-street.de",
+              admin: false,
+            },
+          } as AuthenticationResult);
         },
-      } as IUserRepository;
+      } as IAuthService;
       const response = await server.inject({
         method: "POST",
         url: "/account/sign-in",
@@ -144,11 +123,22 @@ suite("AccountController Unit-Tests", () => {
 
   suite("Logout-Page Tests", () => {
     test("Logout should delete cookie and redirect", async () => {
-      container.userRepoMock = {
-        getByEmail$(email: string): Promise<User | null> {
-          return Promise.resolve({ email: email, password: "1234qwer" } as User);
+      container.authServiceMock = {
+        authenticate$(credentials: IAuthCredentials): Promise<AuthenticationResult> {
+          if (credentials.email !== "cookie.monster@sesame-street.de") {
+            return Promise.resolve({ success: false });
+          }
+
+          return Promise.resolve({
+            success: true,
+            user: {
+              id: "1234",
+              email: "cookie.monster@sesame-street.de",
+              admin: false,
+            },
+          } as AuthenticationResult);
         },
-      } as IUserRepository;
+      } as IAuthService;
       const signInResponse = await server.inject({
         method: "POST",
         url: "/account/sign-in",

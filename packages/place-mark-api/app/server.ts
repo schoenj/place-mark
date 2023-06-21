@@ -2,38 +2,72 @@ import { Server } from "@hapi/hapi";
 import { fileURLToPath } from "url";
 import path from "path";
 import Joi from "joi";
-import { IApplicationConfig, IContainer, registerCookieAuthentication$, registerDependencyManagement, registerRenderingEngine$ } from "./core/index.js";
-import { registerController } from "./core/endpoints/utils.js";
-import { AccountController, IndexController } from "./controllers/index.js";
+import Inert from "@hapi/inert";
+import HapiSwagger, { RegisterOptions as SwaggerOptions } from "hapi-swagger";
+import { registerController, registerCookieAuthentication$, registerDependencyManagement, registerJwtAuthentication$, registerRenderingEngine$ } from "./core/index.js";
+import { IApplicationConfig } from "./config/interfaces/index.js";
+import { AccountController, IndexController, UserApiController, AuthApiController } from "./controllers/index.js";
+import { IContainer } from "./dependencies/interfaces/index.js";
 
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
+
+const swaggerOptions: SwaggerOptions = {
+  info: {
+    title: "Place-Mark API",
+    version: "0.1",
+  },
+  grouping: "tags",
+  securityDefinitions: {
+    jwt: {
+      type: "apiKey",
+      name: "Authorization",
+      in: "header",
+    },
+  },
+  security: [
+    {
+      jwt: [],
+    },
+  ],
+};
 
 /**
  * Creates and configures a new Hapi Server
  * @param config The Application config
  * @param containerFactory A function that creates the Container
- * @return { server: Server, start$: Promise<void> } The configured webserver and a function to start it
+ * @return { server: Server, start$: (log: true) => Promise<void> } The configured webserver and a function to start it
  */
 export const createServer$ = async (config: IApplicationConfig, containerFactory: () => IContainer) => {
   const server: Server = new Server({
     host: config.webServer.host,
     port: config.webServer.port,
+    debug: { request: "*" },
   });
 
   registerDependencyManagement(server, containerFactory);
   await registerRenderingEngine$(server, dirname);
   await registerCookieAuthentication$(server, config);
+  await registerJwtAuthentication$(server, config);
+  server.validator(Joi);
+  await server.register(Inert);
+  await server.register({
+    plugin: HapiSwagger,
+    options: swaggerOptions,
+  });
   registerController(server, IndexController, () => new IndexController());
   registerController(server, AccountController, () => new AccountController());
-  server.validator(Joi);
+  registerController(server, UserApiController, () => new UserApiController());
+  registerController(server, AuthApiController, () => new AuthApiController());
 
   return {
     server,
 
-    start$: async () => {
+    start$: async (log = true) => {
       await server.start();
-      console.log("Server running on %s", server.info.uri);
+      if (log) {
+        console.log("Server running on %s", server.info.uri);
+      }
     },
   };
 };

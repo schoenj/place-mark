@@ -1,5 +1,5 @@
 import Joi, { StringSchema, AnySchema } from "joi";
-import { KeyOf } from "../types.js";
+import { KeyOf } from "../utils/types.js";
 import { FormDefinition, IInputBase, ITextInput } from "../form/index.js";
 
 type AdditionalValidator<T extends AnySchema> = (schema: T) => T;

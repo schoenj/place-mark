@@ -2,7 +2,7 @@ import { ValidationErrorItem } from "joi";
 import { FormDefinition } from "./abstraction/index.js";
 import { createFormField, IFormField } from "./form-field.js";
 import { groupBy } from "../utils/index.js";
-import { KeyOf } from "../types.js";
+import { KeyOf } from "../utils/types.js";
 
 export interface IForm<T extends object> {
   action: string;

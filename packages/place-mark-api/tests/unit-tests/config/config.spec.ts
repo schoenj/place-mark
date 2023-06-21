@@ -1,5 +1,6 @@
 import { assert } from "chai";
-import { getConfig, IApplicationConfig } from "./config.js";
+import { IApplicationConfig } from "../../../app/config/interfaces/index.js";
+import { getConfig } from "../../../app/config/index.js";
 
 suite("config-tests", () => {
   test("getConfig() should work", () => {
@@ -9,21 +10,28 @@ suite("config-tests", () => {
     process.env.COOKIE_NAME = "cookie_monster";
     process.env.COOKIE_PASSWORD = "Cookies! Me eat!";
     process.env.COOKIE_SECURE = "true";
+    process.env.JWT_PASSWORD = "I am afraid of Bears!";
 
     // Check Config
     let config: IApplicationConfig = getConfig();
     assert.isTrue(Object.isFrozen(config));
 
     // WebServer Config
-    assert.equal("0.0.0.0", config.webServer.host);
-    assert.equal(8080, config.webServer.port);
+    assert.equal(config.webServer.host, "0.0.0.0");
+    assert.equal(config.webServer.port, 8080);
     assert.isTrue(Object.isFrozen(config.webServer));
 
     // Cookie Config (COOKIE_SECURE=true)
-    assert.equal("cookie_monster", config.cookie.name);
-    assert.equal("Cookies! Me eat!", config.cookie.password);
+    assert.equal(config.cookie.name, "cookie_monster");
+    assert.equal(config.cookie.password, "Cookies! Me eat!");
     assert.isTrue(config.cookie.isSecure);
     assert.isTrue(Object.isFrozen(config.cookie));
+
+    // JWT Config
+    assert.equal(config.jwt.algorithm, "HS256");
+    assert.equal(config.jwt.expiresIn, 3600);
+    assert.equal(config.jwt.password, "I am afraid of Bears!");
+    assert.isTrue(Object.isFrozen(config.jwt));
 
     // Cookie Config (COOKIE_SECURE=1)
     process.env.COOKIE_SECURE = "1";
@@ -35,15 +43,15 @@ suite("config-tests", () => {
     process.env.WEBSERVER_HOST = "";
     process.env.WEBSERVER_PORT = "";
     process.env.COOKIE_NAME = "";
-    process.env.COOKIE_PASSWORD = "";
+    process.env.COOKIE_PASSWORD = "place-mark";
     process.env.COOKIE_SECURE = "";
+    process.env.JWT_PASSWORD = "place-mark";
     const config: IApplicationConfig = getConfig();
 
     // WebServer defaults
     assert.equal("localhost", config.webServer.host);
     assert.equal(3000, config.webServer.port);
     assert.equal("auth", config.cookie.name);
-    assert.equal("place-mark", config.cookie.password);
     assert.isFalse(config.cookie.isSecure);
   });
 
