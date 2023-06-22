@@ -1,4 +1,4 @@
-import { KeyOf } from "../../types.js";
+import { KeyOf } from "../../utils/types.js";
 import { IInputBase, ITextInput } from "./form-input-definitions.js";
 
 export interface FormDefinition<T extends object> {

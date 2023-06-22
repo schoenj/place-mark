@@ -1,29 +1,18 @@
-import { Lifecycle, ReqRefDefaults, Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { ValidationError, ValidationErrorItem } from "joi";
+import { ResponseObject } from "@hapi/hapi";
+import { ValidationErrorItem } from "joi";
 import {
   Controller,
   createFailedForm,
   createForm,
-  FormDefinition,
-  IForm,
-  ISignInUserRequestDto,
-  ISignUpUserRequestDto,
   Route,
   signInFormDefinition,
   SignInUserRequestSpecification,
   signUpFormDefinition,
   SignUpUserRequestSpecification,
 } from "../core/index.js";
-import { SignUpViewModel, SignInViewModel, ViewModel } from "../view-models/index.js";
-import FailAction = Lifecycle.FailAction;
-
-export function createFailAction<TModel extends ViewModel, TDto extends object>(formDef: FormDefinition<TDto>, createModelFunc: (form: IForm<TDto>) => TModel): FailAction {
-  return (request: Request<ReqRefDefaults>, h: ResponseToolkit<ReqRefDefaults>, error: Error | undefined) => {
-    const form: IForm<TDto> = createFailedForm(formDef, request.payload as TDto, (error as ValidationError).details);
-    const model: TModel = createModelFunc(form);
-    return h.view(model.view, model).takeover().code(400);
-  };
-}
+import { ISignInUserRequestDto, ISignUpUserRequestDto } from "../core/dtos/index.js";
+import { SignUpViewModel, SignInViewModel } from "../view-models/index.js";
+import { createFailAction } from "./utils.js";
 
 export class AccountController extends Controller {
   @Route({
@@ -51,7 +40,7 @@ export class AccountController extends Controller {
   public async signUp$(): Promise<ResponseObject> {
     const user = this.request.payload as ISignUpUserRequestDto;
 
-    if (await this.request.container.userRepository.getByEmail$(user.email)) {
+    if (await this.container.userRepository.getByEmail$(user.email)) {
       const errors: ValidationErrorItem[] = [
         {
           message: "Account already exists",
@@ -63,8 +52,8 @@ export class AccountController extends Controller {
       return this.render(model).code(400);
     }
 
-    await this.request.container.userRepository.create$(user);
-    return this.response.redirect("/account/sign-in");
+    await this.container.userRepository.create$(user);
+    return this.h.redirect("/account/sign-in");
   }
 
   @Route({
@@ -91,8 +80,8 @@ export class AccountController extends Controller {
   })
   public async signIn$(): Promise<ResponseObject> {
     const credentials = this.request.payload as ISignInUserRequestDto;
-    const user = await this.request.container.userRepository.getByEmail$(credentials.email);
-    if (!user || user.password !== credentials.password) {
+    const result = await this.container.authService.authenticate$(credentials);
+    if (!result.success) {
       const errors: ValidationErrorItem[] = [
         {
           message: "Email or password is invalid",
@@ -100,10 +89,11 @@ export class AccountController extends Controller {
         } as ValidationErrorItem,
       ];
       const model = new SignInViewModel(createFailedForm(signInFormDefinition, this.request.payload as ISignInUserRequestDto, errors));
-      return this.response.view(model.view, model).code(400);
+      return this.h.view(model.view, model).code(400);
     }
-    this.request.cookieAuth.set({ id: user.id });
-    return this.response.redirect("/");
+
+    this.request.cookieAuth.set({ id: result.user });
+    return this.h.redirect("/");
   }
 
   @Route({
@@ -115,6 +105,6 @@ export class AccountController extends Controller {
   })
   public logout(): ResponseObject {
     this.request.cookieAuth.clear();
-    return this.response.redirect("/");
+    return this.h.redirect("/");
   }
 }

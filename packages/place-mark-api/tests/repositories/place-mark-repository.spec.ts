@@ -1,6 +1,6 @@
 import { PlaceMark, PrismaClient, User } from "@prisma/client";
 import { assert } from "chai";
-import { PlaceMarkRepository } from "../../app/core/repositories/place-mark-repository.js";
+import { PlaceMarkRepository } from "../../app/repositories/index.js";
 
 const createCookieMonster$ = async (client: PrismaClient) => {
   const user: User = await client.user.create({
