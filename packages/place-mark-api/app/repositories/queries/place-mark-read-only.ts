@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { userLookupQuery } from "./user-lookup.js";
 import { IPlaceMarkReadOnlyDto } from "../../core/dtos/index.js";
+import { categoryLookupQuery } from "./category-lookup.js";
 
 const placeMarkReadOnlySelect = {
   id: true,
@@ -10,6 +11,9 @@ const placeMarkReadOnlySelect = {
   longitude: true,
   createdAt: true,
   updatedAt: true,
+  category: {
+    select: categoryLookupQuery.select,
+  },
   createdBy: {
     select: userLookupQuery.select,
   },
@@ -20,6 +24,7 @@ export type PlaceMarkReadOnlySelectType = Prisma.PlaceMarkGetPayload<{ select: t
 function placeMarkReadOnlyTransform(placeMark: PlaceMarkReadOnlySelectType): IPlaceMarkReadOnlyDto {
   return {
     ...placeMark,
+    category: categoryLookupQuery.transform(placeMark.category),
     createdBy: userLookupQuery.transform(placeMark.createdBy),
   };
 }

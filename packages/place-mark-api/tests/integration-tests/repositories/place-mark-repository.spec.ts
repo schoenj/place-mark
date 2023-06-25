@@ -1,4 +1,4 @@
-import { PlaceMark, PrismaClient } from "@prisma/client";
+import { Category, PlaceMark, PrismaClient } from "@prisma/client";
 import { assert } from "chai";
 import { PlaceMarkRepository } from "../../../app/repositories/index.js";
 import { createUser$ } from "../../utils.js";
@@ -8,16 +8,24 @@ suite("PlaceMarkRepository Integration Tests", () => {
   let prismaClient: PrismaClient;
   let repository: PlaceMarkRepository;
   let cookieMonsterId: string;
+  let category: Category;
 
   setup(async () => {
     prismaClient = new PrismaClient();
     await prismaClient.$connect();
     repository = new PlaceMarkRepository(prismaClient);
     [cookieMonsterId] = await createUser$(prismaClient, cookieMonsterUser);
+    category = await prismaClient.category.create({
+      data: {
+        createdById: cookieMonsterId,
+        designation: "landscape",
+      },
+    });
   });
 
   teardown(async () => {
     await prismaClient.placeMark.deleteMany();
+    await prismaClient.category.deleteMany();
     await prismaClient.user.deleteMany();
     await prismaClient.$disconnect();
   });
@@ -30,6 +38,7 @@ suite("PlaceMarkRepository Integration Tests", () => {
         latitude: 51.50546124603717,
         longitude: -0.07539259117490767,
         createdById: cookieMonsterId,
+        categoryId: category.id,
       },
     });
 
@@ -44,6 +53,9 @@ suite("PlaceMarkRepository Integration Tests", () => {
     assert.isNotNull(dto?.createdBy);
     assert.equal(dto?.createdBy?.id, cookieMonsterId);
     assert.equal(dto?.createdBy?.designation, "Cookie Monster");
+    assert.isNotNull(dto?.category);
+    assert.equal(dto?.category.id, category.id);
+    assert.equal(dto?.category.designation, category.designation);
   });
 
   suite("get$ should work", () => {
@@ -61,14 +73,11 @@ suite("PlaceMarkRepository Integration Tests", () => {
             latitude: Math.random(),
             longitude: Math.random(),
             createdById: cookieMonsterId,
+            categoryId: category.id,
           },
         });
         placeMarks.push(placeMark);
       }
-    });
-
-    teardown(async () => {
-      await prismaClient.placeMark.deleteMany();
     });
 
     test("skip should work", async () => {
@@ -142,6 +151,9 @@ suite("PlaceMarkRepository Integration Tests", () => {
       assert.equal(actual?.createdBy?.designation, "Cookie Monster");
       assert.equal(actual?.updatedAt.toUTCString(), expected?.updatedAt.toUTCString());
       assert.equal(actual?.createdAt.toUTCString(), expected?.createdAt.toUTCString());
+      assert.isNotNull(actual?.category);
+      assert.equal(actual?.category.id, category.id);
+      assert.equal(actual?.category.designation, category.designation);
     });
   });
 });

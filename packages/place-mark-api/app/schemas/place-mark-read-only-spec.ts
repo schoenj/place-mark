@@ -9,6 +9,7 @@ export const placeMarkReadOnlySpec: Joi.ObjectSchema<IPlaceMarkReadOnlyDto> = Jo
   description: Joi.string().required().label("Description").example("Tower Bridge").min(3).max(500),
   latitude: Joi.number().required().min(-90).max(90).label("Latitude").example(51.5055),
   longitude: Joi.number().required().min(-180).max(180).label("Longitude").example(-0.075406),
+  category: lookupSpec,
   createdBy: lookupSpec,
   createdAt: createdAtSpec,
   updatedAt: updatedAtSpec,

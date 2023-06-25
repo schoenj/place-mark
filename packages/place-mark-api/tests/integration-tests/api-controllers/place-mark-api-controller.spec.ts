@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { assert } from "chai";
-import { User } from "@prisma/client";
+import { Category, User } from "@prisma/client";
 import { IPaginatedListResponse, IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
@@ -10,12 +10,19 @@ suite("PlaceMarkApiController Integration Tests", () => {
   let fixture: IntegrationTestFixture;
   let token: string;
   let user: User;
+  let category: Category;
 
   setup(async () => {
     fixture = new IntegrationTestFixture();
     await fixture.start$();
     token = fixture.authValidator.add({ id: "some-id", email: "admin@admin.com", admin: false });
     user = await fixture.createUser$(cookieMonsterUser);
+    category = await fixture.prisma.category.create({
+      data: {
+        designation: "landscape",
+        createdById: user.id,
+      },
+    });
   });
 
   teardown(async () => {
@@ -34,6 +41,7 @@ suite("PlaceMarkApiController Integration Tests", () => {
             latitude: i,
             longitude: i,
             createdById: user.id,
+            categoryId: category.id,
           },
         });
       }
@@ -68,6 +76,9 @@ suite("PlaceMarkApiController Integration Tests", () => {
       assert.equal(actual.description, "desc 00");
       assert.equal(actual.latitude, 0);
       assert.equal(actual.longitude, 0);
+      assert.isNotNull(actual.category);
+      assert.equal(actual.category.id, category.id);
+      assert.equal(actual.category.designation, category.designation);
 
       response = await sendRequest$({ take: 1, skip: 1 });
       assert.equal(response.status, 200);
@@ -79,6 +90,8 @@ suite("PlaceMarkApiController Integration Tests", () => {
       assert.equal(actual.description, "desc 01");
       assert.equal(actual.latitude, 1);
       assert.equal(actual.longitude, 1);
+      assert.equal(actual.category.id, category.id);
+      assert.equal(actual.category.designation, category.designation);
     });
   });
 
@@ -102,6 +115,7 @@ suite("PlaceMarkApiController Integration Tests", () => {
           latitude: 51.5055,
           longitude: -0.075406,
           createdById: user.id,
+          categoryId: category.id,
         },
       });
 
@@ -120,6 +134,8 @@ suite("PlaceMarkApiController Integration Tests", () => {
       response.data.updatedAt = new Date(response.data.updatedAt);
       assert.equal(response.data.createdAt.toUTCString(), placeMark.createdAt.toUTCString());
       assert.equal(response.data.updatedAt.toUTCString(), placeMark.updatedAt.toUTCString());
+      assert.equal(response.data.category.id, category.id);
+      assert.equal(response.data.category.designation, category.designation);
     });
   });
 });

@@ -164,6 +164,10 @@ suite("PlaceMarkApiController Unit-Tests", () => {
           id: "446634e51d85e59154d725c5",
           designation: "Cookie Monster",
         },
+        category: {
+          id: "846634e51d85e59154d725c5",
+          designation: "landscape",
+        },
         createdAt: new Date(),
         updatedAt: new Date(),
       };

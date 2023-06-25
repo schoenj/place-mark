@@ -6,6 +6,7 @@ export interface IPlaceMarkReadOnlyDto {
   description: string | null;
   latitude: number;
   longitude: number;
+  category: ILookupDto;
   createdBy: ILookupDto;
   createdAt: Date;
   updatedAt: Date;

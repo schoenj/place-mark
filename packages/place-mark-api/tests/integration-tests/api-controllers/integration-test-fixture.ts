@@ -57,6 +57,7 @@ export class IntegrationTestFixture extends TestFixture {
   protected async afterStop$(): Promise<void> {
     await this.server.stop({ timeout: 1 });
     await this.prisma.placeMark.deleteMany();
+    await this.prisma.category.deleteMany();
     await this.prisma.user.deleteMany();
     await this.prisma.$disconnect();
   }
