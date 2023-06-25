@@ -6,3 +6,5 @@ export * from "./user-read-only-spec.js";
 export * from "./validation-result-spec.js";
 export * from "./validation-result-item-spec.js";
 export * from "./empty-spec.js";
+export * from "./lookup-spec.js";
+export * from "./place-mark-read-only-spec.js";

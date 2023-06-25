@@ -1,57 +1,57 @@
 import { ServerInjectResponse } from "@hapi/hapi";
 import { assert } from "chai";
+import { IPaginatedListRequest, IPaginatedListResponse, IPlaceMarkReadOnlyDto } from "../../../../app/core/dtos/index.js";
+import { IPlaceMarkRepository } from "../../../../app/repositories/interfaces/index.js";
+import { QueryParams, toQueryString } from "../../../utils.js";
 import { IValidationResult } from "../../../../app/core/index.js";
-import { IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto } from "../../../../app/core/dtos/index.js";
-import { toQueryString, QueryParams } from "../../../utils.js";
-import { IUserRepository } from "../../../../app/repositories/interfaces/index.js";
 import { UnitTestFixture } from "../unit-test-fixture.js";
 
-suite("UserApiController Unit-Tests", () => {
+suite("PlaceMarkApiController Unit-Tests", () => {
   let fixture: UnitTestFixture;
   let token: string;
 
   setup(async () => {
     fixture = new UnitTestFixture();
     await fixture.start$();
-    token = fixture.authValidator.add({ id: "some-id", email: "admin@admin.com", admin: true });
+    token = fixture.authValidator.add({ id: "some-id", email: "admin@admin.com", admin: false });
   });
 
   teardown(async () => {
     await fixture.stop$();
   });
 
-  suite("GET /api/user Tests", () => {
+  suite("GET /api/place-mark Tests", () => {
     test("auth should work", async () => {
       const response = await fixture.inject({
         method: "GET",
-        url: "/api/user",
+        url: "/api/place-mark",
       });
 
       assert.equal(response.statusCode, 401);
     });
 
     test("empty params should work", async () => {
-      const mockedResult: IPaginatedListResponse<IUserReadOnlyDto> = {
+      const mockedResult: IPaginatedListResponse<IPlaceMarkReadOnlyDto> = {
         total: 0,
         data: [],
       };
       let repoCalled = false;
-      fixture.container.userRepoMock = {
-        get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>> {
+      fixture.container.placeMarkRepoMock = {
+        get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IPlaceMarkReadOnlyDto>> {
           assert.isNotNull(listRequest);
           assert.isUndefined(listRequest.skip);
           assert.isUndefined(listRequest.take);
           if (repoCalled) {
-            assert.fail("UserRepository.get$ called twice.");
+            assert.fail("PlaceMarkRepository.get$ called twice.");
           }
           repoCalled = true;
           return Promise.resolve(mockedResult);
         },
-      } as IUserRepository;
+      } as IPlaceMarkRepository;
 
       const response = await fixture.inject({
         method: "GET",
-        url: "/api/user",
+        url: "/api/place-mark",
         headers: {
           authorization: token,
         },
@@ -64,13 +64,13 @@ suite("UserApiController Unit-Tests", () => {
     });
 
     test("correct params should be extracted", async () => {
-      const mockedResult: IPaginatedListResponse<IUserReadOnlyDto> = {
+      const mockedResult: IPaginatedListResponse<IPlaceMarkReadOnlyDto> = {
         total: 0,
         data: [],
       };
       let repoCalled = 0;
-      fixture.container.userRepoMock = {
-        get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>> {
+      fixture.container.placeMarkRepoMock = {
+        get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IPlaceMarkReadOnlyDto>> {
           assert.isNotNull(listRequest);
 
           switch (repoCalled) {
@@ -87,19 +87,19 @@ suite("UserApiController Unit-Tests", () => {
               assert.equal(listRequest.take, 3);
               break;
             default:
-              assert.fail("UserRepository.get$ called more than three times.");
+              assert.fail("PlaceMarkRepository.get$ called more than three times.");
               break;
           }
           // eslint-disable-next-line no-plusplus
           repoCalled++;
           return Promise.resolve(mockedResult);
         },
-      } as IUserRepository;
+      } as IPlaceMarkRepository;
 
       const call$ = async (query: QueryParams) => {
         const response = await fixture.inject({
           method: "GET",
-          url: `/api/user?${toQueryString(query)}`,
+          url: `/api/place-mark?${toQueryString(query)}`,
           headers: {
             authorization: token,
           },
@@ -120,7 +120,7 @@ suite("UserApiController Unit-Tests", () => {
       const assertCall$ = async (query: QueryParams, validationErrors: { [key: string]: string }) => {
         const response: ServerInjectResponse<IValidationResult[]> = await fixture.inject({
           method: "GET",
-          url: `/api/user?${toQueryString(query)}`,
+          url: `/api/place-mark?${toQueryString(query)}`,
           headers: {
             Authorization: token,
           },
@@ -143,97 +143,68 @@ suite("UserApiController Unit-Tests", () => {
     });
   });
 
-  suite("GET /api/user/{id} Tests", () => {
+  suite("GET /api/place-mark/{id} Tests", () => {
     test("auth should work", async () => {
       const response = await fixture.inject({
         method: "GET",
-        url: "/api/user/646634e51d85e59154d725c5",
+        url: "/api/place-mark/646634e51d85e59154d725c5",
       });
 
       assert.equal(response.statusCode, 401);
     });
 
     test("should return 200 on success", async () => {
-      const mockUser: IUserReadOnlyDto = {
+      const mockPlaceMark: IPlaceMarkReadOnlyDto = {
         id: "646634e51d85e59154d725c5",
-        firstName: "Cookie",
-        lastName: "Monster",
-        email: "cookie.monster@sesame-street.de",
+        designation: "Tower Bridge",
+        description: "240m tall",
+        latitude: 51.5055,
+        longitude: -0.075406,
+        createdBy: {
+          id: "446634e51d85e59154d725c5",
+          designation: "Cookie Monster",
+        },
         createdAt: new Date(),
         updatedAt: new Date(),
-        admin: true,
       };
-      fixture.container.userRepoMock = {
-        getById$(id: string): Promise<IUserReadOnlyDto | null> {
+      fixture.container.placeMarkRepoMock = {
+        getById$(id: string): Promise<IPlaceMarkReadOnlyDto | null> {
           if (id !== "646634e51d85e59154d725c5") {
             assert.fail("Wrong id supplied");
           }
 
-          return Promise.resolve(mockUser);
+          return Promise.resolve(mockPlaceMark);
         },
-      } as IUserRepository;
+      } as IPlaceMarkRepository;
 
-      const response: ServerInjectResponse<IUserReadOnlyDto> = await fixture.inject({
+      const response: ServerInjectResponse<IPlaceMarkReadOnlyDto> = await fixture.inject({
         method: "GET",
-        url: "/api/user/646634e51d85e59154d725c5",
+        url: "/api/place-mark/646634e51d85e59154d725c5",
         headers: {
           authorization: token,
         },
       });
 
       assert.equal(response.statusCode, 200);
-      assert.equal(response.result, mockUser);
+      assert.equal(response.result, mockPlaceMark);
     });
 
     test("should return 404 on not found", async () => {
-      fixture.container.userRepoMock = {
-        getById$(id: string): Promise<IUserReadOnlyDto | null> {
+      fixture.container.placeMarkRepoMock = {
+        getById$(id: string): Promise<IPlaceMarkReadOnlyDto | null> {
           assert.equal(id, "646634e51d85e59154d725c5");
           return Promise.resolve(null);
         },
-      } as IUserRepository;
+      } as IPlaceMarkRepository;
       const response = await fixture.inject({
         method: "GET",
-        url: "/api/user/646634e51d85e59154d725c5",
+        url: "/api/place-mark/646634e51d85e59154d725c5",
         headers: {
           authorization: token,
         },
       });
 
       assert.equal(response.statusCode, 404);
-    });
-  });
-
-  suite("DELETE /api/user/{id} Tests", () => {
-    test("auth should work", async () => {
-      const response = await fixture.inject({
-        method: "DELETE",
-        url: "/api/user/646634e51d85e59154d725c5",
-      });
-
-      assert.equal(response.statusCode, 401);
-    });
-
-    test("should work", async () => {
-      let repoCalled = false;
-      fixture.container.userRepoMock = {
-        deleteById$(id: string): Promise<void> {
-          assert.isFalse(repoCalled);
-          repoCalled = true;
-          assert.equal(id, "646634e51d85e59154d725c5");
-          return Promise.resolve();
-        },
-      } as IUserRepository;
-
-      const response = await fixture.inject({
-        method: "DELETE",
-        url: "/api/user/646634e51d85e59154d725c5",
-        headers: {
-          authorization: token,
-        },
-      });
-      assert.equal(response.statusCode, 204);
-      assert.isTrue(repoCalled);
     });
   });
 });

@@ -20,3 +20,9 @@ export async function createUser$(client: PrismaClient, userData: Prisma.UserCre
   const user: User = await client.user.create({ data: userData });
   return [user.id, user.email];
 }
+
+export function pad(num: number, size: number) {
+  let result = num.toString();
+  while (result.length < size) result = `0${result}`;
+  return result;
+}

@@ -1,19 +1,20 @@
-import { Server, ServerInjectResponse } from "@hapi/hapi";
+import { ServerInjectResponse } from "@hapi/hapi";
 import { assert } from "chai";
-import { ContainerMock, testConfig } from "../test-setup.js";
-import { createServer$ } from "../../../../app/server.js";
 import { AuthenticationResult, IAuthCredentials, IAuthenticatedUser, IAuthService } from "../../../../app/services/interfaces/index.js";
 import { IValidationResult } from "../../../../app/core/index.js";
 import { IAuthResultDto } from "../../../../app/core/dtos/index.js";
+import { UnitTestFixture } from "../unit-test-fixture.js";
 
 suite("AuthApiController Unit-Tests", () => {
-  let server: Server;
-  let container: ContainerMock;
+  let fixture: UnitTestFixture;
 
   setup(async () => {
-    container = new ContainerMock();
-    const result = await createServer$(testConfig, () => container);
-    server = result.server;
+    fixture = new UnitTestFixture();
+    await fixture.start$();
+  });
+
+  teardown(async () => {
+    await fixture.stop$();
   });
 
   suite("POST /api/auth/token Tests", () => {
@@ -22,7 +23,7 @@ suite("AuthApiController Unit-Tests", () => {
       const testCredentials: IAuthCredentials = { email: "test@test.de", password: "1234" };
       const testUser: IAuthenticatedUser = { id: testId, email: testCredentials.email, admin: true };
 
-      container.authServiceMock = {
+      fixture.container.authServiceMock = {
         authenticate$<T extends IAuthCredentials>(credentials: T): Promise<AuthenticationResult> {
           assert.isNotNull(credentials);
           assert.equal(credentials.email, testCredentials.email);
@@ -36,7 +37,7 @@ suite("AuthApiController Unit-Tests", () => {
         },
       } as IAuthService;
 
-      const result: ServerInjectResponse<IAuthResultDto> = await server.inject({
+      const result: ServerInjectResponse<IAuthResultDto> = await fixture.inject({
         method: "POST",
         url: "/api/auth/token",
         payload: testCredentials,
@@ -50,7 +51,7 @@ suite("AuthApiController Unit-Tests", () => {
 
     test("No success if authentication failes", async () => {
       const testCredentials: IAuthCredentials = { email: "test@test.de", password: "1234" };
-      container.authServiceMock = {
+      fixture.container.authServiceMock = {
         authenticate$<T extends IAuthCredentials>(credentials: T): Promise<AuthenticationResult> {
           assert.isNotNull(credentials);
           assert.equal(credentials.email, testCredentials.email);
@@ -63,7 +64,7 @@ suite("AuthApiController Unit-Tests", () => {
         },
       } as IAuthService;
 
-      const result: ServerInjectResponse<IAuthResultDto> = await server.inject({
+      const result: ServerInjectResponse<IAuthResultDto> = await fixture.inject({
         method: "POST",
         url: "/api/auth/token",
         payload: testCredentials,
@@ -76,7 +77,7 @@ suite("AuthApiController Unit-Tests", () => {
     });
 
     test("Payload should be validated", async () => {
-      container.authServiceMock = {
+      fixture.container.authServiceMock = {
         authenticate$<T extends IAuthCredentials>(credentials: T): Promise<AuthenticationResult> {
           assert.isNotNull(credentials);
           assert.fail("Service should not be called");
@@ -85,7 +86,7 @@ suite("AuthApiController Unit-Tests", () => {
       } as IAuthService;
 
       const assertCall$ = async (payload: object, validationErrors: { [key: string]: string }) => {
-        const response: ServerInjectResponse<IValidationResult[]> = await server.inject({
+        const response: ServerInjectResponse<IValidationResult[]> = await fixture.inject({
           method: "POST",
           url: "/api/auth/token",
           payload: payload,
