@@ -55,3 +55,6 @@ jobs:
 
       - name: Tests
         run: npm run test:api
+
+      - name: Transpile
+        run: npm run build:api
