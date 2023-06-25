@@ -1,9 +1,10 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import { assert } from "chai";
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { ITestFixtureConfig, TestFixture } from "../../test-fixture.js";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
 import { Container } from "../../../app/dependencies/index.js";
+import { IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 
 export class IntegrationTestFixture extends TestFixture {
   private readonly _prisma: PrismaClient;
@@ -47,6 +48,103 @@ export class IntegrationTestFixture extends TestFixture {
     }
 
     return this.server.info.uri;
+  }
+
+  public async testGetById$<T extends { id: string }, TDto extends object>(create$: () => Promise<T>, path: string, cmp: (expected: T, actual: TDto) => void): Promise<void> {
+    // Authentication with wrong id
+    try {
+      await this.axios.get(`/api/${path}/646634e51d85e59154d725c5`);
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 401);
+    }
+
+    // Authenticated, but entry does not exist
+    const token = this.authValidator.add({ id: "646634e51d85e59154d745c5", email: "byId@test.com", admin: false });
+    const data = { headers: { Authorization: token } };
+    try {
+      await this.axios.get(`/api/${path}/646634e51d85e59154d725c5`, data);
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 404);
+    }
+
+    // Success
+    const expected: T = await create$();
+    const response: AxiosResponse<TDto> = await this.axios.get(`/api/${path}/${expected.id}`, data);
+    assert.equal(response.status, 200);
+    cmp(expected, response.data);
+  }
+
+  public async testDeleteById$<T extends { id: string }>(create$: () => Promise<T>, path: string, find$: (id: string) => Promise<T[]>): Promise<void> {
+    // Authentication with wrong id
+    try {
+      await this.axios.delete(`/api/${path}/646634e51d85e59154d725c5`);
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 401);
+    }
+
+    // Authenticated, but entry does not exist
+    const token = this.authValidator.add({ id: "646634e51d85e59154d745c5", email: "byId@test.com", admin: false });
+    const data = { headers: { Authorization: token } };
+    let response = await this.axios.delete(`/api/${path}/646634e51d85e59154d725c5`, data);
+    assert.equal(response.status, 204);
+
+    // Success
+    const created: T = await create$();
+    response = await this.axios.delete(`/api/${path}/${created.id}`, data);
+    assert.equal(response.status, 204);
+    const found: T[] = await find$(created.id);
+    assert.isEmpty(found);
+  }
+
+  public async testGet$<T extends { id: string }, TDto extends object>(
+    entries: T[],
+    path: string,
+    cmp: (expected: T, actual: TDto) => void,
+    sort: (a: T, b: T) => number
+  ): Promise<void> {
+    // Authentication should work
+    try {
+      await this.axios.get(`/api/${path}`);
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 401);
+    }
+
+    // No Parameters should work
+    const token = this.authValidator.add({ id: "646634e51d85e59154d745c5", email: "byId@test.com", admin: false });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let data: any = { headers: { Authorization: token } };
+    let response: AxiosResponse<IPaginatedListResponse<TDto>> = await this.axios.get(`/api/${path}`, data);
+    assert.equal(response.status, 200);
+    assert.equal(response.data.total, entries.length);
+    assert.isNotEmpty(response.data.data);
+    const max = entries.length > 25 ? 25 : entries.length;
+    assert.equal(response.data.data.length, max);
+    entries.sort(sort);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < max; i++) {
+      cmp(entries[i], response.data.data[i]);
+    }
+
+    // Skip/Take should work
+    data = { ...data, params: { skip: 1, take: 1 } };
+    response = await this.axios.get(`/api/${path}`, data);
+    assert.equal(response.status, 200);
+    assert.equal(response.data.total, entries.length);
+    assert.isNotEmpty(response.data.data);
+    assert.equal(response.data.data.length, 1);
+    cmp(entries[1], response.data.data[0]);
   }
 
   protected async afterStart$(): Promise<void> {

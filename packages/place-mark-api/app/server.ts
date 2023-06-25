@@ -6,7 +6,7 @@ import Inert from "@hapi/inert";
 import HapiSwagger, { RegisterOptions as SwaggerOptions } from "hapi-swagger";
 import { registerController, registerCookieAuthentication$, registerDependencyManagement, registerJwtAuthentication$, registerRenderingEngine$ } from "./core/index.js";
 import { IApplicationConfig } from "./config/interfaces/index.js";
-import { AccountController, IndexController, UserApiController, AuthApiController, PlaceMarkApiController } from "./controllers/index.js";
+import { AccountController, IndexController, UserApiController, AuthApiController, PlaceMarkApiController, CategoryApiController } from "./controllers/index.js";
 import { IContainer } from "./dependencies/interfaces/index.js";
 
 const filename: string = fileURLToPath(import.meta.url);
@@ -61,6 +61,7 @@ export const createServer$ = async (config: IApplicationConfig, containerFactory
   registerController(server, AuthApiController, () => new AuthApiController());
   registerController(server, UserApiController, () => new UserApiController());
   registerController(server, PlaceMarkApiController, () => new PlaceMarkApiController());
+  registerController(server, CategoryApiController, () => new CategoryApiController());
 
   return {
     server,

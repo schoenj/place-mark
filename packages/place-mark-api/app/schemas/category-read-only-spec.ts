@@ -9,4 +9,4 @@ export const categoryReadOnlySpec: Joi.ObjectSchema<ICategoryReadOnlyDto> = Joi.
   createdBy: lookupSpec,
   createdAt: createdAtSpec,
   updatedAt: updatedAtSpec,
-});
+}).label("CategoryReadOnlyDto");
