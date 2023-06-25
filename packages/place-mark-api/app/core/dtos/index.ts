@@ -7,3 +7,4 @@ export * from "./lookup-dto.js";
 export * from "./place-mark/place-mark-read-only-dto.js";
 export * from "./paginated-list-request.js";
 export * from "./paginated-list-response.js";
+export * from "./category/category-read-only-dto.js";

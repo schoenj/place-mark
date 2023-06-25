@@ -8,7 +8,7 @@ import { createServer$ } from "../app/server.js";
 import { IContainer } from "../app/dependencies/interfaces/index.js";
 import { testConfig } from "./unit-tests/controllers/test-setup.js";
 import { AuthenticationResult, IAuthCredentials, IAuthenticatedUser, IAuthService } from "../app/services/interfaces/index.js";
-import { IPlaceMarkRepository, IUserRepository } from "../app/repositories/interfaces/index.js";
+import { ICategoryRepository, IPlaceMarkRepository, IUserRepository } from "../app/repositories/interfaces/index.js";
 import { TestAuthValidator } from "./test-auth-validator.js";
 
 export interface ITestFixtureConfig {
@@ -54,6 +54,10 @@ class TestContainerWrapper implements IContainer {
 
   get userRepository(): IUserRepository {
     return this._container.userRepository;
+  }
+
+  get categoryRepository(): ICategoryRepository {
+    return this._container.categoryRepository;
   }
 }
 

@@ -1,212 +1,119 @@
-import { PrismaClient, User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { assert } from "chai";
 import { cookieMonsterUser, kermitTheFrogUser } from "../../fixtures.js";
 import { UserRepository } from "../../../app/repositories/index.js";
-import { userReadOnlyQuery } from "../../../app/repositories/queries/user-read-only.js";
-import { createUser$ } from "../../utils.js";
-
-class TestUserRepository extends UserRepository {
-  public testPaginate$ = this.paginate$;
-}
+import { RepositoryTestFixture } from "./repository-test-fixture.js";
+import { IUserReadOnlyDto } from "../../../app/core/dtos/index.js";
 
 suite("UserRepository Integration Tests", () => {
-  let prismaClient: PrismaClient;
-  let repository: TestUserRepository;
+  let fixture: RepositoryTestFixture<UserRepository>;
+  let cmp: (expected: User, actual: IUserReadOnlyDto) => void;
 
   setup(async () => {
-    prismaClient = new PrismaClient();
-    await prismaClient.$connect();
-    repository = new TestUserRepository(prismaClient);
+    fixture = new RepositoryTestFixture<UserRepository>((client) => new UserRepository(client));
+    await fixture.start$();
+    cmp = (expected, actual) => {
+      assert.isNotNull(actual);
+      assert.equal(actual.id, expected.id);
+      assert.equal(actual.firstName, expected.firstName);
+      assert.equal(actual.lastName, expected.lastName);
+      assert.equal(actual.email, expected.email);
+      assert.equal(actual.admin, expected.admin);
+      assert.equal(actual.createdAt.toUTCString(), expected.createdAt.toUTCString());
+      assert.equal(actual.updatedAt.toUTCString(), expected.updatedAt.toUTCString());
+      assert.isEmpty(Object.keys(actual).filter((x) => x === "password"));
+    };
   });
 
   teardown(async () => {
-    await prismaClient.user.deleteMany();
-    await prismaClient.$disconnect();
+    await fixture.stop$();
   });
 
-  suite("paginate$ should work", () => {
-    let users: User[];
-
-    setup(async () => {
-      users = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 5; i > 0; i--) {
-        // eslint-disable-next-line no-await-in-loop
-        const user = await prismaClient.user.create({
-          data: {
-            firstName: `Firstname ${i}`,
-            lastName: `Lastname ${i}`,
-            email: `firstname-${i}@test.com`,
-            password: `password-${i}`,
-          },
-        });
-        users.push(user);
-      }
-    });
-
-    teardown(async () => {
-      await prismaClient.user.deleteMany();
-    });
-    const userPaginate$ = (skip: number, take: number) =>
-      repository.testPaginate$(undefined, { firstName: "asc" }, userReadOnlyQuery.select, userReadOnlyQuery.transform, skip, take);
-
-    test("skip should work", async () => {
-      let result = await userPaginate$(0, 5);
-      assert.isNotNull(result);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 5);
-
-      result = await userPaginate$(4, 5);
-      assert.isNotNull(result);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 1);
-
-      result = await userPaginate$(9999, 5);
-      assert.isNotNull(result);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 0);
-    });
-
-    test("take should work", async () => {
-      let result = await userPaginate$(0, 5);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 5);
-
-      result = await userPaginate$(0, 4);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 4);
-
-      result = await userPaginate$(0, 1);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 1);
-
-      result = await userPaginate$(0, 999);
-      assert.equal(result.total, users.length);
-      assert.equal(result.data.length, 5);
-    });
-
-    test("order should work", async () => {
-      let result = await userPaginate$(0, 0);
-      assert.isNotNull(result);
-      let firstNames = result.data.map((x) => x.firstName);
-      assert.equal(firstNames[0], "Firstname 1");
-      assert.equal(firstNames[1], "Firstname 2");
-      assert.equal(firstNames[2], "Firstname 3");
-      assert.equal(firstNames[3], "Firstname 4");
-      assert.equal(firstNames[4], "Firstname 5");
-
-      result = await userPaginate$(2, 5);
-      firstNames = result.data.map((x) => x.firstName);
-      assert.isNotNull(result);
-      assert.equal(firstNames[0], "Firstname 3");
-      assert.equal(firstNames[1], "Firstname 4");
-      assert.equal(firstNames[2], "Firstname 5");
-    });
-
-    test("select should work", async () => {
-      const result = await userPaginate$(0, 1);
-      assert.isNotNull(result);
-      const actual = result.data[0];
-      assert.isNotNull(actual);
-
-      const expected = users.find((x) => x.id === result.data[0].id);
-      assert.isNotNull(expected);
-
-      assert.equal(actual.firstName, expected?.firstName);
-      assert.equal(actual.lastName, expected?.lastName);
-      assert.equal(actual.email, expected?.email);
-      assert.equal(Object.keys(actual).filter((x) => x === "password").length, 0);
-      assert.equal(actual?.updatedAt.toUTCString(), expected?.updatedAt.toUTCString());
-      assert.equal(actual?.createdAt.toUTCString(), expected?.createdAt.toUTCString());
-    });
-  });
-
-  suite("getByEmail$ Tests", () => {
-    let cookieMonsterEmail: string;
-
-    setup(async () => {
-      [, cookieMonsterEmail] = await createUser$(prismaClient, cookieMonsterUser);
-    });
-
-    test("should work", async () => {
-      await createUser$(prismaClient, kermitTheFrogUser);
-
-      // Cookie Monster should be found
-      let found = await repository.getByEmail$(cookieMonsterEmail);
-      assert.isNotNull(found);
-      assert.equal(cookieMonsterEmail, found?.email);
-
-      // Cookie Monster should be found, the email address should be case-insensitive
-      found = await repository.getByEmail$("coOkIE.MoNsTeR@SESAME-street.de");
-      assert.isNotNull(found);
-      assert.equal(cookieMonsterEmail, found?.email);
-
-      // Kermit the Frog should be found
-      found = await repository.getByEmail$(kermitTheFrogUser.email);
-      assert.isNotNull(found);
-      assert.equal(kermitTheFrogUser.email, found?.email);
-
-      // Miss Piggy should not be found
-      found = await repository.getByEmail$("miss.piggy@the-muppets.com");
-      assert.isNull(found);
-    });
-  });
-
-  suite("getById$ Tests", async () => {
-    let cookieMonsterId: string;
-
-    setup(async () => {
-      [cookieMonsterId] = await createUser$(prismaClient, cookieMonsterUser);
-    });
-
-    test("getById$ should work", async () => {
-      const user = await repository.getById$(cookieMonsterId);
-      assert.isNotNull(user);
-      assert.equal(user?.id, cookieMonsterId);
-      assert.equal(user?.firstName, cookieMonsterUser.firstName);
-      assert.equal(user?.lastName, cookieMonsterUser.lastName);
-      assert.equal(user?.email, cookieMonsterUser.email);
-    });
-  });
-
-  suite("create$ Tests", async () => {
-    let cookieMonsterId: string;
-
-    setup(async () => {
-      [cookieMonsterId] = await createUser$(prismaClient, cookieMonsterUser);
-    });
-
-    test("should work", async () => {
-      const user = await prismaClient.user.findUnique({
-        where: {
-          email: cookieMonsterUser.email,
+  test("get$ should work", async () => {
+    const users: User[] = [];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 5; i > 0; i--) {
+      // eslint-disable-next-line no-await-in-loop
+      const user = await fixture.prisma.user.create({
+        data: {
+          firstName: `Firstname ${i}`,
+          lastName: `Lastname ${i}`,
+          email: `firstname-${i}@test.com`,
+          password: `password-${i}`,
         },
       });
+      users.push(user);
+    }
 
-      assert.isNotNull(user);
-      assert.equal(user?.id, cookieMonsterId);
-      assert.equal(user?.firstName, cookieMonsterUser.firstName);
-      assert.equal(user?.lastName, cookieMonsterUser.lastName);
-      assert.equal(user?.email, cookieMonsterUser.email);
-      assert.equal(user?.password, cookieMonsterUser.password);
-
-      await assert.isRejected(createUser$(prismaClient, cookieMonsterUser));
-    });
+    await fixture.testPaginate$(
+      (repository, skip, take) => repository.get$({ take, skip }),
+      users,
+      cmp,
+      (a, b) => (a.firstName > b.firstName ? 1 : -1)
+    );
   });
 
-  suite("deleteById$ Tests", async () => {
-    test("should work", async () => {
-      const user = await prismaClient.user.create({
-        data: kermitTheFrogUser,
-      });
+  test("getByEmail$ should work", async () => {
+    await fixture.createUser$(cookieMonsterUser);
+    await fixture.createUser$(kermitTheFrogUser);
 
-      await repository.deleteById$(user.id);
-      const found = await prismaClient.user.findUnique({
-        where: {
-          id: user.id,
-        },
-      });
-      assert.isNull(found);
+    // Cookie Monster should be found
+    let found = await fixture.repository.getByEmail$(cookieMonsterUser.email);
+    assert.isNotNull(found);
+    assert.equal(found?.email, cookieMonsterUser.email);
+
+    // Cookie Monster should be found, the email address should be case-insensitive
+    found = await fixture.repository.getByEmail$("coOkIE.MoNsTeR@SESAME-street.de");
+    assert.isNotNull(found);
+    assert.equal(found?.email, cookieMonsterUser.email);
+
+    // Kermit the Frog should be found
+    found = await fixture.repository.getByEmail$(kermitTheFrogUser.email);
+    assert.isNotNull(found);
+    assert.equal(found?.email, kermitTheFrogUser.email);
+
+    // Miss Piggy should not be found
+    found = await fixture.repository.getByEmail$("miss.piggy@the-muppets.com");
+    assert.isNull(found);
+  });
+
+  test("getById$ should work", async () => {
+    await fixture.testGetById$(
+      () => fixture.prisma.user.create({ data: cookieMonsterUser }),
+      (repo, id) => repo.getById$(id),
+      cmp
+    );
+  });
+
+  test("create$ should work", async () => {
+    const user = await fixture.repository.create$(cookieMonsterUser);
+    assert.isNotNull(user);
+    assert.isNotNull(user?.id);
+    assert.equal(user?.firstName, cookieMonsterUser.firstName);
+    assert.equal(user?.lastName, cookieMonsterUser.lastName);
+    assert.equal(user?.email, cookieMonsterUser.email);
+    assert.equal(user?.password, cookieMonsterUser.password);
+
+    try {
+      await fixture.repository.create$(cookieMonsterUser);
+      assert.fail("Should throw a exception");
+    } catch (ex) {
+      assert.instanceOf(ex, Prisma.PrismaClientKnownRequestError);
+      const prismaEx = ex as Prisma.PrismaClientKnownRequestError;
+      assert.equal(prismaEx.code, "P2002");
+      assert.isNotNull(prismaEx.meta);
+      assert.equal(prismaEx.meta?.target, "User_email_key");
+    }
+  });
+
+  test("deleteById$ should work", async () => {
+    const user = await fixture.createUser$(kermitTheFrogUser);
+    await fixture.repository.deleteById$(user.id);
+    const found = await fixture.prisma.user.findUnique({
+      where: {
+        id: user.id,
+      },
     });
+    assert.isNull(found);
   });
 });
