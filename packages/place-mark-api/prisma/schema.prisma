@@ -18,6 +18,17 @@ model User {
   password String
   admin Boolean @default(false)
   placeMarks PlaceMark[]
+  categories Category[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  designation String
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdById String @db.ObjectId
+  placeMarks PlaceMark[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -30,6 +41,8 @@ model PlaceMark {
   longitude Float
   createdBy User @relation(fields: [createdById], references: [id])
   createdById String @db.ObjectId
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId String @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
