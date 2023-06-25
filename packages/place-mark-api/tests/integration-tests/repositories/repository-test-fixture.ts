@@ -1,6 +1,5 @@
 import { assert } from "chai";
 import { Prisma, PrismaClient, User } from "@prisma/client";
-import { func } from "joi";
 import { Repository } from "../../../app/repositories/repository.js";
 import { IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 
