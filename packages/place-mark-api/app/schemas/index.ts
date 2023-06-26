@@ -9,3 +9,4 @@ export * from "./empty-spec.js";
 export * from "./lookup-spec.js";
 export * from "./place-mark-read-only-spec.js";
 export * from "./category-read-only-spec.js";
+export * from "./category-create-read-write-spec.js";

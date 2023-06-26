@@ -11,6 +11,8 @@ suite("AuthService Unit-Tests", () => {
   test("validate$ should work", async () => {
     const expected = {
       id: "646634e51d85e59154d725c5",
+      admin: false,
+      email: "test@test.de",
     } as IUserReadOnlyDto;
     let repoCalled = false;
     const repo = {
@@ -39,8 +41,9 @@ suite("AuthService Unit-Tests", () => {
     assert.isNotNull(credentials);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     assert.isTrue("user" in credentials!);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    assert.equal(credentials!.user, expected);
+    assert.equal(credentials?.user?.id, expected.id);
+    assert.equal(credentials?.user?.admin, expected.admin);
+    assert.equal(credentials?.user?.email, expected.email);
     assert.isTrue(repoCalled);
   });
 

@@ -1,8 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { Category, Prisma } from "@prisma/client";
 import { Repository } from "./repository.js";
 import { ICategoryRepository } from "./interfaces/index.js";
-import { ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
+import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
 import { categoryReadOnlyQuery, CategoryReadOnlySelectType } from "./queries/category-read-only.js";
+import { BusinessException } from "../core/business-exception.js";
 
 export class CategoryRepository extends Repository implements ICategoryRepository {
   /**
@@ -72,5 +73,29 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
       total: total,
       data: data.map((x) => transform(x)),
     };
+  }
+
+  /**
+   * Saves a Category
+   * @param category
+   */
+  public async create$(category: ICategoryCreateReadWriteDto): Promise<string> {
+    if (category.createdById === null || category.createdById === undefined) {
+      throw new BusinessException("Category", "createdById is not set.");
+    }
+
+    const userCount = await this.db.user.count({ where: { id: category.createdById } });
+    if (userCount !== 1) {
+      throw new BusinessException("User", `User not found. Id: ${category.createdById}`);
+    }
+
+    const result: Category = await this.db.category.create({
+      data: {
+        designation: category.designation,
+        createdById: category.createdById,
+      },
+    });
+
+    return result.id;
   }
 }

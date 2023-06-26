@@ -1,10 +1,39 @@
 import { ResponseObject } from "@hapi/hapi";
 import { Controller, Route } from "../../core/index.js";
-import { categoryReadOnlySpec, emptySpec, idParamSpec, paginatedListRequestSpec, validationResultSpec } from "../../schemas/index.js";
+import { categoryCreateReadWriteSpec, categoryReadOnlySpec, emptySpec, idParamSpec, paginatedListRequestSpec, validationResultSpec } from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
-import { IPaginatedListRequest } from "../../core/dtos/index.js";
+import { ICategoryCreateReadWriteDto, IPaginatedListRequest } from "../../core/dtos/index.js";
 
 export class CategoryApiController extends Controller {
+  @Route({
+    method: "POST",
+    path: "/api/category",
+    options: {
+      auth: { strategy: "jwt" },
+      tags: ["api", "category"],
+      description: "Creates a new category",
+      validate: {
+        payload: categoryCreateReadWriteSpec,
+        failAction: defaultFailAction,
+      },
+      response: {
+        status: {
+          201: categoryReadOnlySpec,
+          400: validationResultSpec,
+          401: emptySpec,
+        },
+      },
+    },
+  })
+  public async create$(): Promise<ResponseObject> {
+    const createDto = this.request.payload as ICategoryCreateReadWriteDto;
+    createDto.createdById = this.user?.id;
+    const id = await this.container.categoryRepository.create$(createDto);
+    const category = await this.container.categoryRepository.getById$(id);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.h.response(category!).header("Location", `/api/category/${id}`).code(201);
+  }
+
   @Route({
     method: "GET",
     path: "/api/category",

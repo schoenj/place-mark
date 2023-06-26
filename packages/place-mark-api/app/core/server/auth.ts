@@ -3,6 +3,14 @@ import Cookie, { Options as HapiCookieOptions } from "@hapi/cookie";
 import jwt, { Options as HapiJwtOptions } from "hapi-auth-jwt2";
 import { IApplicationConfig } from "../../config/interfaces/index.js";
 
+declare module "@hapi/hapi" {
+  interface UserCredentials {
+    id: string;
+    admin: boolean;
+    email: string;
+  }
+}
+
 export async function registerCookieAuthentication$(server: Server, config: IApplicationConfig): Promise<void> {
   await server.register(Cookie);
   const options: HapiCookieOptions = {

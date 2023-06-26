@@ -1,6 +1,12 @@
-import { ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../../core/dtos/index.js";
+import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../../core/dtos/index.js";
 
 export interface ICategoryRepository {
+  /**
+   * Saves a Category
+   * @param category
+   */
+  create$(category: ICategoryCreateReadWriteDto): Promise<string>;
+
   /**
    * Gets a category by its id
    * @param id the id

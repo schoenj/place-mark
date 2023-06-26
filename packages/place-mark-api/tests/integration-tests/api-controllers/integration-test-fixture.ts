@@ -4,7 +4,7 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import { ITestFixtureConfig, TestFixture } from "../../test-fixture.js";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
 import { Container } from "../../../app/dependencies/index.js";
-import { IPaginatedListResponse } from "../../../app/core/dtos/index.js";
+import { IAuthResultDto, IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 
 export class IntegrationTestFixture extends TestFixture {
   private readonly _prisma: PrismaClient;
@@ -40,6 +40,13 @@ export class IntegrationTestFixture extends TestFixture {
         },
       });
     return this._axios;
+  }
+
+  public async authenticate$(user: { email: string; password: string }): Promise<string> {
+    const response: AxiosResponse<IAuthResultDto> = await this.axios.post("/api/auth/token", { email: user.email, password: user.password });
+    assert.equal(response.status, 200);
+    assert.isNotNull(response.data.token);
+    return response.data.token as string;
   }
 
   public get serverUrl(): string {

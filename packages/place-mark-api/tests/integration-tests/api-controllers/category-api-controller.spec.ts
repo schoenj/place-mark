@@ -1,5 +1,6 @@
 import { Category, User } from "@prisma/client";
 import { assert } from "chai";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { cookieMonsterUser } from "../../fixtures.js";
@@ -30,6 +31,44 @@ suite("CategoryApiController Integration Tests", () => {
 
   teardown(async () => {
     await fixture.stop$();
+  });
+
+  test("POST /api/category should work", async () => {
+    // Authentication should work
+    try {
+      await fixture.axios.post("/api/category", { designation: "Bridge" });
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 401);
+    }
+
+    // Success
+    const token = await fixture.authenticate$(user);
+    const response: AxiosResponse<ICategoryReadOnlyDto> = await fixture.axios.post(
+      "/api/category",
+      {
+        designation: "Bridge",
+      },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    assert.equal(response.status, 201);
+    assert.isNotNull(response.data);
+    const category = await fixture.prisma.category.findUnique({ where: { id: response.data.id } });
+    assert.isNotNull(category);
+    assert.equal(response.data.designation, "Bridge");
+    assert.isNotNull(response.data.createdBy);
+    assert.equal(response.data.createdBy.id, user.id);
+    assert.equal(response.data.createdBy.designation, `${user.firstName} ${user.lastName}`);
+    assert.isNotNull(response.data.createdAt);
+    assert.isNotNull(response.data.updatedAt);
+    assert.isNotEmpty(response.headers.location);
+    assert.equal(response.headers.location, `/api/category/${response.data.id}`);
   });
 
   test("GET /api/category should work", async () => {
