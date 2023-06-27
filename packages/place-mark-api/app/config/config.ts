@@ -1,10 +1,18 @@
 import dotenv from "dotenv";
+import fs from "fs";
 import { IApplicationConfig, ICookieConfig, IJwtConfig, IWebServerConfig } from "./interfaces/index.js";
 
 /**
  * Initialize dotenv
  */
-const result = dotenv.config();
+let result: dotenv.DotenvConfigOutput | undefined;
+try {
+  if (fs.existsSync("../.env")) {
+    result = dotenv.config();
+  }
+} catch (e) {
+  console.error(e);
+}
 
 /**
  * Loads and validates the webserver config from the .env file
@@ -71,7 +79,7 @@ function getJwtConfig(): IJwtConfig {
  * @return IApplicationConfig The application config
  */
 export function getConfig(): IApplicationConfig {
-  if (result.error) {
+  if (result?.error) {
     throw new Error(`An error occurred while reading .env file. Error reported: ${result.error.message}`);
   }
 
