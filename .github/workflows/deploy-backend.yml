@@ -1,9 +1,11 @@
 name: deploy backend
 
 on:
-  push:
+#  push:
+  pull_request:
     branches:
-      - 'main',
+#     - 'main'
+      - 'dev'
     paths:
       - 'packages/place-mark-api/**'
       - '*.json'
