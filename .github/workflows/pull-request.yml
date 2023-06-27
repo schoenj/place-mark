@@ -1,7 +1,9 @@
-name: pull request
+name: lint test backend dev
 
 on:
   pull_request:
+    branches:
+      - 'dev'
     paths:
       - 'packages/place-mark-api/**'
       - 'docker/mongodb-rs/**'
