@@ -190,7 +190,7 @@ export class PlaceMarkClient {
 		return body;
 	}
 
-	private isIsoDateString(value: any): boolean {
+	private isIsoDateString(value: unknown): boolean {
 		if (value === null || value === undefined) {
 			return false;
 		}

@@ -20,7 +20,7 @@
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button is-primary" href="/">
+                    <a class="button is-primary" href="/sign-in">
                         <strong>Sign In</strong>
                     </a>
                     <a class="button is-secondary" href="/">

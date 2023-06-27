@@ -1,17 +1,19 @@
 <script lang="ts">
     import {apiClient} from "../../api-client";
+    import {goto} from "$app/navigation";
 
     let email: string;
     let password: string;
-    let errors: string[];
+    let errors: [] = [];
 
     async function login$(): Promise<void> {
         const result = await apiClient.authenticate$({ email, password });
-        if (result.isSuccess) {
-
-        } else if (result.isValidationError) {
-
-        }
+        // if (result.isSuccess) {
+        //     console.log(result.data?.token);
+        //     await goto("/")
+        // } else if (result.isValidationError) {
+        //     console.error(result.data);
+        // }
     }
 </script>
 
@@ -44,7 +46,7 @@
         </div>
     </form>
 
-    {#if errors && errors.length}
+    {#if (errors.length)}
         <ul>
             {#each errors as error}
                 <li>{error}</li>
