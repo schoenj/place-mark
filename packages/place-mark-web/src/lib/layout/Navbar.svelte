@@ -1,6 +1,6 @@
-<nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar" aria-label="main navigation">
     <div class="navbar-brand">
-        <a class="navbar-item" href="/packages/place-mark-web/public">
+        <a class="navbar-item" href="/">
             Place-Mark
         </a>
 
@@ -13,17 +13,17 @@
 
     <div class="navbar-menu" id="main-nav">
         <div class="navbar-start">
-            <a class="navbar-item" href="/packages/place-mark-web/public">
+            <a class="navbar-item" href="/">
                 Home
             </a>
         </div>
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button is-primary">
+                    <a class="button is-primary" href="/">
                         <strong>Sign In</strong>
                     </a>
-                    <a class="button is-secondary">
+                    <a class="button is-secondary" href="/">
                         <strong>Logout</strong>
                     </a>
                 </div>
