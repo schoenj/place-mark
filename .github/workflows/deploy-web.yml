@@ -1,4 +1,4 @@
-name: push main
+name: deploy-web
 
 on:
 #  push:
@@ -32,6 +32,7 @@ jobs:
         uses: nwtgck/actions-netlify@v2.0
         with:
           publish-dir: './packages/place-mark-web/dist'
+          production-deploy: true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.PRODUCTION_NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.PRODUCTION_NETLIFY_SITE_ID }}
