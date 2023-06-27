@@ -12,6 +12,7 @@
   },
   "files": ["dist"],
   "scripts": {
+    "postinstall": "npm run build",
     "prebuild": "rimraf dist/",
     "build": "tsc --build"
   },
