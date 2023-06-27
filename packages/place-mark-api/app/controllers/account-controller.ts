@@ -4,14 +4,13 @@ import {
   Controller,
   createFailedForm,
   createForm,
-  ISignInUserRequestDto,
-  ISignUpUserRequestDto,
   Route,
   signInFormDefinition,
   SignInUserRequestSpecification,
   signUpFormDefinition,
   SignUpUserRequestSpecification,
 } from "../core/index.js";
+import { ISignInUserRequestDto, ISignUpUserRequestDto } from "../core/dtos/index.js";
 import { SignUpViewModel, SignInViewModel } from "../view-models/index.js";
 import { createFailAction } from "./utils.js";
 

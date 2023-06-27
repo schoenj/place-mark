@@ -1,5 +1,6 @@
 import { ValidateResponse } from "@hapi/cookie";
 import jwt, { SignOptions } from "jsonwebtoken";
+import { UserCredentials } from "@hapi/hapi";
 import { AuthenticationResult, IAuthCredentials, IAuthenticatedUser, IAuthService } from "./interfaces/index.js";
 import { IUserRepository } from "../repositories/interfaces/index.js";
 import { IApplicationConfig } from "../config/interfaces/index.js";
@@ -33,7 +34,7 @@ export class AuthService implements IAuthService {
           id: user.id,
           email: user.email,
           admin: user.admin,
-        },
+        } as UserCredentials,
       };
     }
 
@@ -52,7 +53,11 @@ export class AuthService implements IAuthService {
         return {
           isValid: true,
           credentials: {
-            user: user,
+            user: {
+              id: user.id,
+              email: user.email,
+              admin: user.admin,
+            } as UserCredentials,
           },
         } as ValidateResponse;
       }

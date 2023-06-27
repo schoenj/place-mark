@@ -1,5 +1,6 @@
 import { ViewModel } from "../view-model.js";
-import { IForm, ISignUpUserRequestDto } from "../../core/index.js";
+import { IForm } from "../../core/index.js";
+import { ISignUpUserRequestDto } from "../../core/dtos/index.js";
 
 export class SignUpViewModel extends ViewModel {
   constructor(private _registerForm: IForm<ISignUpUserRequestDto>) {

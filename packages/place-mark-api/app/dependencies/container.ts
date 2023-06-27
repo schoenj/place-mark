@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { IAuthService } from "../services/interfaces/index.js";
 import { AuthService } from "../services/index.js";
-import { IUserRepository } from "../repositories/interfaces/index.js";
+import { IPlaceMarkRepository, IUserRepository, ICategoryRepository } from "../repositories/interfaces/index.js";
 import { IApplicationConfig } from "../config/interfaces/index.js";
-import { UserRepository } from "../repositories/user-repository.js";
+import { UserRepository, PlaceMarkRepository, CategoryRepository } from "../repositories/index.js";
 import { IContainer } from "./interfaces/index.js";
 
 /**
@@ -11,6 +11,10 @@ import { IContainer } from "./interfaces/index.js";
  */
 export class Container implements IContainer {
   private _userRepository: IUserRepository | null;
+
+  private _placeMarkRepository: IPlaceMarkRepository | null;
+
+  private _categoryRepository: ICategoryRepository | null;
 
   private _authService: IAuthService | null;
 
@@ -34,6 +38,19 @@ export class Container implements IContainer {
   public get userRepository(): IUserRepository {
     this._userRepository = this._userRepository || new UserRepository(this.db);
     return this._userRepository;
+  }
+
+  public get placeMarkRepository(): IPlaceMarkRepository {
+    this._placeMarkRepository = this._placeMarkRepository || new PlaceMarkRepository(this.db);
+    return this._placeMarkRepository;
+  }
+
+  /**
+   * Gets the Category-Repository;
+   */
+  public get categoryRepository(): ICategoryRepository {
+    this._categoryRepository = this._categoryRepository || new CategoryRepository(this.db);
+    return this._categoryRepository;
   }
 
   /**

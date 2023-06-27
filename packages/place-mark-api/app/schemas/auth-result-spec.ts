@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { IAuthResultDto } from "../core/index.js";
+import { IAuthResultDto } from "../core/dtos/index.js";
 
 export const authSuccessResultSpec: Joi.ObjectSchema<IAuthResultDto> = Joi.object<IAuthResultDto>({
   success: Joi.boolean().required().description("Value indicating whether the authentication were successfully").example(true),

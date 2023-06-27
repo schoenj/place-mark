@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { assert } from "chai";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
-import { IUserRepository } from "../../../app/repositories/interfaces/index.js";
+import { ICategoryRepository, IPlaceMarkRepository, IUserRepository } from "../../../app/repositories/interfaces/index.js";
 import { IAuthService } from "../../../app/services/interfaces/index.js";
 import { IApplicationConfig } from "../../../app/config/interfaces/index.js";
 
@@ -25,6 +25,10 @@ export const testConfig: IApplicationConfig = {
 export class ContainerMock implements IContainer {
   public userRepoMock: IUserRepository | null;
 
+  public placeMarkRepoMock: IPlaceMarkRepository | null;
+
+  public categoryRepoMock: ICategoryRepository | null;
+
   public authServiceMock: IAuthService | null;
 
   // eslint-disable-next-line class-methods-use-this
@@ -39,6 +43,22 @@ export class ContainerMock implements IContainer {
     }
 
     return this.userRepoMock;
+  }
+
+  public get placeMarkRepository(): IPlaceMarkRepository {
+    if (this.placeMarkRepoMock === null) {
+      assert.fail("PlaceMarkRepository were accessed before mocked.");
+    }
+
+    return this.placeMarkRepoMock;
+  }
+
+  public get categoryRepository(): ICategoryRepository {
+    if (this.categoryRepoMock === null) {
+      assert.fail("CategoryRepository were access before mocked");
+    }
+
+    return this.categoryRepoMock;
   }
 
   public get authService(): IAuthService {

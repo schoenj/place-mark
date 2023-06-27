@@ -1,4 +1,4 @@
-import { Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
+import { Request, ResponseObject, ResponseToolkit, UserCredentials } from "@hapi/hapi";
 import { IContainer } from "../../dependencies/interfaces/index.js";
 
 export abstract class Controller {
@@ -17,5 +17,13 @@ export abstract class Controller {
 
   protected render<T extends { view: string }>(model: T): ResponseObject {
     return this.h.view(model.view, model);
+  }
+
+  public get authenticated(): boolean {
+    return this.request.auth.isAuthenticated;
+  }
+
+  public get user(): UserCredentials | null | undefined {
+    return this.request.auth.credentials.user;
   }
 }
