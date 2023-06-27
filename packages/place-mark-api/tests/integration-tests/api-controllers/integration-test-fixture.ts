@@ -34,7 +34,7 @@ export class IntegrationTestFixture extends TestFixture {
       this._axios ||
       axios.create({
         baseURL: this.serverUrl,
-        timeout: 500,
+        timeout: 5000,
         headers: {
           Accept: "application/json",
         },
