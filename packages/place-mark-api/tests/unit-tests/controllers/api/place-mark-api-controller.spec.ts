@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "../../../../app/core/dtos/index.js";
-import { ICategoryRepository, IPlaceMarkRepository } from "../../../../app/repositories/interfaces/index.js";
+import { IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "../../../../app/core/dtos/index.js";
+import { IPlaceMarkRepository } from "../../../../app/repositories/interfaces/index.js";
 import { UnitTestFixture } from "../unit-test-fixture.js";
 
 suite("PlaceMarkApiController Unit-Tests", () => {
