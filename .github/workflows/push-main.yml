@@ -42,6 +42,7 @@ jobs:
         with:
           envkey_DATABASE_URL: ${{ secrets.STAGING_CONNECTION_STRING }}
           directory: ./packages/place-mark-api
+          file_name: .env.testing
 
       - name: Tests
         run: npm run test:api
