@@ -1,5 +1,6 @@
 import { ResponseObject } from "@hapi/hapi";
 import { ValidationErrorItem } from "joi";
+import { ISignInUserRequestDto, ISignUpUserRequestDto } from "../core/dtos/index.js";
 import {
   Controller,
   createFailedForm,
@@ -10,7 +11,6 @@ import {
   signUpFormDefinition,
   SignUpUserRequestSpecification,
 } from "../core/index.js";
-import { ISignInUserRequestDto, ISignUpUserRequestDto } from "../core/dtos/index.js";
 import { SignUpViewModel, SignInViewModel } from "../view-models/index.js";
 import { createFailAction } from "./utils.js";
 

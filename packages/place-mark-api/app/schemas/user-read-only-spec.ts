@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { IUserReadOnlyDto } from "../core/dtos/index.js";
+import { IUserReadOnlyDto } from "@schoenj/place-mark-core";
 import { createdAtSpec, idSpec, updatedAtSpec } from "./common.js";
 
 export const userReadOnlySpec: Joi.ObjectSchema<IUserReadOnlyDto> = Joi.object<IUserReadOnlyDto>({

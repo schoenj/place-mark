@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { User } from "@prisma/client";
-import { IUserReadOnlyDto } from "../../../app/core/dtos/index.js";
+import { IUserReadOnlyDto } from "@schoenj/place-mark-core";
 import { pad } from "../../utils.js";
 import { kermitTheFrogUser } from "../../fixtures.js";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";

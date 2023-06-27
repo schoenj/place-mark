@@ -1,5 +1,5 @@
-import { FormDefinition } from "../abstraction/index.js";
 import { ISignInUserRequestDto } from "../../dtos/index.js";
+import { FormDefinition } from "../abstraction/index.js";
 import { emailInputFieldDef, passwordInputFieldDef } from "../common-definitions.js";
 
 export const signInFormDefinition: FormDefinition<ISignInUserRequestDto> = {

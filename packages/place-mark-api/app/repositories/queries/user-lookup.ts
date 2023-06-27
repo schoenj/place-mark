@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { ILookupDto } from "../../core/dtos/index.js";
+import { ILookupDto } from "@schoenj/place-mark-core";
 
 const userLookupSelect = {
   id: true,

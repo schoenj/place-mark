@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "../../../../app/core/dtos/index.js";
+import { IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "@schoenj/place-mark-core";
 import { IPlaceMarkRepository } from "../../../../app/repositories/interfaces/index.js";
 import { UnitTestFixture } from "../unit-test-fixture.js";
 

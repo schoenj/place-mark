@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { ICategoryReadOnlyDto } from "../core/dtos/index.js";
+import { ICategoryReadOnlyDto } from "@schoenj/place-mark-core";
 import { createdAtSpec, designationSpec, idSpec, updatedAtSpec } from "./common.js";
 import { lookupSpec } from "./lookup-spec.js";
 

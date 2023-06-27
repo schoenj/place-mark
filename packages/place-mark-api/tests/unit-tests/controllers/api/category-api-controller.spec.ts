@@ -1,6 +1,6 @@
 import { assert } from "chai";
+import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto } from "@schoenj/place-mark-core";
 import { UnitTestFixture } from "../unit-test-fixture.js";
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto } from "../../../../app/core/dtos/index.js";
 import { ICategoryRepository } from "../../../../app/repositories/interfaces/index.js";
 
 suite("CategoryApiController Unit Tests", () => {

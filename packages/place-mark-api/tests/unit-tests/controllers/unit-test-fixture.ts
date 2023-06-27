@@ -1,9 +1,9 @@
 import { assert } from "chai";
 import { ServerInjectResponse } from "@hapi/hapi";
+import { IPaginatedListRequest, IPaginatedListResponse } from "@schoenj/place-mark-core";
 import { ITestFixtureConfig, TestFixture } from "../../test-fixture.js";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
 import { ContainerMock } from "./test-setup.js";
-import { IPaginatedListRequest, IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 import { IValidationResult } from "../../../app/core/index.js";
 
 export class UnitTestFixture extends TestFixture {
