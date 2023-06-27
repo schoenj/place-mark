@@ -1,4 +1,4 @@
-FROM node:18-buster
+FROM node:18-alpine
 WORKDIR /application
 COPY ./package.json ./
 COPY ./package-lock.json ./
