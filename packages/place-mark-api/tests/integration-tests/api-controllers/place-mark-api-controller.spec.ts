@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import { Category, PlaceMark, User } from "@prisma/client";
-import { IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { ICategoryReadOnlyDto, IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { pad } from "../../utils.js";
@@ -42,6 +43,38 @@ suite("PlaceMarkApiController Integration Tests", () => {
 
   teardown(async () => {
     await fixture.stop$();
+  });
+
+  test("POST /api/place-mark should work", async () => {
+    const payload = {
+      designation: "Tower Bridge",
+      description: "Part of the City of London",
+      latitude: 51.5055,
+      longitude: -0.075406,
+      categoryId: category.id,
+    };
+
+    // Authentication should work
+    try {
+      await fixture.axios.post("/api/place-mark", payload);
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 401);
+    }
+
+    // Success
+    const token = await fixture.authenticate$(user);
+    const response: AxiosResponse<IPlaceMarkReadOnlyDto> = await fixture.axios.post("/api/place-mark", payload, { headers: { Authorization: token } });
+    assert.equal(response.status, 201);
+    assert.isNotNull(response.data);
+    const placeMark = await fixture.prisma.placeMark.findUnique({ where: { id: response.data.id } });
+    assert.isNotNull(placeMark);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    cmp(placeMark!, response.data);
+    assert.isNotEmpty(response.headers.location);
+    assert.equal(response.headers.location, `/api/place-mark/${response.data.id}`);
   });
 
   test("GET /api/place-mark should work", async () => {
