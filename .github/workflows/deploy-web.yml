@@ -1,13 +1,12 @@
 name: deploy-web
 
 on:
-#  push:
-#    branches:
-#      - 'main'
-  pull_request:
-#    paths:
-#      - 'packages/place-mark-web/**'
-#      - '*.json'
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'packages/place-mark-web/**'
+      - '*.json'
 
 jobs:
   deploy-frontend:

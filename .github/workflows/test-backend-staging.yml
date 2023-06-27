@@ -1,13 +1,12 @@
 name: test-backend-staging
 
 on:
-  #  push:
-  #    branches:
-  #      - 'main'
-  pull_request:
-#    paths:
-#      - 'packages/place-mark-api/**'
-#      - '*.json'
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'packages/place-mark-api/**'
+      - '*.json'
 
 jobs:
   test-backend-cloud-atlas:
