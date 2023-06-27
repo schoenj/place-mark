@@ -1,0 +1,60 @@
+name: pull request
+
+on:
+  pull_request:
+    paths:
+      - 'packages/place-mark-api/**'
+      - 'docker/mongodb-rs/**'
+      - '*.json'
+      - '*.yml'
+
+jobs:
+  lint-test-backend:
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    services:
+      mongodb:
+        image: prismagraphql/mongo-single-replica:4.4.3-bionic
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: prisma
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: NPM CI
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint:api
+
+      - name: Create .env File
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_COOKIE_PASSWORD: "A_Cookie_Password_That_Should_Be_Replaced_In_Production"
+          directory: ./packages/place-mark-api
+
+      - name: Create .env.testing File
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DATABASE_URL: "mongodb://root:prisma@localhost:27017/place-mark-integration-tests?authSource=admin&retryWrites=true&w=majority"
+          directory: ./packages/place-mark-api
+          file_name: .env.testing
+
+      - name: Tests
+        run: npm run test:api
+
+      - name: Transpile
+        run: npm run build:api

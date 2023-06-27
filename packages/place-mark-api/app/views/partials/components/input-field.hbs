@@ -1,0 +1,20 @@
+<div class="field">
+    <label class="label" for="{{fieldName}}">
+        {{description}}
+    </label>
+    <div class="control">
+        <input
+            class="input"
+            {{attribute "required" "required" required}}
+            {{attribute "min" min min}}
+            {{attribute "max" max max}}
+            {{attribute "value" value value}}
+            type="{{choose inputType "text"}}"
+            placeholder="{{placeholder}}"
+            name="{{fieldName}}"
+        >
+        {{#each errors}}
+            <p class="help is-danger">{{this}}</p>
+        {{/each}}
+    </div>
+</div>
