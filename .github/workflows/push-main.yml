@@ -6,11 +6,11 @@ on:
 #      - 'main'
   pull_request:
     paths:
-      - 'packages/place-mark-api/**'
+      - 'packages/place-mark-web/**'
       - '*.json'
 
 jobs:
-  test-and-deploy-backend:
+  deploy-frontend:
     runs-on: ubuntu-20.04
 
     steps:
@@ -25,35 +25,13 @@ jobs:
       - name: NPM CI
         run: npm ci
 
-      - name: Create .env File
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-          envkey_COOKIE_PASSWORD: ${{ secrets.STAGING_COOKIE_PASSWORD }}
-          envkey_JWT_PASSWORD: ${{ secrets.STAGING_JWT_PASSWORD }}
-          envkey_DATABASE_URL: ${{ secrets.STAGING_CONNECTION_STRING }}
-          directory: ./packages/place-mark-api
-
-      - name: Create .env.testing File
-        uses: SpicyPizza/create-envfile@v1.3
-        with:
-          envkey_DATABASE_URL: ${{ secrets.STAGING_CONNECTION_STRING }}
-          directory: ./packages/place-mark-api
-          file_name: .env.testing
-
-      - name: Tests
-        run: npm run test:api
-
-      - name: Transpile
-        run: npm run build:api
-
-      - name: Remove DevDependencies
-        run: npm prune --production --workspace packages/place-mark-api
+      - name: NPM Build
+        run: npm run build:web
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2.0
         with:
-          publish-dir: './packages/place-mark-api/dist'
-          production-branch: main
+          publish-dir: './packages/place-mark-web/dist'
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.PRODUCTION_NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.PRODUCTION_NETLIFY_SITE_ID }}
