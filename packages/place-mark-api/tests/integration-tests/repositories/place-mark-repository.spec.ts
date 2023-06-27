@@ -4,6 +4,7 @@ import { PlaceMarkRepository } from "../../../app/repositories/index.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
 import { IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
+import { BusinessException } from "../../../app/core/business-exception.js";
 
 suite("PlaceMarkRepository Integration Tests", () => {
   let fixture: RepositoryTestFixture<PlaceMarkRepository>;
@@ -40,6 +41,80 @@ suite("PlaceMarkRepository Integration Tests", () => {
 
   teardown(async () => {
     await fixture.stop$();
+  });
+
+  test("create$ should work", async () => {
+    // Business Exception should be thrown, because user is not set
+    try {
+      await fixture.repository.create$({
+        designation: "Tower Bridge",
+        categoryId: category.id,
+        latitude: 51.5055,
+        longitude: -0.075406,
+        description: "Part of the City of London",
+        createdById: undefined,
+      });
+      assert.fail("BusinessException should be thrown");
+    } catch (ex) {
+      assert.instanceOf(ex, BusinessException);
+      const businessException = ex as BusinessException;
+      assert.equal(businessException.entity, "Category");
+      assert.include(businessException.message, "createdById");
+    }
+
+    // Business Exception should be thrown, because user does not exist
+    try {
+      await fixture.repository.create$({
+        designation: "Tower Bridge",
+        categoryId: category.id,
+        latitude: 51.5055,
+        longitude: -0.075406,
+        description: "Part of the City of London",
+        createdById: "646634e51d85e59154d725c5",
+      });
+      assert.fail("BusinessException should be thrown");
+    } catch (ex) {
+      assert.instanceOf(ex, BusinessException);
+      const businessException = ex as BusinessException;
+      assert.equal(businessException.entity, "User");
+      assert.include(businessException.message, "not found");
+    }
+
+    // Business Exception should be thrown, because category does not exist
+    try {
+      await fixture.repository.create$({
+        designation: "Tower Bridge",
+        categoryId: "646634e51d85e59154d725c5",
+        latitude: 51.5055,
+        longitude: -0.075406,
+        description: "Part of the City of London",
+        createdById: user.id,
+      });
+      assert.fail("BusinessException should be thrown");
+    } catch (ex) {
+      assert.instanceOf(ex, BusinessException);
+      const businessException = ex as BusinessException;
+      assert.equal(businessException.entity, "Category");
+      assert.include(businessException.message, "not found");
+    }
+
+    // Success
+    const id = await fixture.repository.create$({
+      designation: "Tower Bridge",
+      categoryId: category.id,
+      latitude: 51.5055,
+      longitude: -0.075406,
+      description: "Part of the City of London",
+      createdById: user.id,
+    });
+    const placeMark = await fixture.prisma.placeMark.findUnique({ where: { id: id } });
+    assert.isNotNull(placeMark);
+    assert.equal(placeMark?.designation, "Tower Bridge");
+    assert.equal(placeMark?.categoryId, category.id);
+    assert.equal(placeMark?.createdById, user.id);
+    assert.equal(placeMark?.description, "Part of the City of London");
+    assert.equal(placeMark?.latitude, 51.5055);
+    assert.equal(placeMark?.longitude, -0.075406);
   });
 
   test("getById$ should work", async () => {

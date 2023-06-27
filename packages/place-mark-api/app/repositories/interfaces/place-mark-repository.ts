@@ -1,6 +1,12 @@
-import { IPaginatedListRequest, IPaginatedListResponse, IPlaceMarkReadOnlyDto } from "../../core/dtos/index.js";
+import { IPaginatedListRequest, IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "../../core/dtos/index.js";
 
 export interface IPlaceMarkRepository {
+  /**
+   * Saves a place-mark
+   * @param placeMark
+   */
+  create$(placeMark: IPlaceMarkCreateReadWriteDto): Promise<string>;
+
   /**
    * Gets a place-mark by its id
    * @param id The id

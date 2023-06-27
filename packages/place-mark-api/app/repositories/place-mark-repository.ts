@@ -1,10 +1,44 @@
-import { Prisma } from "@prisma/client";
+import { Category, Prisma } from "@prisma/client";
 import { IPlaceMarkRepository } from "./interfaces/index.js";
 import { Repository } from "./repository.js";
-import { IPaginatedListRequest, IPaginatedListResponse, IPlaceMarkReadOnlyDto } from "../core/dtos/index.js";
+import { IPaginatedListRequest, IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "../core/dtos/index.js";
 import { placeMarkReadOnlyQuery, PlaceMarkReadOnlySelectType } from "./queries/place-mark-read-only.js";
+import { BusinessException } from "../core/business-exception.js";
 
 export class PlaceMarkRepository extends Repository implements IPlaceMarkRepository {
+  /**
+   * Saves a place-mark
+   * @param placeMark
+   */
+  async create$(placeMark: IPlaceMarkCreateReadWriteDto): Promise<string> {
+    if (placeMark.createdById === null || placeMark.createdById === undefined) {
+      throw new BusinessException("Category", "createdById is not set.");
+    }
+
+    const userCount = await this.db.user.count({ where: { id: placeMark.createdById } });
+    if (userCount !== 1) {
+      throw new BusinessException("User", `User not found. Id: ${placeMark.createdById}`);
+    }
+
+    const categoryCount = await this.db.category.count({ where: { id: placeMark.categoryId } });
+    if (categoryCount !== 1) {
+      throw new BusinessException("Category", `Category not found. Id: ${placeMark.categoryId}`);
+    }
+
+    const result: Category = await this.db.placeMark.create({
+      data: {
+        designation: placeMark.designation,
+        description: placeMark.description,
+        latitude: placeMark.latitude,
+        longitude: placeMark.longitude,
+        categoryId: placeMark.categoryId,
+        createdById: placeMark.createdById,
+      },
+    });
+
+    return result.id;
+  }
+
   /**
    * Gets a place-mark by its id
    * @param id The id
