@@ -1,26 +1,27 @@
-import { Server } from "@hapi/hapi";
 import { User } from "@prisma/client";
 import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
-import { createServer$ } from "../../../app/server.js";
-import { ICreateUserReadWriteDto } from "../../../app/core/index.js";
-import { testConfig, ContainerMock } from "./test-setup.js";
+import { ICreateUserReadWriteDto } from "../../../app/core/dtos/index.js";
+import { testConfig } from "./test-setup.js";
 import { IUserRepository } from "../../../app/repositories/interfaces/index.js";
 import { AuthenticationResult, IAuthCredentials, IAuthService } from "../../../app/services/interfaces/index.js";
+import { UnitTestFixture } from "./unit-test-fixture.js";
 
 suite("AccountController Unit-Tests", () => {
-  let server: Server;
-  let container: ContainerMock;
+  let fixture: UnitTestFixture;
 
   setup(async () => {
-    container = new ContainerMock();
-    const result = await createServer$(testConfig, () => container);
-    server = result.server;
+    fixture = new UnitTestFixture();
+    await fixture.start$();
+  });
+
+  teardown(async () => {
+    await fixture.stop$();
   });
 
   suite("Sign-Up-Page Tests", () => {
     test("GET should return 200", async () => {
-      const response = await server.inject({
+      const response = await fixture.inject({
         method: "GET",
         url: "/account/sign-up",
       });
@@ -30,7 +31,7 @@ suite("AccountController Unit-Tests", () => {
     test("POST should redirect to login page on success", async () => {
       let userSearched = false;
       let created = false;
-      container.userRepoMock = {
+      fixture.container.userRepoMock = {
         getByEmail$(email: string): Promise<User | null> {
           assert.isFalse(userSearched);
           if (email === "cookie.monster@sesame-street.de") {
@@ -52,7 +53,7 @@ suite("AccountController Unit-Tests", () => {
         },
       } as IUserRepository;
 
-      const response = await server.inject({
+      const response = await fixture.inject({
         method: "POST",
         url: "/account/sign-up",
         payload: {
@@ -71,7 +72,7 @@ suite("AccountController Unit-Tests", () => {
 
   suite("Sign-In-Page Tests", () => {
     test("GET should return 200", async () => {
-      const response = await server.inject({
+      const response = await fixture.inject({
         method: "GET",
         url: "/account/sign-in",
       });
@@ -80,7 +81,7 @@ suite("AccountController Unit-Tests", () => {
 
     test("POST should redirect to home on success", async () => {
       let userFetched = false;
-      container.authServiceMock = {
+      fixture.container.authServiceMock = {
         authenticate$(credentials: IAuthCredentials): Promise<AuthenticationResult> {
           assert.isFalse(userFetched);
           userFetched = true;
@@ -98,7 +99,7 @@ suite("AccountController Unit-Tests", () => {
           } as AuthenticationResult);
         },
       } as IAuthService;
-      const response = await server.inject({
+      const response = await fixture.inject({
         method: "POST",
         url: "/account/sign-in",
         payload: {
@@ -123,7 +124,7 @@ suite("AccountController Unit-Tests", () => {
 
   suite("Logout-Page Tests", () => {
     test("Logout should delete cookie and redirect", async () => {
-      container.authServiceMock = {
+      fixture.container.authServiceMock = {
         authenticate$(credentials: IAuthCredentials): Promise<AuthenticationResult> {
           if (credentials.email !== "cookie.monster@sesame-street.de") {
             return Promise.resolve({ success: false });
@@ -139,7 +140,7 @@ suite("AccountController Unit-Tests", () => {
           } as AuthenticationResult);
         },
       } as IAuthService;
-      const signInResponse = await server.inject({
+      const signInResponse = await fixture.inject({
         method: "POST",
         url: "/account/sign-in",
         payload: {
@@ -151,7 +152,7 @@ suite("AccountController Unit-Tests", () => {
       let cookie = (signInResponse.headers["set-cookie"] as OutgoingHttpHeader[])[0] as string;
       cookie = cookie.substring(0, cookie.indexOf(";"));
 
-      const logoutResponse = await server.inject({
+      const logoutResponse = await fixture.inject({
         method: "GET",
         url: "/account/logout",
         headers: {

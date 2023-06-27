@@ -13,3 +13,14 @@ export const kermitTheFrogUser: Prisma.UserCreateInput = {
   email: "kermit.the-frog@the-muppets.com",
   password: "1234",
 };
+
+/**
+ * A Testuser that will always be, when sorted, be the last entry
+ */
+export const testUser: Prisma.UserCreateInput = {
+  firstName: "x",
+  lastName: "y",
+  email: "x@y.de",
+  admin: false,
+  password: "1234qwer",
+};

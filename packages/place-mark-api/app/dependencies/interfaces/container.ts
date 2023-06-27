@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { IUserRepository } from "../../repositories/interfaces/index.js";
+import { ICategoryRepository, IPlaceMarkRepository, IUserRepository } from "../../repositories/interfaces/index.js";
 import { IAuthService } from "../../services/interfaces/index.js";
 
 /**
@@ -15,6 +15,16 @@ export interface IContainer {
    * Gets the User-Repository
    */
   get userRepository(): IUserRepository;
+
+  /**
+   * Gets the PlaceMark-Repository
+   */
+  get placeMarkRepository(): IPlaceMarkRepository;
+
+  /**
+   * Gets the Category-Repository
+   */
+  get categoryRepository(): ICategoryRepository;
 
   /**
    * Gets the Auth-Service
