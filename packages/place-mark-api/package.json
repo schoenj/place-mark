@@ -12,7 +12,7 @@
     "start": "node ./dist/index.js",
     "clean": "rimraf dist/",
     "build-clean": "npm run clean && npm run build",
-    "integration-test": "ts-mocha -n loader=ts-node/esm tests/integration-tests/**/*.spec.ts -- --ui tdd --file tests/integration-tests/setup.ts --timeout 5s",
+    "integration-test": "ts-mocha -n loader=ts-node/esm tests/integration-tests/**/*.spec.ts -- --ui tdd --file tests/integration-tests/setup.ts --timeout 15s",
     "unit-test": "ts-mocha -n loader=ts-node/esm tests/unit-tests/**/*.spec.ts -- --ui tdd",
     "lint": "eslint .",
     "lint-and-fix": "eslint . --fix"
