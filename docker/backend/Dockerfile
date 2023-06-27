@@ -8,6 +8,8 @@ COPY ./packages/place-mark-api ./packages/place-mark-api/
 RUN npm ci
 RUN npm run build:api
 RUN npm prune --production --workspace packages/place-mark-api
-RUN find ./packages/place-mark-api -mindepth 1 ! -regex '^./packages/place-mark-api/dist\(/.*\)?' -delete
+# RUN find ./packages/place-mark-api -mindepth 1 ! -regex '^./packages/place-mark-api/(dist\(/.*\)?|package.json|package-lock.json)' -delete
+# RUN apk add --no-cache bash
+# SHELL ["/bin/bash", "-c"]
 CMD ["npm", "run", "start:api"]
 EXPOSE 3000
