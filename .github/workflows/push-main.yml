@@ -15,6 +15,7 @@ jobs:
 
     strategy:
       max-parallel: 1 # We only use one database! Otherwise, the jobs fail
+      fail-fast: true
       matrix:
         node-version: [ 16.x, 18.x ]
 
