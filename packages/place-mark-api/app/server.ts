@@ -38,11 +38,11 @@ const swaggerOptions: SwaggerOptions = {
  * @param containerFactory A function that creates the Container
  * @return { server: Server, start$: (log: true) => Promise<void> } The configured webserver and a function to start it
  */
-export const createServer$ = async (config: IApplicationConfig, containerFactory: () => IContainer) => {
+export async function createServer$(config: IApplicationConfig, containerFactory: () => IContainer): Promise<{ server: Server; start$: () => Promise<void> }> {
   const server: Server = new Server({
     host: config.webServer.host,
     port: config.webServer.port,
-    debug: { request: "*" },
+    // debug: { request: "*" },
   });
 
   registerDependencyManagement(server, containerFactory);
@@ -73,7 +73,7 @@ export const createServer$ = async (config: IApplicationConfig, containerFactory
       }
     },
   };
-};
+}
 
 process.on("unhandledRejection", (err) => {
   console.error(err);
