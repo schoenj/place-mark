@@ -9,6 +9,7 @@
     "dev": "ts-node --esm index.ts",
     "test": "npm run unit-test && npm run integration-test",
     "build": "tsc --project tsconfig.build.json && copyfiles -u 2 ./app/views/**/*.hbs ./dist/app/views/",
+    "start": "node ./dist/index.js",
     "clean": "rimraf dist/",
     "build-clean": "npm run clean && npm run build",
     "integration-test": "ts-mocha -n loader=ts-node/esm tests/integration-tests/**/*.spec.ts -- --ui tdd --file tests/integration-tests/setup.ts --timeout 5s",
