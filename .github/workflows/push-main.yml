@@ -37,6 +37,12 @@ jobs:
           envkey_DATABASE_URL: ${{ secrets.STAGING_CONNECTION_STRING }}
           directory: ./packages/place-mark-api
 
+      - name: Create .env.testing File
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_DATABASE_URL: ${{ secrets.STAGING_CONNECTION_STRING }}
+          directory: ./packages/place-mark-api
+
       - name: Tests
         run: npm run test:api
 
