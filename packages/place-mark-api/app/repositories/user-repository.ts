@@ -1,4 +1,4 @@
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto } from "../core/dtos/index.js";
 import { Repository } from "./repository.js";
 import { userReadOnlyQuery, UserReadOnlySelectType } from "./queries/user-read-only.js";
@@ -10,9 +10,10 @@ export class UserRepository extends Repository implements IUserRepository {
    * @param listRequest The List-Request
    */
   async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>> {
-    const result = await this.paginate$(
-      undefined,
-      [
+    const total = await this.db.user.count();
+    const data = await this.db.user.findMany({
+      select: userReadOnlyQuery.select,
+      orderBy: [
         {
           firstName: "asc",
         },
@@ -20,13 +21,14 @@ export class UserRepository extends Repository implements IUserRepository {
           lastName: "asc",
         },
       ],
-      userReadOnlyQuery.select,
-      userReadOnlyQuery.transform,
-      listRequest.skip,
-      listRequest.take
-    );
+      skip: listRequest?.skip || 0,
+      take: listRequest?.take || 25,
+    });
 
-    return result;
+    return {
+      total: total,
+      data: data.map((x) => userReadOnlyQuery.transform(x)),
+    };
   }
 
   /**
@@ -99,40 +101,5 @@ export class UserRepository extends Repository implements IUserRepository {
         },
       });
     }
-  }
-
-  /**
-   * Gets a paginated and filtered list
-   * @param where Optional Where-Clause
-   * @param orderBy Optional OrderBy
-   * @param select Select-Clause
-   * @param transform Method to map the database response to dto
-   * @param skip The amount of records to skip
-   * @param take The amount of records to load
-   * @protected
-   */
-  protected async paginate$<TSelect extends Prisma.UserSelect, TDto extends object>(
-    where: Prisma.UserWhereInput | undefined,
-    orderBy: Prisma.Enumerable<Prisma.UserOrderByWithRelationInput> | undefined,
-    select: TSelect,
-    transform: (entry: Prisma.UserGetPayload<{ select: TSelect }>) => TDto,
-    skip?: number,
-    take?: number
-  ): Promise<IPaginatedListResponse<TDto>> {
-    const [total, data]: [number, Prisma.UserGetPayload<{ select: TSelect }>[]] = await Promise.all([
-      this.db.user.count({ where }),
-      this.db.user.findMany({
-        where: where,
-        orderBy: orderBy,
-        select: select,
-        skip: skip || 0,
-        take: take || 25,
-      }),
-    ]);
-
-    return {
-      total: total,
-      data: data.map((x) => transform(x)),
-    };
   }
 }

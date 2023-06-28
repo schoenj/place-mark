@@ -1,4 +1,4 @@
-import { Category, Prisma } from "@prisma/client";
+import { Category } from "@prisma/client";
 import { Repository } from "./repository.js";
 import { ICategoryRepository } from "./interfaces/index.js";
 import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
@@ -11,18 +11,20 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
    * @param listRequest List-Request
    */
   public async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<ICategoryReadOnlyDto>> {
-    const result = await this.paginate$(
-      undefined,
-      {
+    const total = await this.db.category.count();
+    const data = await this.db.category.findMany({
+      orderBy: {
         designation: "asc",
       },
-      categoryReadOnlyQuery.select,
-      categoryReadOnlyQuery.transform,
-      listRequest.skip,
-      listRequest.take
-    );
+      select: categoryReadOnlyQuery.select,
+      skip: listRequest?.skip || 0,
+      take: listRequest?.take || 25,
+    });
 
-    return result;
+    return {
+      total: total,
+      data: data.map((x) => categoryReadOnlyQuery.transform(x)),
+    };
   }
 
   /**
@@ -38,41 +40,6 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
     });
 
     return category ? categoryReadOnlyQuery.transform(category) : null;
-  }
-
-  /**
-   * Gets a paginated and filtered list
-   * @param where Optional Where-Clause
-   * @param orderBy Optional OrderBy
-   * @param select Select-Clause
-   * @param transform Method to map the database response to dto
-   * @param skip The amount of records to skip
-   * @param take The amount of records to load
-   * @protected
-   */
-  protected async paginate$<TSelect extends Prisma.CategorySelect, TDto extends object>(
-    where: Prisma.CategoryWhereInput | undefined,
-    orderBy: Prisma.Enumerable<Prisma.CategoryOrderByWithRelationInput> | undefined,
-    select: TSelect,
-    transform: (entry: Prisma.CategoryGetPayload<{ select: TSelect }>) => TDto,
-    skip?: number,
-    take?: number
-  ): Promise<IPaginatedListResponse<TDto>> {
-    const [total, data]: [number, Prisma.CategoryGetPayload<{ select: TSelect }>[]] = await Promise.all([
-      this.db.category.count({ where }),
-      this.db.category.findMany({
-        where: where,
-        orderBy: orderBy,
-        select: select,
-        skip: skip || 0,
-        take: take || 25,
-      }),
-    ]);
-
-    return {
-      total: total,
-      data: data.map((x) => transform(x)),
-    };
   }
 
   /**

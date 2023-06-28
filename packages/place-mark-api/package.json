@@ -1,8 +1,18 @@
 {
   "name": "@schoenj/place-mark-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "PlaceMark - A small web application for managing POIs, points of interests.",
   "type": "module",
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schoenj/place-mark/issues"
+  },
+  "homepage": "https://github.com/schoenj/place-mark#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schoenj/place-mark.git"
+  },
   "scripts": {
     "postinstall": "npm run generate-model",
     "generate-model": "npx prisma generate",
@@ -17,16 +27,14 @@
     "lint": "eslint .",
     "lint-and-fix": "eslint . --fix"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
     "@hapi/cookie": "^12.0.1",
     "@hapi/hapi": "^21.3.2",
     "@hapi/inert": "^7.1.0",
     "@hapi/vision": "^7.0.1",
-    "axios": "^1.4.0",
     "@prisma/client": "^4.14.1",
+    "axios": "^1.4.0",
     "dotenv": "^16.0.3",
     "handlebars": "^4.7.7",
     "hapi-auth-jwt2": "^10.4.0",
@@ -57,10 +65,11 @@
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "mocha": "^10.2.0",
-    "rimraf": "^5.0.1",
     "prisma": "^4.14.1",
+    "rimraf": "^5.0.1",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "word-wrap": "^1.2.3"
   }
 }
