@@ -4,7 +4,6 @@
   "description": "PlaceMark - A small web application for managing POIs, points of interests.",
   "workspaces": [
     "packages/place-mark-api",
-    "packages/place-mark-web",
     "packages/place-mark-core"
   ],
   "scripts": {
