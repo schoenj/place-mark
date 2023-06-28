@@ -1,5 +1,7 @@
-<script lang="ts">
-    import LoginForm from "$lib/forms/LoginForm.svelte";
+<script>
+    import LoginForm from '$lib/LoginForm.svelte';
 </script>
 
-<LoginForm></LoginForm>
+<div class="container">
+    <LoginForm/>
+</div>

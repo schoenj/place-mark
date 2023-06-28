@@ -1,6 +1,6 @@
-<script lang="ts">
-    import Header from "$lib/layout/Header.svelte";
-    import Navbar from "$lib/layout/Navbar.svelte";
+<script>
+    import Header from '$lib/Header.svelte';
+    import Navbar from '$lib/Navbar.svelte';
 </script>
 
 <Header>

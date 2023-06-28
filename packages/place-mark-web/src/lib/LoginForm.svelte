@@ -1,13 +1,14 @@
 <script lang="ts">
-    import {apiClient} from "../../api-client";
-    import {goto} from "$app/navigation";
+    // import {apiClient} from "../../api-client";
+    // import {goto} from "$app/navigation";
 
-    let email: string;
-    let password: string;
-    let errors: [] = [];
+    let email = "";
+    let password = "";
+    let errorMessages: string[] = [];
 
-    async function login$(): Promise<void> {
-        const result = await apiClient.authenticate$({ email, password });
+    async function login$() {
+        // const result =
+        //await apiClient.authenticate$({ email, password });
         // if (result.isSuccess) {
         //     console.log(result.data?.token);
         //     await goto("/")
@@ -23,7 +24,7 @@
             <div class="column">
                 <div class="field">
                     <label class="label" for="email">Email</label>
-                    <input bind:value={email} required class="input" type="text" placeholder="cookie.monster@sesame-street.com" name="email" id="email">
+                    <input bind:value={email} class="input" type="text" placeholder="cookie.monster@sesame-street.com" name="email" id="email">
                 </div>
             </div>
         </div>
@@ -31,7 +32,7 @@
             <div class="column">
                 <div class="field">
                     <label class="label" for="password">Password</label>
-                    <input bind:value={password} required class="input" type="password" placeholder="***" name="password" id="password">
+                    <input bind:value={password} class="input" type="password" placeholder="***" name="password" id="password">
                 </div>
             </div>
         </div>
@@ -46,11 +47,13 @@
         </div>
     </form>
 
-    {#if (errors.length)}
+    <!--{errorMessages}-->
+    {#if errorMessages}
         <ul>
-            {#each errors as error}
-                <li>{error}</li>
+            {#each errorMessages as errorMessage}
+                <li>{errorMessage}</li>
             {/each}
         </ul>
     {/if}
 </section>
+
