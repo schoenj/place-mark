@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { Prisma, PrismaClient, User } from "@prisma/client";
-import { IPaginatedListResponse } from "@schoenj/place-mark-core";
+import { IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 import { Repository } from "../../../app/repositories/repository.js";
 
 export class RepositoryTestFixture<TRepository extends Repository> {

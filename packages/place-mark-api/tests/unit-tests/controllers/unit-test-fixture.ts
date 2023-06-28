@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { ServerInjectResponse } from "@hapi/hapi";
-import { IPaginatedListRequest, IPaginatedListResponse } from "@schoenj/place-mark-core";
+import { IPaginatedListRequest, IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 import { ITestFixtureConfig, TestFixture } from "../../test-fixture.js";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
 import { ContainerMock } from "./test-setup.js";

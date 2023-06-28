@@ -1,6 +1,6 @@
 import { Category, PlaceMark, User } from "@prisma/client";
 import { assert } from "chai";
-import { IPlaceMarkReadOnlyDto } from "@schoenj/place-mark-core";
+import { IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { PlaceMarkRepository } from "../../../app/repositories/index.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";

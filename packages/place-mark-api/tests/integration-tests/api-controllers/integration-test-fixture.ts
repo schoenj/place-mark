@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import { assert } from "chai";
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
-import { IAuthResultDto, IPaginatedListResponse } from "@schoenj/place-mark-core";
+import { IAuthResultDto, IPaginatedListResponse } from "../../../app/core/dtos/index.js";
 import { ITestFixtureConfig, TestFixture } from "../../test-fixture.js";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
 import { Container } from "../../../app/dependencies/index.js";

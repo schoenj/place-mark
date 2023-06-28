@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ICreateUserReadWriteDto } from "@schoenj/place-mark-core";
+import { ICreateUserReadWriteDto } from "./create-user-read-write-dto.js";
 
 export interface ISignUpUserRequestDto extends ICreateUserReadWriteDto {
   passwordAgain: string;

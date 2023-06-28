@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { Category, PlaceMark, User } from "@prisma/client";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { IPlaceMarkReadOnlyDto } from "@schoenj/place-mark-core";
+import { IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { pad } from "../../utils.js";

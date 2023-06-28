@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import { assert } from "chai";
 import { OutgoingHttpHeader } from "http";
-import { ICreateUserReadWriteDto } from "@schoenj/place-mark-core";
+import { ICreateUserReadWriteDto } from "../../../app/core/dtos/index.js";
 import { testConfig } from "./test-setup.js";
 import { IUserRepository } from "../../../app/repositories/interfaces/index.js";
 import { AuthenticationResult, IAuthCredentials, IAuthService } from "../../../app/services/interfaces/index.js";

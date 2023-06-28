@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { IPlaceMarkReadOnlyDto } from "@schoenj/place-mark-core";
+import { IPlaceMarkReadOnlyDto } from "../core/dtos/index.js";
 import { createdAtSpec, designationSpec, idSpec, latitudeSpec, longitudeSpec, updatedAtSpec } from "./common.js";
 import { lookupSpec } from "./lookup-spec.js";
 

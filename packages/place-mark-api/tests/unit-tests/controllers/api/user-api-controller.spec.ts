@@ -1,4 +1,4 @@
-import { IUserReadOnlyDto } from "@schoenj/place-mark-core";
+import { IUserReadOnlyDto } from "../../../../app/core/dtos/index.js";
 import { IUserRepository } from "../../../../app/repositories/interfaces/index.js";
 import { UnitTestFixture } from "../unit-test-fixture.js";
 import { cookieMonsterUser } from "../../../fixtures.js";

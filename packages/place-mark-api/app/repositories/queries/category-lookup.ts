@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { ILookupDto } from "@schoenj/place-mark-core";
+import { ILookupDto } from "../../core/dtos/index.js";
 
 const categoryLookupSelect = {
   id: true,

@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { ICategoryCreateReadWriteDto } from "@schoenj/place-mark-core";
+import { ICategoryCreateReadWriteDto } from "../core/dtos/index.js";
 import { designationSpec } from "./common.js";
 
 export const categoryCreateReadWriteSpec: Joi.ObjectSchema<ICategoryCreateReadWriteDto> = Joi.object({

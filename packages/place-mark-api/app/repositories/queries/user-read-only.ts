@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { IUserReadOnlyDto } from "@schoenj/place-mark-core";
+import { IUserReadOnlyDto } from "../../core/dtos/index.js";
 
 const userReadOnlySelect = {
   id: true,

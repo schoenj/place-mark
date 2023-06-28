@@ -1,6 +1,6 @@
 import { Category, User } from "@prisma/client";
 import { assert } from "chai";
-import { ICategoryReadOnlyDto } from "@schoenj/place-mark-core";
+import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { CategoryRepository } from "../../../app/repositories/index.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";

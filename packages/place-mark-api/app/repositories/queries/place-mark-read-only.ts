@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { IPlaceMarkReadOnlyDto } from "@schoenj/place-mark-core";
+import { IPlaceMarkReadOnlyDto } from "../../core/dtos/index.js";
 import { userLookupQuery } from "./user-lookup.js";
 import { categoryLookupQuery } from "./category-lookup.js";
 

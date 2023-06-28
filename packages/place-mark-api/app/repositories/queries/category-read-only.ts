@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { ICategoryReadOnlyDto } from "@schoenj/place-mark-core";
+import { ICategoryReadOnlyDto } from "../../core/dtos/index.js";
 import { userLookupQuery } from "./user-lookup.js";
 
 const categoryReadOnlySelect = {
