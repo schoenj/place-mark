@@ -1,9 +1,9 @@
 import { Category, User } from "@prisma/client";
 import { assert } from "chai";
+import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { CategoryRepository } from "../../../app/repositories/index.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
-import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { BusinessException } from "../../../app/core/business-exception.js";
 
 suite("CategoryRepository Integration Tests", () => {

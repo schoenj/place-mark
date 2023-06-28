@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { Prisma, PrismaClient, User } from "@prisma/client";
-import { Repository } from "../../../app/repositories/repository.js";
 import { IPaginatedListResponse } from "../../../app/core/dtos/index.js";
+import { Repository } from "../../../app/repositories/repository.js";
 
 export class RepositoryTestFixture<TRepository extends Repository> {
   private static _started = false;

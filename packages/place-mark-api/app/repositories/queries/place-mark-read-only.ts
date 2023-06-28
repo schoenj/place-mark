@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { userLookupQuery } from "./user-lookup.js";
 import { IPlaceMarkReadOnlyDto } from "../../core/dtos/index.js";
+import { userLookupQuery } from "./user-lookup.js";
 import { categoryLookupQuery } from "./category-lookup.js";
 
 const placeMarkReadOnlySelect = {

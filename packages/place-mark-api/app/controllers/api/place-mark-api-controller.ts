@@ -1,8 +1,8 @@
 import { ResponseObject } from "@hapi/hapi";
+import { IPaginatedListRequest, IPlaceMarkCreateReadWriteDto } from "../../core/dtos/index.js";
 import { Controller, Route } from "../../core/index.js";
 import { emptySpec, idParamSpec, paginatedListRequestSpec, placeMarkCreateReadWriteSpec, placeMarkReadOnlySpec, validationResultSpec } from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
-import { IPaginatedListRequest, IPlaceMarkCreateReadWriteDto } from "../../core/dtos/index.js";
 
 export class PlaceMarkApiController extends Controller {
   @Route({

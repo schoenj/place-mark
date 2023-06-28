@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { userLookupQuery } from "./user-lookup.js";
 import { ICategoryReadOnlyDto } from "../../core/dtos/index.js";
+import { userLookupQuery } from "./user-lookup.js";
 
 const categoryReadOnlySelect = {
   id: true,

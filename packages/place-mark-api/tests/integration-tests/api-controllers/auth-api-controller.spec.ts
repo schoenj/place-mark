@@ -1,8 +1,8 @@
 import { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import { assert } from "chai";
 import jwt from "jsonwebtoken";
-import { kermitTheFrogUser } from "../../fixtures.js";
 import { IAuthResultDto } from "../../../app/core/dtos/index.js";
+import { kermitTheFrogUser } from "../../fixtures.js";
 import { testConfig } from "../../unit-tests/controllers/test-setup.js";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
 

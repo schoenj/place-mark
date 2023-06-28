@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import { UnitTestFixture } from "../unit-test-fixture.js";
 import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto } from "../../../../app/core/dtos/index.js";
+import { UnitTestFixture } from "../unit-test-fixture.js";
 import { ICategoryRepository } from "../../../../app/repositories/interfaces/index.js";
 
 suite("CategoryApiController Unit Tests", () => {

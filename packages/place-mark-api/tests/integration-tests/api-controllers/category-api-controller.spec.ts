@@ -1,8 +1,8 @@
 import { Category, User } from "@prisma/client";
 import { assert } from "chai";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
+import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { pad } from "../../utils.js";
 

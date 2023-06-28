@@ -1,8 +1,8 @@
 import { ResponseObject } from "@hapi/hapi";
+import { ICategoryCreateReadWriteDto, IPaginatedListRequest } from "../../core/dtos/index.js";
 import { Controller, Route } from "../../core/index.js";
 import { categoryCreateReadWriteSpec, categoryReadOnlySpec, emptySpec, idParamSpec, paginatedListRequestSpec, validationResultSpec } from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
-import { ICategoryCreateReadWriteDto, IPaginatedListRequest } from "../../core/dtos/index.js";
 
 export class CategoryApiController extends Controller {
   @Route({

@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import { assert } from "chai";
 import { User } from "@prisma/client";
+import { IUserReadOnlyDto } from "../../../app/core/dtos/index.js";
 import { IApplicationConfig } from "../../../app/config/interfaces/index.js";
 import { IUserRepository } from "../../../app/repositories/interfaces/index.js";
 import { AuthService } from "../../../app/services/index.js";
 import { testConfig } from "../controllers/test-setup.js";
-import { IUserReadOnlyDto } from "../../../app/core/dtos/index.js";
 
 suite("AuthService Unit-Tests", () => {
   test("validate$ should work", async () => {

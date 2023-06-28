@@ -1,7 +1,7 @@
 import Joi, { ValidationError } from "joi";
 import { ReqRefDefaults, Request, ResponseObject, ResponseToolkit } from "@hapi/hapi";
-import { IValidationResult } from "../../core/index.js";
 import { IPaginatedListResponse } from "../../core/dtos/index.js";
+import { IValidationResult } from "../../core/index.js";
 
 export function createResponseSpec<T>(schema: Joi.ObjectSchema<T>): Joi.ObjectSchema<IPaginatedListResponse<T>> {
   const joiDescription = schema.describe();

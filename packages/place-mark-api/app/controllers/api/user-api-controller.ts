@@ -1,6 +1,6 @@
 import { ResponseObject } from "@hapi/hapi";
-import { Controller, Route } from "../../core/index.js";
 import { IPaginatedListRequest } from "../../core/dtos/index.js";
+import { Controller, Route } from "../../core/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
 import { emptySpec, idParamSpec, paginatedListRequestSpec, userReadOnlySpec, validationResultSpec } from "../../schemas/index.js";
 

@@ -1,8 +1,8 @@
 import { ServerInjectResponse } from "@hapi/hapi";
 import { assert } from "chai";
+import { IAuthResultDto } from "../../../../app/core/dtos/index.js";
 import { AuthenticationResult, IAuthCredentials, IAuthenticatedUser, IAuthService } from "../../../../app/services/interfaces/index.js";
 import { IValidationResult } from "../../../../app/core/index.js";
-import { IAuthResultDto } from "../../../../app/core/dtos/index.js";
 import { UnitTestFixture } from "../unit-test-fixture.js";
 
 suite("AuthApiController Unit-Tests", () => {
