@@ -37,10 +37,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: NPM CI
+        working-directory: ./packages/place-mark-api
         run: npm ci
 
       - name: Lint
-        run: npm run lint:api
+        working-directory: ./packages/place-mark-api
+        run: npm run lint
 
       - name: Create .env File
         uses: SpicyPizza/create-envfile@v1.3
@@ -56,7 +58,9 @@ jobs:
           file_name: .env.testing
 
       - name: Tests
-        run: npm run test:api
+        working-directory: ./packages/place-mark-api
+        run: npm run test
 
       - name: Transpile
-        run: npm run build:api
+        working-directory: ./packages/place-mark-api
+        run: npm run build
