@@ -1,8 +1,9 @@
 import { ResponseObject } from "@hapi/hapi";
-import { Controller, Route } from "../../core/index.js";
+import {Controller, IValidationResult, Route} from "../../core/index.js";
 import { categoryCreateReadWriteSpec, categoryReadOnlySpec, emptySpec, idParamSpec, paginatedListRequestSpec, validationResultSpec } from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
 import { ICategoryCreateReadWriteDto, IPaginatedListRequest } from "../../core/dtos/index.js";
+import {BusinessException} from "../../core/business-exception.js";
 
 export class CategoryApiController extends Controller {
   @Route({
@@ -89,5 +90,44 @@ export class CategoryApiController extends Controller {
       return this.h.response(result).code(200);
     }
     return this.h.response().code(404);
+  }
+
+  @Route({
+    method: "DELETE",
+    path: "/api/category/{id}",
+    options: {
+      auth: { strategy: "jwt" },
+      tags: ["api", "category"],
+      description: "Deletes a category by its id",
+      validate: {
+        params: idParamSpec,
+        failAction: defaultFailAction
+      },
+      response: {
+        status: {
+          204: emptySpec,
+          400: validationResultSpec,
+          401: emptySpec
+        }
+      }
+    }
+  })
+  public async deleteById$(): Promise<ResponseObject> {
+    const id = this.request.params.id as string;
+    try {
+      await this.container.categoryRepository.deleteById$(id);
+    } catch(e) {
+      if (e instanceof BusinessException) {
+        return this.h.response([
+          {
+            property: "id",
+            message: e.message
+          }
+        ] as IValidationResult[]).code(400);
+      }
+
+      throw e;
+    }
+    return this.h.response().code(204);
   }
 }

@@ -91,4 +91,17 @@ suite("CategoryApiController Integration Tests", () => {
   test("GET /api/category/{id} should work", async () => {
     await fixture.testGetById$(() => fixture.prisma.category.create({ data: { designation: "Tower Bridge", createdById: user.id } }), "category", cmp);
   });
+
+  test("Delete /api/category/{id} should work", async () => {
+    await fixture.testDeleteById$(
+      () => fixture.prisma.category.create({
+        data: {
+          designation: "Bridge",
+          createdById: user.id,
+        }
+      }),
+      "category",
+      (id) => fixture.prisma.category.findMany({ where: { id: id } })
+    );
+  });
 });

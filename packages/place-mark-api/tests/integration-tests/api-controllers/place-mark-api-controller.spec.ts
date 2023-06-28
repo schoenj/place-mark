@@ -115,4 +115,21 @@ suite("PlaceMarkApiController Integration Tests", () => {
       cmp
     );
   });
+
+  test("Delete /api/place-mark/{id} should work", async () => {
+    await fixture.testDeleteById$(
+      () => fixture.prisma.placeMark.create({
+        data: {
+        designation: "Tower Bridge",
+        description: "240m tall",
+        latitude: 51.5055,
+        longitude: -0.075406,
+        createdById: user.id,
+        categoryId: category.id,
+        }
+      }),
+      "place-mark",
+      (id) => fixture.prisma.placeMark.findMany({ where: { id: id } })
+    );
+  });
 });

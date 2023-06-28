@@ -7,6 +7,30 @@ import { BusinessException } from "../core/business-exception.js";
 
 export class CategoryRepository extends Repository implements ICategoryRepository {
   /**
+   * Saves a Category
+   * @param category
+   */
+  public async create$(category: ICategoryCreateReadWriteDto): Promise<string> {
+    if (category.createdById === null || category.createdById === undefined) {
+      throw new BusinessException("Category", "createdById is not set.");
+    }
+
+    const userCount = await this.db.user.count({ where: { id: category.createdById } });
+    if (userCount !== 1) {
+      throw new BusinessException("User", `User not found. Id: ${category.createdById}`);
+    }
+
+    const result: Category = await this.db.category.create({
+      data: {
+        designation: category.designation,
+        createdById: category.createdById,
+      },
+    });
+
+    return result.id;
+  }
+
+  /**
    * Gets a paginated list of categories
    * @param listRequest List-Request
    */
@@ -43,26 +67,34 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
   }
 
   /**
-   * Saves a Category
-   * @param category
+   * Deletes a category by its id
+   * @param id The id
    */
-  public async create$(category: ICategoryCreateReadWriteDto): Promise<string> {
-    if (category.createdById === null || category.createdById === undefined) {
-      throw new BusinessException("Category", "createdById is not set.");
-    }
-
-    const userCount = await this.db.user.count({ where: { id: category.createdById } });
-    if (userCount !== 1) {
-      throw new BusinessException("User", `User not found. Id: ${category.createdById}`);
-    }
-
-    const result: Category = await this.db.category.create({
-      data: {
-        designation: category.designation,
-        createdById: category.createdById,
+  public async deleteById$(id: string): Promise<void> {
+    // We need to check the existence first. See UserRepository
+    const found = await this.db.category.findUnique({
+      select: {
+        _count: {
+          select: {
+            placeMarks: true
+          }
+        }
+      },
+      where: {
+        id: id
       },
     });
 
-    return result.id;
+    if (found) {
+      if (found._count.placeMarks) {
+        throw new BusinessException("Category", "Category is still in use.");
+      }
+
+      await this.db.category.delete({
+        where: {
+          id: id,
+        },
+      });
+    }
   }
 }

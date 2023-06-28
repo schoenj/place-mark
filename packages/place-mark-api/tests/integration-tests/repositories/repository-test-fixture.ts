@@ -71,6 +71,20 @@ export class RepositoryTestFixture<TRepository extends Repository> {
     compare(expected, result!);
   }
 
+  public async testDeleteById$<T extends { id: string }>(
+      create$: () => Promise<T>,
+      func$: (repository: TRepository, id: string) => Promise<void>,
+      exists$: (id: string) => Promise<boolean>
+  ): Promise<void> {
+    // Should not throw an exception when entry does not exist
+    await func$(this.repository, "646634e51d85e59154d725c5");
+
+    const created = await create$();
+    await func$(this.repository, created.id);
+    const exists = await exists$(created.id);
+    assert.isFalse(exists);
+  }
+
   public async testPaginate$<T extends object, TDto extends object>(
     func$: (repository: TRepository, skip: number | undefined, take: number | undefined) => Promise<IPaginatedListResponse<TDto>>,
     testData: T[],

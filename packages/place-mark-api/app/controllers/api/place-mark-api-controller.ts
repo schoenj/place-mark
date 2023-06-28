@@ -89,4 +89,29 @@ export class PlaceMarkApiController extends Controller {
     }
     return this.h.response().code(404);
   }
+
+  @Route({
+    method: "DELETE",
+    path: "/api/place-mark/{id}",
+    options: {
+      auth: { strategy: "jwt" },
+      tags: ["api", "place-mark"],
+      description: "Deletes a place-mark by its id",
+      validate: {
+        params: idParamSpec,
+        failAction: defaultFailAction,
+      },
+      response: {
+        status: {
+          204: emptySpec,
+          401: emptySpec,
+        },
+      },
+    }
+  })
+  public async deleteById$(): Promise<ResponseObject> {
+    const id = this.request.params.id as string;
+    await this.container.placeMarkRepository.deleteById$(id);
+    return this.h.response().code(204);
+  }
 }

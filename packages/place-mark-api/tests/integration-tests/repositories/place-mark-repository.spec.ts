@@ -160,4 +160,24 @@ suite("PlaceMarkRepository Integration Tests", () => {
       (a, b) => (a.designation > b.designation ? 1 : -1)
     );
   });
+
+  test("deleteById$ should work", async() => {
+    await fixture.testDeleteById$(
+      () => fixture.prisma.placeMark.create({
+        data: {
+          designation: "Tower Bridge",
+          description: "Built between 1886 and 1894, designed by Horace Jones and engineered by John Wolfe Barry.",
+          latitude: 51.50546124603717,
+          longitude: -0.07539259117490767,
+          createdById: user.id,
+          categoryId: category.id,
+        }
+      }),
+      (repo, id) => repo.deleteById$(id),
+      async (id) => {
+        const found = await fixture.prisma.placeMark.count({ where: { id: id}});
+        return !!found;
+      }
+    );
+  });
 });

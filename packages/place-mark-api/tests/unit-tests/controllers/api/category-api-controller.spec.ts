@@ -1,7 +1,10 @@
 import { assert } from "chai";
+import {ServerInjectResponse} from "@hapi/hapi";
 import { UnitTestFixture } from "../unit-test-fixture.js";
 import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto } from "../../../../app/core/dtos/index.js";
-import { ICategoryRepository } from "../../../../app/repositories/interfaces/index.js";
+import {ICategoryRepository } from "../../../../app/repositories/interfaces/index.js";
+import {BusinessException} from "../../../../app/core/business-exception.js";
+import {IValidationResult} from "../../../../app/core/index.js";
 
 suite("CategoryApiController Unit Tests", () => {
   let fixture: UnitTestFixture;
@@ -101,5 +104,33 @@ suite("CategoryApiController Unit Tests", () => {
         container.categoryRepoMock = { getById$: mock } as ICategoryRepository;
       }
     );
+  });
+
+  test("DELETE /api/category/{id} should work", async () => {
+    await fixture.testDeleteById("category", (container, mock) => {
+      container.categoryRepoMock = { deleteById$: mock } as ICategoryRepository;
+    });
+
+    const mockId = "646634e51d85e59154d745c5";
+    fixture.container.categoryRepoMock = {
+      deleteById$(id: string): Promise<void> {
+        assert.equal(id, mockId)
+        throw new BusinessException("TestEntity", "Some Message");
+      }
+    } as ICategoryRepository;
+    const token = fixture.authValidator.add({ id: mockId, email: "test@test.de", admin: false })
+    const response: ServerInjectResponse<IValidationResult[]> = await fixture.inject({
+      method: "DELETE",
+      url: `/api/category/${mockId}`,
+      headers: {
+        authorization: token
+      }
+    });
+    assert.equal(response.statusCode, 400);
+    assert.isNotNull(response.result);
+    assert.isArray(response.result);
+    assert.equal(response.result?.length, 1);
+    assert.equal(response.result?.[0].property, "id");
+    assert.equal(response.result?.[0].message, "Some Message");
   });
 });

@@ -74,4 +74,21 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
       data: data.map((x) => placeMarkReadOnlyQuery.transform(x)),
     };
   }
+
+  /**
+   * Delete a place-mark by its id
+   * @param id The id
+   */
+  async deleteById$(id: string): Promise<void> {
+    // We need to check the existence first. See UserRepository
+    const count = await this.db.placeMark.count({ where: { id: id }});
+
+    if (count) {
+      await this.db.placeMark.delete({
+        where: {
+          id: id
+        }
+      });
+    }
+  }
 }

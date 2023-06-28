@@ -18,4 +18,10 @@ export interface ICategoryRepository {
    * @param listRequest List-Request
    */
   get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<ICategoryReadOnlyDto>>;
+
+  /**
+   * Deletes a category by its id
+   * @param id The id
+   */
+  deleteById$(id: string): Promise<void>;
 }

@@ -134,4 +134,10 @@ suite("PlaceMarkApiController Unit-Tests", () => {
       }
     );
   });
+
+  test("DELETE /api/place-mark/{id} should work", async () => {
+    await fixture.testDeleteById("place-mark", (container, mock) => {
+      container.placeMarkRepoMock = { deleteById$: mock } as IPlaceMarkRepository;
+    });
+  });
 });

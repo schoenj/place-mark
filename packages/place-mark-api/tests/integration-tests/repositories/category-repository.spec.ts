@@ -106,4 +106,43 @@ suite("CategoryRepository Integration Tests", () => {
       (a, b) => (a.designation > b.designation ? 1 : -1)
     );
   });
+
+  test("deleteById$ should work", async() => {
+    const create$ = () => fixture.prisma.category.create({
+      data: {
+        designation: "Bridge",
+        createdById: user.id,
+      }
+    });
+
+    await fixture.testDeleteById$(
+      create$,
+      (repo, id) => repo.deleteById$(id),
+      async (id) => {
+        const found = await fixture.prisma.category.count({ where: { id: id}});
+        return !!found;
+      }
+    );
+
+    const created = await create$();
+    await fixture.prisma.placeMark.create({
+      data: {
+        designation: "Tower Bridge",
+        description: "Built between 1886 and 1894, designed by Horace Jones and engineered by John Wolfe Barry.",
+        latitude: 51.50546124603717,
+        longitude: -0.07539259117490767,
+        createdById: user.id,
+        categoryId: created.id,
+      }
+    });
+    try{
+      await fixture.repository.deleteById$(created.id);
+      assert.fail("Should have thrown an exception")
+    } catch (ex) {
+      assert.instanceOf(ex, BusinessException);
+      const bEx = ex as BusinessException;
+      assert.equal(bEx.entity, "Category");
+      assert.include(bEx.message, "in use");
+    }
+  });
 });

@@ -18,4 +18,10 @@ export interface IPlaceMarkRepository {
    * @param listRequest List-Request
    */
   get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IPlaceMarkReadOnlyDto>>;
+
+  /**
+   * Delete a place-mark by its id
+   * @param id The id
+   */
+  deleteById$(id: string): Promise<void>;
 }
