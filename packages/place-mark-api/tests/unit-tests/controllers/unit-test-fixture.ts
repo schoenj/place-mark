@@ -92,12 +92,6 @@ export class UnitTestFixture extends TestFixture {
     assert.equal(response.result, mock);
   }
 
-  public async testUpdate$<T extends { id: string }>(
-      create$: () => Promise<T>
-  ): Promise<void> {
-
-  }
-
   public async testDeleteById(path: string, setMock: (container: ContainerMock, mockFunc: (id: string) => Promise<void>) => void): Promise<void> {
     const mockId = "646634e51d85e59154d745c5";
     let counter = 0;

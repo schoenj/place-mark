@@ -3,7 +3,7 @@ import { assert } from "chai";
 import { PlaceMarkRepository } from "../../../app/repositories/index.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
-import {ICategoryReadWriteDto, IPlaceMarkReadOnlyDto, IPlaceMarkReadWriteDto} from "../../../app/core/dtos/index.js";
+import { IPlaceMarkReadOnlyDto, IPlaceMarkReadWriteDto} from "../../../app/core/dtos/index.js";
 import { BusinessException } from "../../../app/core/business-exception.js";
 
 suite("PlaceMarkRepository Integration Tests", () => {

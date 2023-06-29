@@ -5,7 +5,6 @@ import { ITestFixtureConfig, TestFixture } from "../../test-fixture.js";
 import { IContainer } from "../../../app/dependencies/interfaces/index.js";
 import { Container } from "../../../app/dependencies/index.js";
 import { IAuthResultDto, IPaginatedListResponse } from "../../../app/core/dtos/index.js";
-import {testUser} from "../../fixtures.js";
 
 export class IntegrationTestFixture extends TestFixture {
   private readonly _prisma: PrismaClient;
