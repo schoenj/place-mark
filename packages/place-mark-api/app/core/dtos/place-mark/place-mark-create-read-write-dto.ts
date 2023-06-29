@@ -1,8 +1,8 @@
 export interface IPlaceMarkCreateReadWriteDto {
   designation: string;
-  description?: string | null;
+  description: string | null | undefined;
   latitude: number;
   longitude: number;
   categoryId: string;
-  createdById: string | undefined;
+  createdById?: string;
 }

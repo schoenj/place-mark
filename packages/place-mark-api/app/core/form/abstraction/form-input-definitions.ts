@@ -1,3 +1,5 @@
+import { IContainer } from "../../../dependencies/interfaces/index.js";
+
 export type InputTypes = "text" | "email" | "password" | "select" | "number" | "checkbox";
 
 export interface IInputBase {
@@ -20,11 +22,12 @@ export interface ISelectOption {
   selected?: boolean;
 }
 
+export type SelectOptionsLoader = (container: IContainer) => Promise<ISelectOption[]>;
+
 export interface ISelectInput extends IInputBase {
   type: "select";
   selected?: string;
-  multiple?: boolean;
-  options: ISelectOption[];
+  options: ISelectOption[] | SelectOptionsLoader;
   valueType: "number" | "string";
 }
 
@@ -32,6 +35,7 @@ export interface INumberInput extends IInputBase {
   type: "number";
   min?: number;
   max?: number;
+  step?: string;
 }
 
 export interface ICheckbox extends IInputBase {

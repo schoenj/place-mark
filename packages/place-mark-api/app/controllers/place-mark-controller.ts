@@ -1,13 +1,45 @@
 import { ResponseObject } from "@hapi/hapi";
-import { confirmDeleteSpec, Controller, createForm, pagedListFormDefinition, Route } from "../core/index.js";
+import { confirmDeleteSpec, Controller, createForm, createForm$, pagedListFormDefinition, Route } from "../core/index.js";
 import { pagedListRequestSpec } from "../schemas/paged-list-request-spec.js";
 import { createFailAction, pagedToPaginated, paginatedToPaged } from "./utils.js";
 import { PlaceMarkListViewModel } from "../view-models/index.js";
-import { IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
-import { idParamSpec } from "../schemas/index.js";
+import { IConfirmDeleteRequest, IPagedListRequest, IPlaceMarkCreateReadWriteDto } from "../core/dtos/index.js";
+import { idParamSpec, placeMarkCreateReadWriteSpec } from "../schemas/index.js";
 import { ConfirmDeleteViewModel } from "../view-models/general/confirm-delete-view-model.js";
+import { placeMarkCreateFormDefinition } from "../core/form/definitions/place-mark-create-form-definition.js";
+import { PlaceMarkCreateViewModel } from "../view-models/place-mark/place-mark-create-view-model.js";
 
 export class PlaceMarkController extends Controller {
+  @Route({
+    method: "GET",
+    path: "/place-mark/new",
+    options: {
+      auth: { strategy: "session" },
+    },
+  })
+  public async showCreate$(): Promise<ResponseObject> {
+    const form = await createForm$(placeMarkCreateFormDefinition, this.container);
+    return this.render(new PlaceMarkCreateViewModel(form));
+  }
+
+  @Route({
+    method: "POST",
+    path: "/place-mark",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        payload: placeMarkCreateReadWriteSpec,
+        // failAction: ,
+      },
+    },
+  })
+  public async create$(): Promise<ResponseObject> {
+    const category = this.request.payload as IPlaceMarkCreateReadWriteDto;
+    category.createdById = this.user?.id;
+    const id = await this.container.placeMarkRepository.create$(category);
+    return this.h.redirect(`/place-mark/${id}`);
+  }
+
   @Route({
     method: "GET",
     path: "/place-mark",

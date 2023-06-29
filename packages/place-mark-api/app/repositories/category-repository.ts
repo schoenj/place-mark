@@ -1,13 +1,7 @@
 import { Category } from "@prisma/client";
 import { Repository } from "./repository.js";
 import { ICategoryRepository } from "./interfaces/index.js";
-import {
-  ICategoryCreateReadWriteDto,
-  ICategoryReadOnlyDto,
-  ICategoryReadWriteDto,
-  IPaginatedListRequest,
-  IPaginatedListResponse
-} from "../core/dtos/index.js";
+import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, ICategoryReadWriteDto, ILookupDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
 import { categoryReadOnlyQuery, CategoryReadOnlySelectType } from "./queries/category-read-only.js";
 import { BusinessException } from "../core/business-exception.js";
 
@@ -73,6 +67,20 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
   }
 
   /**
+   * Get all categories as lookup
+   */
+  public async getLookup$(): Promise<ILookupDto[]> {
+    const categories = await this.db.category.findMany({
+      select: {
+        id: true,
+        designation: true,
+      },
+    });
+
+    return categories;
+  }
+
+  /**
    * Updates a category
    * @param category The updated category
    */
@@ -88,8 +96,8 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
         id: category.id,
       },
       data: {
-       designation: category.designation
-      }
+        designation: category.designation,
+      },
     });
   }
 
@@ -103,12 +111,12 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
       select: {
         _count: {
           select: {
-            placeMarks: true
-          }
-        }
+            placeMarks: true,
+          },
+        },
       },
       where: {
-        id: id
+        id: id,
       },
     });
 

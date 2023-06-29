@@ -13,6 +13,7 @@ export interface IFormField {
   inputType: string;
   value: unknown;
   placeholder?: string;
+  step?: string;
 }
 
 export function createFormField(field: IInputBase | ITextInput, success: boolean, errors: string[] | null = null, value: unknown = null): IFormField {
@@ -41,5 +42,6 @@ export function createFormField(field: IInputBase | ITextInput, success: boolean
     success: success && !hasErrors,
     error: hasErrors,
     errors: errors || [],
+    step: "step" in field ? field.step : undefined,
   } as IFormField;
 }

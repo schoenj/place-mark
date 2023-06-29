@@ -12,6 +12,19 @@
         required=formField.required
         value=formField.value
     }}
+{{else if (isEqual formField.inputType "number")}}
+    {{> components/input-field
+        fieldName=formField.name
+        max=formField.max
+        min=formField.min
+        value=formField.value
+        description=formField.description
+        required=formField.required
+        inputType=formField.inputType
+        success=formField.success
+        errors=formField.errors
+        step=formField.step
+    }}
 {{else}}
     {{> components/input-field
         fieldName=formField.name

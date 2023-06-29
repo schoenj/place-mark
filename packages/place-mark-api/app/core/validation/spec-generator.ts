@@ -1,5 +1,5 @@
 import Joi, { StringSchema, AnySchema, NumberSchema } from "joi";
-import { KeyOf } from "../utils/types.js";
+import { KeyOf, RequiredKeys } from "../utils/types.js";
 import { FormDefinition, ICheckbox, IInputBase, INumberInput, ISelectInput, ISelectOption, ITextInput } from "../form/index.js";
 
 type AdditionalValidator<T extends AnySchema> = (schema: T) => T;
@@ -15,7 +15,8 @@ function createSelectSpec(def: ISelectInput | IInputBase): AnySchema {
 
   if ("options" in def) {
     if (typeof def.options === "function") {
-      throw new Error("Not implemented!");
+      // In this case we need to check separately
+      return schema;
     }
 
     const values = (def.options as ISelectOption[]).map((x) => x.value);
@@ -73,12 +74,17 @@ function createStringSpec(def: ITextInput | IInputBase, additionalValidator?: St
 }
 
 export function createSpec<T extends object>(formDef: FormDefinition<T>, validators?: Partial<AdditionalValidators<T>>): Joi.ObjectSchema<T> {
-  const properties: Extract<keyof T, string>[] = Object.keys(formDef.fields) as Extract<keyof T, string>[];
+  const properties: RequiredKeys<T>[] = Object.keys(formDef.fields) as RequiredKeys<T>[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const objectSchema: any = {};
 
   // eslint-disable-next-line no-restricted-syntax
   for (const property of properties) {
+    if (!formDef.fields[property]) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
     const def = formDef.fields[property];
 
     let schema: Joi.AnySchema;

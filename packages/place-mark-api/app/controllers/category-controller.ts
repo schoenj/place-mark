@@ -1,13 +1,42 @@
 import { ResponseObject } from "@hapi/hapi";
-import { confirmDeleteSpec, Controller, createForm, pagedListFormDefinition, Route } from "../core/index.js";
+import { categoryCreateFormDefinition, confirmDeleteSpec, Controller, createForm, pagedListFormDefinition, Route } from "../core/index.js";
 import { ConfirmDeleteViewModel } from "../view-models/general/confirm-delete-view-model.js";
-import { idParamSpec } from "../schemas/index.js";
-import { IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
+import { categoryCreateReadWriteSpec, idParamSpec } from "../schemas/index.js";
+import { ICategoryCreateReadWriteDto, IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
 import { pagedListRequestSpec } from "../schemas/paged-list-request-spec.js";
 import { createFailAction, pagedToPaginated, paginatedToPaged } from "./utils.js";
-import { CategoryListViewModel } from "../view-models/index.js";
+import { CategoryCreateViewModel, CategoryListViewModel } from "../view-models/index.js";
 
 export class CategoryController extends Controller {
+  @Route({
+    method: "GET",
+    path: "/category/new",
+    options: {
+      auth: { strategy: "session" },
+    },
+  })
+  public showCreate(): ResponseObject {
+    return this.render(new CategoryCreateViewModel(createForm(categoryCreateFormDefinition)));
+  }
+
+  @Route({
+    method: "POST",
+    path: "/category",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        payload: categoryCreateReadWriteSpec,
+        failAction: createFailAction(categoryCreateFormDefinition, (form) => new CategoryCreateViewModel(form)),
+      },
+    },
+  })
+  public async create$(): Promise<ResponseObject> {
+    const category = this.request.payload as ICategoryCreateReadWriteDto;
+    category.createdById = this.user?.id;
+    const id = await this.container.categoryRepository.create$(category);
+    return this.h.redirect(`/category/${id}`);
+  }
+
   @Route({
     method: "GET",
     path: "/category",

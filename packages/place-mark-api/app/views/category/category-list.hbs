@@ -1,13 +1,16 @@
 <section class="section">
-    <h1 class="title">Categories</h1>
+    <h1 class="title">
+        Categories
+        {{#if admin}}
+            <a class="button is-primary is-small" href="/category/new">
+                New
+            </a>
+        {{/if}}
+    </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
         {{> components/form-field formField=tableForm.fields.perPage }}
         {{> components/page-input page=result.page totalPages=result.totalPages }}
-        <div class="field">
-            <div class="control">
-                <button class="button is-link">Submit</button>
-            </div>
-        </div>
+        {{> components/submit-button designation="Apply" }}
         <table class="table is-striped is-fullwidth">
             <thead>
             <tr>
@@ -25,12 +28,14 @@
                         <td>{{ createdBy.designation }}</td>
                         <td>{{ createdAt }}</td>
                         <td>
-                            <a href="/category/{{id}}/edit">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <a href="/category/{{id}}/delete">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            {{#if admin}}
+                                <a href="/category/{{id}}/edit">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <a href="/category/{{id}}/delete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            {{/if}}
                         </td>
                     </tr>
                 {{/each}}
