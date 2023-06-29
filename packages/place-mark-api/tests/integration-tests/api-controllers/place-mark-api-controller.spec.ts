@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { Category, PlaceMark, User } from "@prisma/client";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
+import { IPlaceMarkReadOnlyDto, IPlaceMarkReadWriteDto } from "../../../app/core/dtos/index.js";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { pad } from "../../utils.js";
@@ -113,6 +113,79 @@ suite("PlaceMarkApiController Integration Tests", () => {
         }),
       "place-mark",
       cmp
+    );
+  });
+
+  test("PUT /api/place-mark should work", async() => {
+    const newCategory = await fixture.prisma.category.create({
+      data: {
+        designation: "New Cat",
+        createdById: user.id
+      }
+    });
+
+    await fixture.testUpdate$(
+        "place-mark",
+        () => fixture.prisma.placeMark.create({
+          data: {
+            designation: "Tower Bridge",
+            description: "240m tall",
+            latitude: 51.5055,
+            longitude: -0.075406,
+            createdById: user.id,
+            categoryId: category.id,
+          }
+        }),
+        {
+          designation: "Tower Bridge (London)",
+          description: "Height: 240m",
+          latitude: 1,
+          longitude: 2,
+          categoryId: newCategory.id
+        } as IPlaceMarkReadWriteDto,
+        async id => (await fixture.prisma.placeMark.findUnique({ where: { id: id }})) as PlaceMark,
+        (created, updated, dto) => {
+          assert.equal(updated.id, created.id);
+          assert.equal(updated.createdAt.toUTCString(), created.createdAt.toUTCString());
+          assert.equal(updated.createdById, created.createdById);
+          assert.equal(updated.designation, dto.designation);
+          assert.equal(updated.description, dto.description);
+          assert.equal(updated.latitude, dto.latitude);
+          assert.equal(updated.longitude, dto.longitude);
+          assert.equal(updated.categoryId, dto.categoryId);
+        },
+        (updated, result: IPlaceMarkReadOnlyDto) => {
+          assert.equal(result.id, updated.id);
+          assert.equal(result.designation, updated.designation);
+          assert.equal(result.description, updated.description);
+          assert.isNotNull(result.category);
+          assert.equal(result.category.id, updated.categoryId);
+          assert.equal(result.category.designation, newCategory.designation);
+          result.createdAt = new Date(result.createdAt);
+          result.updatedAt = new Date(result.updatedAt);
+          assert.equal(result.createdAt.toUTCString(), updated.createdAt.toUTCString());
+          assert.equal(result.updatedAt.toUTCString(), updated.updatedAt.toUTCString());
+          assert.isNotNull(result.createdBy);
+          assert.equal(result.createdBy.id, updated.createdById);
+          assert.equal(result.createdBy.designation, `${user.firstName} ${user.lastName}`);
+        }
+    )
+  });
+
+  test("Delete /api/place-mark/{id} should work", async () => {
+    await fixture.testDeleteById$(
+      () => fixture.prisma.placeMark.create({
+        data: {
+          designation: "Tower Bridge",
+          description: "240m tall",
+          latitude: 51.5055,
+          longitude: -0.075406,
+          createdById: user.id,
+          categoryId: category.id,
+        }
+      }),
+      "place-mark",
+      (id) => fixture.prisma.placeMark.findMany({ where: { id: id } })
     );
   });
 });

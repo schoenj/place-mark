@@ -87,6 +87,49 @@ export class IntegrationTestFixture extends TestFixture {
     cmp(expected, response.data);
   }
 
+  public async testUpdate$<T extends { id: string }, TUpdateDto extends { id: string }, TResult extends object>(
+      path: string,
+      create$: () => Promise<T>,
+      dto: TUpdateDto,
+      find$: (id: string) => Promise<T>,
+      cmpEntity: (created: T, updated: T, dto: TUpdateDto) => void,
+      cmpResult: (updated: T, dto: TResult) => void
+  ): Promise<void> {
+    // Authentication with wrong id
+    try {
+      await this.axios.put(`/api/${path}`, { ...dto, id: "646634e51d85e59154d745c5" });
+      assert.fail("Should have thrown an exception");
+    } catch (err) {
+      assert.isTrue(axios.isAxiosError(err));
+      const axiosError = err as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 401);
+    }
+
+    // Authenticated, but entry does not exist
+    const token = this.authValidator.add({ id: "646634e51d85e59154d745c5", email: "test@test.de", admin: false });
+    const call$ = (payload: TUpdateDto) => this.axios.put(
+        `/api/${path}`,
+        payload,
+        { headers: { Authorization: token } }
+    );
+    try {
+      await call$({ ...dto, id: "646634e51d85e59154d745c5" });
+    } catch (ex) {
+      assert.isTrue(axios.isAxiosError(ex));
+      const axiosError = ex as AxiosError;
+      assert.isNotNull(axiosError);
+      assert.equal(axiosError.response?.status, 404);
+    }
+
+    const created: T = await create$();
+    const response = await call$({ ...dto, id: created.id });
+    assert.equal(response.status, 200);
+    const found = await find$(created.id);
+    cmpEntity(created, found, dto);
+    cmpResult(found, response.data);
+  }
+
   public async testDeleteById$<T extends { id: string }>(create$: () => Promise<T>, path: string, find$: (id: string) => Promise<T[]>): Promise<void> {
     // Authentication with wrong id
     try {

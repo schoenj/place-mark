@@ -2,6 +2,7 @@ import { assert } from "chai";
 import { Prisma, PrismaClient, User } from "@prisma/client";
 import { Repository } from "../../../app/repositories/repository.js";
 import { IPaginatedListResponse } from "../../../app/core/dtos/index.js";
+import {BusinessException} from "../../../app/core/business-exception.js";
 
 export class RepositoryTestFixture<TRepository extends Repository> {
   private static _started = false;
@@ -69,6 +70,44 @@ export class RepositoryTestFixture<TRepository extends Repository> {
     assert.isNotNull(result);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     compare(expected, result!);
+  }
+
+  public async testUpdate$<T extends { id: string }, TDto extends { id: string }>(
+    create$: () => Promise<T>,
+    entity: string,
+    dto: TDto,
+    update$: (repo: TRepository, updateDto: TDto) => Promise<void>,
+    find$: (id: string) => Promise<T | null>,
+    cmp: (created: T, updated: T, dto: TDto) => void
+  ): Promise<void> {
+    try {
+      await update$(this.repository, { ...dto, id: "646634e51d85e59154d725c5"});
+    } catch(ex) {
+      assert.instanceOf(ex, BusinessException);
+      const bEx = ex as BusinessException;
+      assert.equal(bEx.entity, entity);
+      assert.include(bEx.message, "not found");
+    }
+
+    const created = await create$();
+    await update$(this.repository, { ...dto, id: created.id });
+    const found = await find$(created.id);
+    assert.isNotNull(found);
+    cmp(created, found as T, dto);
+  }
+
+  public async testDeleteById$<T extends { id: string }>(
+      create$: () => Promise<T>,
+      func$: (repository: TRepository, id: string) => Promise<void>,
+      exists$: (id: string) => Promise<boolean>
+  ): Promise<void> {
+    // Should not throw an exception when entry does not exist
+    await func$(this.repository, "646634e51d85e59154d725c5");
+
+    const created = await create$();
+    await func$(this.repository, created.id);
+    const exists = await exists$(created.id);
+    assert.isFalse(exists);
   }
 
   public async testPaginate$<T extends object, TDto extends object>(

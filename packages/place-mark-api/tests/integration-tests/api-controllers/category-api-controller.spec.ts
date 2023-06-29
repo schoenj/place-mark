@@ -2,7 +2,7 @@ import { Category, User } from "@prisma/client";
 import { assert } from "chai";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { IntegrationTestFixture } from "./integration-test-fixture.js";
-import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
+import {ICategoryReadOnlyDto, ICategoryReadWriteDto} from "../../../app/core/dtos/index.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { pad } from "../../utils.js";
 
@@ -90,5 +90,47 @@ suite("CategoryApiController Integration Tests", () => {
 
   test("GET /api/category/{id} should work", async () => {
     await fixture.testGetById$(() => fixture.prisma.category.create({ data: { designation: "Tower Bridge", createdById: user.id } }), "category", cmp);
+  });
+
+  test("PUT /api/category should work", async() => {
+    await fixture.testUpdate$(
+        "category",
+        () => fixture.prisma.category.create({
+          data: {
+            designation: "Bridge",
+            createdById: user.id
+          }
+        }),
+        { designation: "New Bridge" } as ICategoryReadWriteDto,
+        async id => (await fixture.prisma.category.findUnique({ where: { id: id }})) as Category,
+        (created, updated, dto) => {
+          assert.equal(updated.id, created.id);
+          assert.equal(updated.createdById, created.createdById);
+          assert.equal(updated.createdAt.toUTCString(), updated.createdAt.toUTCString());
+          assert.equal(updated.designation, dto.designation);
+        },
+        (updated, result: ICategoryReadOnlyDto) => {
+          assert.equal(result.id, updated.id);
+          result.updatedAt = new Date(result.updatedAt);
+          assert.equal(result.updatedAt.toUTCString(), updated.updatedAt.toUTCString());
+          assert.isNotNull(result.createdBy);
+          assert.equal(result.createdBy.id, updated.createdById);
+          assert.equal(result.createdBy.designation, `${user.firstName} ${user.lastName}`);
+          assert.equal(result.designation, updated.designation);
+        }
+    );
+  });
+
+  test("Delete /api/category/{id} should work", async () => {
+    await fixture.testDeleteById$(
+      () => fixture.prisma.category.create({
+        data: {
+          designation: "Bridge",
+          createdById: user.id,
+        }
+      }),
+      "category",
+      (id) => fixture.prisma.category.findMany({ where: { id: id } })
+    );
   });
 });
