@@ -32,8 +32,8 @@ function createFormInternal<T extends object>(formDef: FormDefinition<T>, data: 
   return result;
 }
 
-export function createForm<T extends object>(formDef: FormDefinition<T>): IForm<T> {
-  return createFormInternal(formDef, null, false, null);
+export function createForm<T extends object>(formDef: FormDefinition<T>, data?: T): IForm<T> {
+  return createFormInternal(formDef, data || null, false, null);
 }
 
 export async function createForm$<T extends object>(formDef: FormDefinition<T>, container: IContainer): Promise<IForm<T>> {

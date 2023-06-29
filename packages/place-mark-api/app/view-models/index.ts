@@ -4,3 +4,5 @@ export * from "./place-mark/place-mark-list-view-model.js";
 export * from "./category/category-list-view-model.js";
 export * from "./index-view-model.js";
 export * from "./category/category-create-view-model.js";
+export * from "./place-mark/place-mark-create-view-model.js";
+export * from "./category/category-edit-view-model.js";

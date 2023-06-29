@@ -1,11 +1,11 @@
 import { ResponseObject } from "@hapi/hapi";
-import { categoryCreateFormDefinition, confirmDeleteSpec, Controller, createForm, pagedListFormDefinition, Route } from "../core/index.js";
+import { categoryCreateFormDefinition, categoryEditFormDefinition, confirmDeleteSpec, Controller, createForm, pagedListFormDefinition, Route } from "../core/index.js";
 import { ConfirmDeleteViewModel } from "../view-models/general/confirm-delete-view-model.js";
-import { categoryCreateReadWriteSpec, idParamSpec } from "../schemas/index.js";
-import { ICategoryCreateReadWriteDto, IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
+import { categoryCreateReadWriteSpec, categoryReadWriteSpec, idParamSpec } from "../schemas/index.js";
+import { ICategoryCreateReadWriteDto, ICategoryReadWriteDto, IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
 import { pagedListRequestSpec } from "../schemas/paged-list-request-spec.js";
 import { createFailAction, pagedToPaginated, paginatedToPaged } from "./utils.js";
-import { CategoryCreateViewModel, CategoryListViewModel } from "../view-models/index.js";
+import { CategoryCreateViewModel, CategoryEditViewModel, CategoryListViewModel } from "../view-models/index.js";
 
 export class CategoryController extends Controller {
   @Route({
@@ -35,6 +35,39 @@ export class CategoryController extends Controller {
     category.createdById = this.user?.id;
     const id = await this.container.categoryRepository.create$(category);
     return this.h.redirect(`/category/${id}`);
+  }
+
+  @Route({
+    method: "GET",
+    path: "/category/{id}/edit",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        params: idParamSpec,
+      },
+    },
+  })
+  public async showUpdate$(): Promise<ResponseObject> {
+    const id = this.request.params.id as string;
+    const category = await this.container.categoryRepository.getById$(id);
+    const form = createForm(categoryEditFormDefinition, category as ICategoryReadWriteDto);
+    return this.render(new CategoryEditViewModel(id, form));
+  }
+
+  @Route({
+    method: "POST",
+    path: "/category/edit",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        payload: categoryReadWriteSpec,
+      },
+    },
+  })
+  public async update$(): Promise<ResponseObject> {
+    const category = this.request.payload as ICategoryReadWriteDto;
+    await this.container.categoryRepository.update$(category);
+    return this.h.redirect(`/category/${category.id}`);
   }
 
   @Route({
