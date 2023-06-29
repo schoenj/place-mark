@@ -8,7 +8,7 @@
         {{/if}}
     </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
-        <div style="display: flex; gap: 1em">
+        <div class="table-form">
             {{> components/form-field formField=tableForm.fields.perPage }}
             {{> components/page-input page=result.page totalPages=result.totalPages }}
             {{> components/submit-button designation="Apply" }}
@@ -18,7 +18,7 @@
             <tr>
                 <th>Designation</th>
                 <th>Created By</th>
-                <th>Created At</th>
+                <th>Created At/UpdatedAt</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -28,7 +28,7 @@
                     <tr>
                         <td>{{ designation }}</td>
                         <td>{{ createdBy.designation }}</td>
-                        <td>{{ createdAt }}</td>
+                        <td>{{dateFormat createdAt}}<br>{{dateFormat updatedAt}}</td>
                         <td>
                             {{#if admin}}
                                 <a href="/category/{{id}}/edit">

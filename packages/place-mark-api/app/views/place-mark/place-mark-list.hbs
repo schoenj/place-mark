@@ -6,7 +6,7 @@
         </a>
     </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
-        <div style="display: flex; gap: 1em">
+        <div class="table-form">
             {{> components/form-field formField=tableForm.fields.perPage }}
             {{> components/page-input page=result.page totalPages=result.totalPages }}
             {{> components/submit-button designation="Apply" }}
@@ -18,7 +18,7 @@
                     <th>Coordinates</th>
                     <th>Description</th>
                     <th>Created By</th>
-                    <th>Created At</th>
+                    <th>CreatedAt/UpdatedAt</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -33,7 +33,7 @@
                             </td>
                             <td>{{ description }}</td>
                             <td>{{ createdBy.designation }}</td>
-                            <td>{{ createdAt }}</td>
+                            <td>{{dateFormat createdAt}}<br>{{dateFormat updatedAt}}</td>
                             <td>
                                 <a href="/place-mark/{{id}}/">
                                     <i class="fas fa-eye"></i>

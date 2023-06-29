@@ -3,7 +3,7 @@
         Users
     </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
-        <div style="display: flex; gap: 1em">
+        <div class="table-form">
             {{> components/form-field formField=tableForm.fields.perPage }}
             {{> components/page-input page=result.page totalPages=result.totalPages }}
             {{> components/submit-button designation="Apply" }}
@@ -14,7 +14,7 @@
                 <th>Firstname</th>
                 <th>Lastname</th>
                 <th>Email</th>
-                <th>Created At</th>
+                <th>CreatedAt/UpdatedAt</th>
             </tr>
             </thead>
             <tbody>
@@ -24,7 +24,7 @@
                         <td>{{ firstName }}</td>
                         <td>{{ lastName }}</td>
                         <td>{{ email }}</td>
-                        <td>{{ createdAt }}</td>
+                        <td>{{dateFormat createdAt}}<br>{{dateFormat updatedAt}}</td>
                     </tr>
                 {{/each}}
             {{else}}

@@ -27,6 +27,8 @@ insecureHandlebars.registerHelper("or", (value1, value2) => value1 || value2);
 
 insecureHandlebars.registerHelper("isEqual", (value1, value2) => value1 === value2);
 
+insecureHandlebars.registerHelper("dateFormat", (value: Date) => new insecureHandlebars.SafeString(`${value.toLocaleDateString()} ${value.toLocaleTimeString()}`));
+
 /**
  * Registers Handlebars and integrates with @hapi/vision into a @hapi server
  * @param server The server that should be configured
