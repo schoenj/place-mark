@@ -1,5 +1,5 @@
 import { FormDefinition, ISelectOption } from "../abstraction/index.js";
-import { IConfirmDeleteRequest, IPagedListRequest } from "../../dtos/index.js";
+import { IPagedListRequest } from "../../dtos/index.js";
 
 export const defaultPerPageOptions: ISelectOption[] = [
   { value: "5", designation: "5" },
@@ -9,39 +9,25 @@ export const defaultPerPageOptions: ISelectOption[] = [
   { value: "100", designation: "100" },
 ];
 
-export function createConfirmDeleteFormDefinition(action: string): FormDefinition<IConfirmDeleteRequest> {
+export function createPagedListFormDefinition(action: string): FormDefinition<IPagedListRequest> {
   return {
     action: action,
-    method: "POST",
+    method: "GET",
     fields: {
-      confirm: {
-        type: "checkbox",
-        description: "Confirm deletion",
-        value: "confirmed",
-        name: "confirm",
-        required: true,
+      perPage: {
+        type: "select",
+        required: false,
+        name: "perPage",
+        description: "Per Page",
+        options: defaultPerPageOptions,
+      },
+      page: {
+        type: "number",
+        required: false,
+        name: "page",
+        description: "Page",
+        min: 1,
       },
     },
   };
 }
-
-export const pagedListFormDefinition: FormDefinition<IPagedListRequest> = {
-  action: "/place-mark",
-  method: "GET",
-  fields: {
-    perPage: {
-      type: "select",
-      required: false,
-      name: "perPage",
-      description: "Per Page",
-      options: defaultPerPageOptions,
-    },
-    page: {
-      type: "number",
-      required: false,
-      name: "page",
-      description: "Page",
-      min: 1,
-    },
-  },
-};

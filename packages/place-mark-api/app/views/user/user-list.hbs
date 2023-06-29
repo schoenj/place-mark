@@ -1,11 +1,6 @@
 <section class="section">
     <h1 class="title">
-        Categories
-        {{#if admin}}
-            <a class="button is-primary is-small" href="/category/new">
-                New
-            </a>
-        {{/if}}
+        Users
     </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
         <div style="display: flex; gap: 1em">
@@ -16,29 +11,20 @@
         <table class="table is-striped is-fullwidth">
             <thead>
             <tr>
-                <th>Designation</th>
-                <th>Created By</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
                 <th>Created At</th>
-                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             {{#if result.data.length}}
                 {{#each result.data}}
                     <tr>
-                        <td>{{ designation }}</td>
-                        <td>{{ createdBy.designation }}</td>
+                        <td>{{ firstName }}</td>
+                        <td>{{ lastName }}</td>
+                        <td>{{ email }}</td>
                         <td>{{ createdAt }}</td>
-                        <td>
-                            {{#if admin}}
-                                <a href="/category/{{id}}/edit">
-                                    <i class="fas fa-pen"></i>
-                                </a>
-                                <a href="/category/{{id}}/delete">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            {{/if}}
-                        </td>
                     </tr>
                 {{/each}}
             {{else}}

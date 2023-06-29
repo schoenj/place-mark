@@ -1,5 +1,5 @@
 import { ResponseObject } from "@hapi/hapi";
-import { categoryCreateFormDefinition, categoryEditFormDefinition, confirmDeleteSpec, Controller, createForm, pagedListFormDefinition, Route } from "../core/index.js";
+import { categoryCreateFormDefinition, categoryEditFormDefinition, confirmDeleteSpec, Controller, createForm, createPagedListFormDefinition, Route } from "../core/index.js";
 import { ConfirmDeleteViewModel } from "../view-models/general/confirm-delete-view-model.js";
 import { categoryCreateReadWriteSpec, categoryReadWriteSpec, idParamSpec } from "../schemas/index.js";
 import { ICategoryCreateReadWriteDto, ICategoryReadWriteDto, IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
@@ -79,7 +79,7 @@ export class CategoryController extends Controller {
         query: pagedListRequestSpec,
         failAction: async (request) => {
           const result = await request.container.categoryRepository.get$(pagedToPaginated());
-          return createFailAction(pagedListFormDefinition, (form) => new CategoryListViewModel(form, paginatedToPaged(result, request.query)));
+          return createFailAction(createPagedListFormDefinition("/category"), (form) => new CategoryListViewModel(form, paginatedToPaged(result, request.query)));
         },
       },
     },
@@ -87,7 +87,7 @@ export class CategoryController extends Controller {
   public async get$(): Promise<ResponseObject> {
     const pagedRequest = this.request.query as IPagedListRequest;
     const result = await this.container.categoryRepository.get$(pagedToPaginated(pagedRequest));
-    const model = new CategoryListViewModel(createForm(pagedListFormDefinition), paginatedToPaged(result, pagedRequest));
+    const model = new CategoryListViewModel(createForm(createPagedListFormDefinition("/category")), paginatedToPaged(result, pagedRequest));
     return this.render(model);
   }
 

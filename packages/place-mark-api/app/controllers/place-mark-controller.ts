@@ -1,5 +1,5 @@
 import { ResponseObject } from "@hapi/hapi";
-import { confirmDeleteSpec, Controller, createForm, createForm$, pagedListFormDefinition, placeMarkCreateFormDefinition, Route } from "../core/index.js";
+import { confirmDeleteSpec, Controller, createForm, createForm$, createPagedListFormDefinition, placeMarkCreateFormDefinition, Route } from "../core/index.js";
 import { pagedListRequestSpec } from "../schemas/paged-list-request-spec.js";
 import { createFailAction, pagedToPaginated, paginatedToPaged } from "./utils.js";
 import { PlaceMarkCreateViewModel, PlaceMarkEditViewModel, PlaceMarkListViewModel } from "../view-models/index.js";
@@ -81,7 +81,7 @@ export class PlaceMarkController extends Controller {
         query: pagedListRequestSpec,
         failAction: async (request) => {
           const result = await request.container.placeMarkRepository.get$(pagedToPaginated());
-          return createFailAction(pagedListFormDefinition, (form) => new PlaceMarkListViewModel(form, paginatedToPaged(result, request.query)));
+          return createFailAction(createPagedListFormDefinition("/place-mark"), (form) => new PlaceMarkListViewModel(form, paginatedToPaged(result, request.query)));
         },
       },
     },
@@ -89,7 +89,7 @@ export class PlaceMarkController extends Controller {
   public async get$(): Promise<ResponseObject> {
     const pagedRequest = this.request.query as IPagedListRequest;
     const result = await this.container.placeMarkRepository.get$(pagedToPaginated(pagedRequest));
-    const model = new PlaceMarkListViewModel(createForm(pagedListFormDefinition), paginatedToPaged(result, pagedRequest));
+    const model = new PlaceMarkListViewModel(createForm(createPagedListFormDefinition("/place-mark")), paginatedToPaged(result, pagedRequest));
     return this.render(model);
   }
 

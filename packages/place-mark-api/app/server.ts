@@ -17,6 +17,7 @@ import {
   CategoryController,
 } from "./controllers/index.js";
 import { IContainer } from "./dependencies/interfaces/index.js";
+import { UserController } from "./controllers/user-controller.js";
 
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
@@ -68,6 +69,7 @@ export async function createServer$(config: IApplicationConfig, containerFactory
   registerController(server, AccountController, () => new AccountController());
   registerController(server, PlaceMarkController, () => new PlaceMarkController());
   registerController(server, CategoryController, () => new CategoryController());
+  registerController(server, UserController, () => new UserController());
 
   registerController(server, AuthApiController, () => new AuthApiController());
   registerController(server, UserApiController, () => new UserApiController());

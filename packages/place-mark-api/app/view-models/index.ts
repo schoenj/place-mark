@@ -7,3 +7,4 @@ export * from "./category/category-create-view-model.js";
 export * from "./place-mark/place-mark-create-view-model.js";
 export * from "./category/category-edit-view-model.js";
 export * from "./place-mark/place-mark-edit-view-model.js";
+export * from "./user/user-list-view-model.js";

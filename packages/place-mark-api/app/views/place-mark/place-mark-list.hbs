@@ -6,9 +6,11 @@
         </a>
     </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
-        {{> components/form-field formField=tableForm.fields.perPage }}
-        {{> components/page-input page=result.page totalPages=result.totalPages }}
-        {{> components/submit-button designation="Apply" }}
+        <div style="display: flex; gap: 1em">
+            {{> components/form-field formField=tableForm.fields.perPage }}
+            {{> components/page-input page=result.page totalPages=result.totalPages }}
+            {{> components/submit-button designation="Apply" }}
+        </div>
         <table class="table is-striped is-fullwidth">
             <thead>
                 <tr>
