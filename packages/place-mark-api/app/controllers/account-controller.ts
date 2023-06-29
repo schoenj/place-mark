@@ -92,7 +92,7 @@ export class AccountController extends Controller {
       return this.h.view(model.view, model).code(400);
     }
 
-    this.request.cookieAuth.set({ id: result.user });
+    this.request.cookieAuth.set({ id: result.user.id });
     return this.h.redirect("/");
   }
 

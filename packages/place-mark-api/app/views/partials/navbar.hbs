@@ -1,0 +1,48 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            Place-Mark
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="main-nav">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="main-nav" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="/">
+                Home
+            </a>
+
+            <a class="navbar-item" href="/place-mark">
+                Place-Marks
+            </a>
+
+            <a class="navbar-item" href="/category">
+                Categories
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    {{#if authenticated}}
+                        <a class="button is-light" href="/account/logout">
+                            Logout
+                        </a>
+                    {{else}}
+                        <a class="button is-primary" href="/account/sign-up">
+                            <strong>Sign up</strong>
+                        </a>
+                        <a class="button is-light" href="/account/sign-in">
+                            Log in
+                        </a>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

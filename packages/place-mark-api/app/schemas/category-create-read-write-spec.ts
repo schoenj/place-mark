@@ -4,4 +4,4 @@ import { designationSpec } from "./common.js";
 
 export const categoryCreateReadWriteSpec: Joi.ObjectSchema<ICategoryCreateReadWriteDto> = Joi.object({
   designation: designationSpec,
-});
+}).label("CategoryCreateReadWriteDto");

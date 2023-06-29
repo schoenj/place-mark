@@ -8,4 +8,4 @@ export const placeMarkCreateReadWriteSpec: Joi.ObjectSchema<IPlaceMarkCreateRead
   latitude: latitudeSpec,
   longitude: longitudeSpec,
   categoryId: idSpec,
-});
+}).label("PlaceMarkCreateReadWriteDto");
