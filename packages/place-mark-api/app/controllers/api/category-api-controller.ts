@@ -1,8 +1,21 @@
 import { ResponseObject } from "@hapi/hapi";
 import {Controller, IValidationResult, Route} from "../../core/index.js";
-import { categoryCreateReadWriteSpec, categoryReadOnlySpec, emptySpec, idParamSpec, paginatedListRequestSpec, validationResultSpec } from "../../schemas/index.js";
+import {
+  categoryCreateReadWriteSpec,
+  categoryReadOnlySpec,
+  categoryReadWriteSpec,
+  emptySpec,
+  idParamSpec,
+  paginatedListRequestSpec,
+  validationResultSpec
+} from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
-import { ICategoryCreateReadWriteDto, IPaginatedListRequest } from "../../core/dtos/index.js";
+import {
+  ICategoryCreateReadWriteDto,
+  ICategoryReadOnlyDto,
+  ICategoryReadWriteDto,
+  IPaginatedListRequest
+} from "../../core/dtos/index.js";
 import {BusinessException} from "../../core/business-exception.js";
 
 export class CategoryApiController extends Controller {
@@ -90,6 +103,41 @@ export class CategoryApiController extends Controller {
       return this.h.response(result).code(200);
     }
     return this.h.response().code(404);
+  }
+
+  @Route({
+    method: "PUT",
+    path: "/api/category",
+    options: {
+      auth: { strategy: "jwt" },
+      tags: ["api", "category"],
+      description: "Updates a category",
+      validate: {
+        payload: categoryReadWriteSpec,
+        failAction: defaultFailAction
+      },
+      response: {
+        status: {
+          200: categoryReadOnlySpec,
+          404: emptySpec,
+          401: emptySpec
+        }
+      }
+    }
+  })
+  public async updateById$(): Promise<ResponseObject> {
+    const category = this.request.payload as ICategoryReadWriteDto;
+    try {
+      await this.container.categoryRepository.update$(category);
+    } catch(ex) {
+      if (ex instanceof BusinessException) {
+        return this.h.response().code(404);
+      }
+
+      throw ex;
+    }
+    const result = await this.container.categoryRepository.getById$(category.id);
+    return this.h.response(result as ICategoryReadOnlyDto);
   }
 
   @Route({

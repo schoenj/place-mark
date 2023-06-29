@@ -1,7 +1,13 @@
 import { Category } from "@prisma/client";
 import { Repository } from "./repository.js";
 import { ICategoryRepository } from "./interfaces/index.js";
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
+import {
+  ICategoryCreateReadWriteDto,
+  ICategoryReadOnlyDto,
+  ICategoryReadWriteDto,
+  IPaginatedListRequest,
+  IPaginatedListResponse
+} from "../core/dtos/index.js";
 import { categoryReadOnlyQuery, CategoryReadOnlySelectType } from "./queries/category-read-only.js";
 import { BusinessException } from "../core/business-exception.js";
 
@@ -64,6 +70,27 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
     });
 
     return category ? categoryReadOnlyQuery.transform(category) : null;
+  }
+
+  /**
+   * Updates a category
+   * @param category The updated category
+   */
+  public async update$(category: ICategoryReadWriteDto): Promise<void> {
+    const count = await this.db.category.count({ where: { id: category.id } });
+
+    if (!count) {
+      throw new BusinessException("Category", `Category not found. Id: ${category.id}`);
+    }
+
+    await this.db.category.update({
+      where: {
+        id: category.id,
+      },
+      data: {
+       designation: category.designation
+      }
+    });
   }
 
   /**

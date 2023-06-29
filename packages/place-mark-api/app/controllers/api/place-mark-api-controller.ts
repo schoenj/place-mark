@@ -1,8 +1,21 @@
 import { ResponseObject } from "@hapi/hapi";
 import { Controller, Route } from "../../core/index.js";
-import { emptySpec, idParamSpec, paginatedListRequestSpec, placeMarkCreateReadWriteSpec, placeMarkReadOnlySpec, validationResultSpec } from "../../schemas/index.js";
+import {
+  emptySpec,
+  idParamSpec,
+  paginatedListRequestSpec,
+  placeMarkCreateReadWriteSpec,
+  placeMarkReadOnlySpec, placeMarkReadWriteSpec,
+  validationResultSpec
+} from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
-import { IPaginatedListRequest, IPlaceMarkCreateReadWriteDto } from "../../core/dtos/index.js";
+import {
+  IPaginatedListRequest,
+  IPlaceMarkCreateReadWriteDto,
+  IPlaceMarkReadOnlyDto,
+  IPlaceMarkReadWriteDto
+} from "../../core/dtos/index.js";
+import {BusinessException} from "../../core/business-exception.js";
 
 export class PlaceMarkApiController extends Controller {
   @Route({
@@ -88,6 +101,41 @@ export class PlaceMarkApiController extends Controller {
       return this.h.response(result).code(200);
     }
     return this.h.response().code(404);
+  }
+
+  @Route({
+    method: "PUT",
+    path: "/api/place-mark",
+    options: {
+      auth: { strategy: "jwt" },
+      tags: ["api", "place-mark"],
+      description: "Updates a place-mark",
+      validate: {
+        payload: placeMarkReadWriteSpec,
+        failAction: defaultFailAction
+      },
+      response: {
+        status: {
+          200: placeMarkReadOnlySpec,
+          404: emptySpec,
+          401: emptySpec
+        }
+      }
+    }
+  })
+  public async updateById$(): Promise<ResponseObject> {
+    const placeMark = this.request.payload as IPlaceMarkReadWriteDto;
+    try {
+      await this.container.placeMarkRepository.update$(placeMark);
+    } catch(ex) {
+      if (ex instanceof BusinessException) {
+        return this.h.response().code(404);
+      }
+
+      throw ex;
+    }
+    const result = await this.container.placeMarkRepository.getById$(placeMark.id);
+    return this.h.response(result as IPlaceMarkReadOnlyDto);
   }
 
   @Route({

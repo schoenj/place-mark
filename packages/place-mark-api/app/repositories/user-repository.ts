@@ -6,10 +6,27 @@ import { IUserRepository } from "./interfaces/index.js";
 
 export class UserRepository extends Repository implements IUserRepository {
   /**
+   * Creates a new user
+   * @param user The user to create
+   */
+  public async create$(user: ICreateUserReadWriteDto): Promise<User> {
+    const created: User = await this.db.user.create({
+      data: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email.toLowerCase(),
+        password: user.password,
+      },
+    });
+
+    return created;
+  }
+
+  /**
    * Loads a paginated list of users
    * @param listRequest The List-Request
    */
-  async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>> {
+  public async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>> {
     const total = await this.db.user.count();
     const data = await this.db.user.findMany({
       select: userReadOnlyQuery.select,
@@ -35,7 +52,7 @@ export class UserRepository extends Repository implements IUserRepository {
    * Gets a user by its email address
    * @param email The email address
    */
-  async getByEmail$(email: string): Promise<User | null> {
+  public async getByEmail$(email: string): Promise<User | null> {
     const user: User | null = await this.db.user.findUnique({
       where: {
         // findUnique does not support the insensitive mode
@@ -50,7 +67,7 @@ export class UserRepository extends Repository implements IUserRepository {
    * Gets a user by its id
    * @param id The id
    */
-  async getById$(id: string): Promise<IUserReadOnlyDto | null> {
+  public async getById$(id: string): Promise<IUserReadOnlyDto | null> {
     const user: UserReadOnlySelectType | null = await this.db.user.findUnique({
       where: {
         id: id,
@@ -62,27 +79,10 @@ export class UserRepository extends Repository implements IUserRepository {
   }
 
   /**
-   * Creates a new user
-   * @param user The user to create
-   */
-  async create$(user: ICreateUserReadWriteDto): Promise<User> {
-    const created: User = await this.db.user.create({
-      data: {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email.toLowerCase(),
-        password: user.password,
-      },
-    });
-
-    return created;
-  }
-
-  /**
    * Deletes a user by its id
    * @param id The id
    */
-  async deleteById$(id: string): Promise<void> {
+  public async deleteById$(id: string): Promise<void> {
     // See https://github.com/prisma/prisma/issues/4072
     // tldr:
     // - delete throws an error, if the object is not found

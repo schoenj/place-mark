@@ -3,7 +3,7 @@ import { assert } from "chai";
 import { CategoryRepository } from "../../../app/repositories/index.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
-import { ICategoryReadOnlyDto } from "../../../app/core/dtos/index.js";
+import {ICategoryReadOnlyDto, ICategoryReadWriteDto} from "../../../app/core/dtos/index.js";
 import { BusinessException } from "../../../app/core/business-exception.js";
 
 suite("CategoryRepository Integration Tests", () => {
@@ -105,6 +105,22 @@ suite("CategoryRepository Integration Tests", () => {
       cmp,
       (a, b) => (a.designation > b.designation ? 1 : -1)
     );
+  });
+
+  test("update$ should work", async() => {
+    await fixture.testUpdate$(
+      () => fixture.prisma.category.create({ data: { createdById: user.id, designation: "Bridge" }}),
+      "Category",
+      { designation: "Bridge New" } as ICategoryReadWriteDto,
+      (repo, dto) => repo.update$(dto),
+      id => fixture.prisma.category.findUnique({ where: { id: id }}),
+      (created, updated, dto) => {
+        assert.equal(updated.id, created.id);
+        assert.equal(updated.createdById, created.createdById);
+        assert.equal(updated.createdAt.toUTCString(), created.createdAt.toUTCString());
+        assert.equal(updated.designation, dto.designation);
+      }
+    )
   });
 
   test("deleteById$ should work", async() => {

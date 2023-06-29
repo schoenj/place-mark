@@ -1,4 +1,10 @@
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../../core/dtos/index.js";
+import {
+  ICategoryCreateReadWriteDto,
+  ICategoryReadOnlyDto,
+  ICategoryReadWriteDto,
+  IPaginatedListRequest,
+  IPaginatedListResponse
+} from "../../core/dtos/index.js";
 
 export interface ICategoryRepository {
   /**
@@ -18,6 +24,12 @@ export interface ICategoryRepository {
    * @param listRequest List-Request
    */
   get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<ICategoryReadOnlyDto>>;
+
+  /**
+   * Updates a category
+   * @param category The updated category
+   */
+  update$(category: ICategoryReadWriteDto): Promise<void>;
 
   /**
    * Deletes a category by its id

@@ -3,7 +3,7 @@ import { assert } from "chai";
 import { PlaceMarkRepository } from "../../../app/repositories/index.js";
 import { cookieMonsterUser } from "../../fixtures.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
-import { IPlaceMarkReadOnlyDto } from "../../../app/core/dtos/index.js";
+import {ICategoryReadWriteDto, IPlaceMarkReadOnlyDto, IPlaceMarkReadWriteDto} from "../../../app/core/dtos/index.js";
 import { BusinessException } from "../../../app/core/business-exception.js";
 
 suite("PlaceMarkRepository Integration Tests", () => {
@@ -159,6 +159,48 @@ suite("PlaceMarkRepository Integration Tests", () => {
       cmp,
       (a, b) => (a.designation > b.designation ? 1 : -1)
     );
+  });
+
+  test("update$ should work", async() => {
+    const newCategory = await fixture.prisma.category.create({
+      data: {
+        designation: "new",
+        createdById: user.id
+      }
+    });
+
+    await fixture.testUpdate$(
+        () => fixture.prisma.placeMark.create({
+          data: {
+            designation: "Tower Bridge",
+            description: "Built between 1886 and 1894, designed by Horace Jones and engineered by John Wolfe Barry.",
+            latitude: 51.50546124603717,
+            longitude: -0.07539259117490767,
+            createdById: user.id,
+            categoryId: category.id,
+          }
+        }),
+        "PlaceMark",
+        {
+          designation: "Tower Bridge New",
+          description: "Build between 1886 and 1894.",
+          latitude: 1,
+          longitude: 3,
+          categoryId: newCategory.id
+        } as IPlaceMarkReadWriteDto,
+        (repo, dto) => repo.update$(dto),
+        id => fixture.prisma.placeMark.findUnique({ where: { id: id }}),
+        (created, updated, dto) => {
+          assert.equal(updated.id, created.id);
+          assert.equal(updated.designation, dto.designation);
+          assert.equal(updated.description, dto.description);
+          assert.equal(updated.latitude, dto.latitude);
+          assert.equal(updated.longitude, dto.longitude);
+          assert.equal(updated.categoryId, dto.categoryId);
+          assert.equal(updated.createdById, created.createdById);
+          assert.equal(updated.createdAt.toUTCString(), created.createdAt.toUTCString());
+        }
+    )
   });
 
   test("deleteById$ should work", async() => {
