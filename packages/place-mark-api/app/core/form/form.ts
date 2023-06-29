@@ -36,7 +36,7 @@ export function createForm<T extends object>(formDef: FormDefinition<T>, data?: 
   return createFormInternal(formDef, data || null, false, null);
 }
 
-export async function createForm$<T extends object>(formDef: FormDefinition<T>, container: IContainer): Promise<IForm<T>> {
+export async function createForm$<T extends object>(formDef: FormDefinition<T>, container: IContainer, data?: T): Promise<IForm<T>> {
   // eslint-disable-next-line no-restricted-syntax
   for (const fieldName of Object.keys(formDef.fields) as KeyOf<T>[]) {
     const field = formDef.fields[fieldName] as IInputBase;
@@ -49,7 +49,7 @@ export async function createForm$<T extends object>(formDef: FormDefinition<T>, 
     }
   }
 
-  return createForm(formDef);
+  return createForm(formDef, data);
 }
 
 export function createFailedForm<T extends object>(formDef: FormDefinition<T>, data: T, errors: ValidationErrorItem[]): IForm<T> {

@@ -1,4 +1,4 @@
-import { INumberInput, ITextInput } from "./abstraction/index.js";
+import { INumberInput, ISelectInput, ITextInput } from "./abstraction/index.js";
 
 export const firstNameInputFieldDef: ITextInput = {
   type: "text",
@@ -79,4 +79,15 @@ export const longitudeInputFieldDef: INumberInput = {
   min: -180,
   max: 180,
   step: ".0000001",
+};
+
+export const categoryInputFieldDef: ISelectInput = {
+  type: "select",
+  name: "categoryId",
+  description: "Category",
+  valueType: "string",
+  options: async (container) => {
+    const categories = await container.categoryRepository.getLookup$();
+    return categories.map((x) => ({ value: x.id, designation: x.designation }));
+  },
 };
