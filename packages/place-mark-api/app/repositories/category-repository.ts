@@ -1,80 +1,17 @@
-import { Category, Prisma } from "@prisma/client";
+import { Category } from "@prisma/client";
 import { Repository } from "./repository.js";
 import { ICategoryRepository } from "./interfaces/index.js";
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
+import {
+  ICategoryCreateReadWriteDto,
+  ICategoryReadOnlyDto,
+  ICategoryReadWriteDto,
+  IPaginatedListRequest,
+  IPaginatedListResponse
+} from "../core/dtos/index.js";
 import { categoryReadOnlyQuery, CategoryReadOnlySelectType } from "./queries/category-read-only.js";
 import { BusinessException } from "../core/business-exception.js";
 
 export class CategoryRepository extends Repository implements ICategoryRepository {
-  /**
-   * Gets a paginated list of categories
-   * @param listRequest List-Request
-   */
-  public async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<ICategoryReadOnlyDto>> {
-    const result = await this.paginate$(
-      undefined,
-      {
-        designation: "asc",
-      },
-      categoryReadOnlyQuery.select,
-      categoryReadOnlyQuery.transform,
-      listRequest.skip,
-      listRequest.take
-    );
-
-    return result;
-  }
-
-  /**
-   * Gets a category by its id
-   * @param id the id
-   */
-  public async getById$(id: string): Promise<ICategoryReadOnlyDto | null> {
-    const category: CategoryReadOnlySelectType | null = await this.db.category.findUnique({
-      where: {
-        id: id,
-      },
-      select: categoryReadOnlyQuery.select,
-    });
-
-    return category ? categoryReadOnlyQuery.transform(category) : null;
-  }
-
-  /**
-   * Gets a paginated and filtered list
-   * @param where Optional Where-Clause
-   * @param orderBy Optional OrderBy
-   * @param select Select-Clause
-   * @param transform Method to map the database response to dto
-   * @param skip The amount of records to skip
-   * @param take The amount of records to load
-   * @protected
-   */
-  protected async paginate$<TSelect extends Prisma.CategorySelect, TDto extends object>(
-    where: Prisma.CategoryWhereInput | undefined,
-    orderBy: Prisma.Enumerable<Prisma.CategoryOrderByWithRelationInput> | undefined,
-    select: TSelect,
-    transform: (entry: Prisma.CategoryGetPayload<{ select: TSelect }>) => TDto,
-    skip?: number,
-    take?: number
-  ): Promise<IPaginatedListResponse<TDto>> {
-    const [total, data]: [number, Prisma.CategoryGetPayload<{ select: TSelect }>[]] = await Promise.all([
-      this.db.category.count({ where }),
-      this.db.category.findMany({
-        where: where,
-        orderBy: orderBy,
-        select: select,
-        skip: skip || 0,
-        take: take || 25,
-      }),
-    ]);
-
-    return {
-      total: total,
-      data: data.map((x) => transform(x)),
-    };
-  }
-
   /**
    * Saves a Category
    * @param category
@@ -97,5 +34,94 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
     });
 
     return result.id;
+  }
+
+  /**
+   * Gets a paginated list of categories
+   * @param listRequest List-Request
+   */
+  public async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<ICategoryReadOnlyDto>> {
+    const total = await this.db.category.count();
+    const data = await this.db.category.findMany({
+      orderBy: {
+        designation: "asc",
+      },
+      select: categoryReadOnlyQuery.select,
+      skip: listRequest?.skip || 0,
+      take: listRequest?.take || 25,
+    });
+
+    return {
+      total: total,
+      data: data.map((x) => categoryReadOnlyQuery.transform(x)),
+    };
+  }
+
+  /**
+   * Gets a category by its id
+   * @param id the id
+   */
+  public async getById$(id: string): Promise<ICategoryReadOnlyDto | null> {
+    const category: CategoryReadOnlySelectType | null = await this.db.category.findUnique({
+      where: {
+        id: id,
+      },
+      select: categoryReadOnlyQuery.select,
+    });
+
+    return category ? categoryReadOnlyQuery.transform(category) : null;
+  }
+
+  /**
+   * Updates a category
+   * @param category The updated category
+   */
+  public async update$(category: ICategoryReadWriteDto): Promise<void> {
+    const count = await this.db.category.count({ where: { id: category.id } });
+
+    if (!count) {
+      throw new BusinessException("Category", `Category not found. Id: ${category.id}`);
+    }
+
+    await this.db.category.update({
+      where: {
+        id: category.id,
+      },
+      data: {
+       designation: category.designation
+      }
+    });
+  }
+
+  /**
+   * Deletes a category by its id
+   * @param id The id
+   */
+  public async deleteById$(id: string): Promise<void> {
+    // We need to check the existence first. See UserRepository
+    const found = await this.db.category.findUnique({
+      select: {
+        _count: {
+          select: {
+            placeMarks: true
+          }
+        }
+      },
+      where: {
+        id: id
+      },
+    });
+
+    if (found) {
+      if (found._count.placeMarks) {
+        throw new BusinessException("Category", "Category is still in use.");
+      }
+
+      await this.db.category.delete({
+        where: {
+          id: id,
+        },
+      });
+    }
   }
 }

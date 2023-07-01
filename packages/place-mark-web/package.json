@@ -1,16 +1,24 @@
 {
   "name": "@schoenj/place-mark-web",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Svelte frontend for the PlaceMark service",
   "type": "module",
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/schoenj/place-mark/issues"
+  },
+  "homepage": "https://github.com/schoenj/place-mark#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schoenj/place-mark.git"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.3",
     "@tsconfig/svelte": "^4.0.1",

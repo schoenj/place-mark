@@ -1,7 +1,13 @@
-import { Category, Prisma } from "@prisma/client";
+import { Category } from "@prisma/client";
 import { IPlaceMarkRepository } from "./interfaces/index.js";
 import { Repository } from "./repository.js";
-import { IPaginatedListRequest, IPaginatedListResponse, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadOnlyDto } from "../core/dtos/index.js";
+import {
+  IPaginatedListRequest,
+  IPaginatedListResponse,
+  IPlaceMarkCreateReadWriteDto,
+  IPlaceMarkReadOnlyDto,
+  IPlaceMarkReadWriteDto
+} from "../core/dtos/index.js";
 import { placeMarkReadOnlyQuery, PlaceMarkReadOnlySelectType } from "./queries/place-mark-read-only.js";
 import { BusinessException } from "../core/business-exception.js";
 
@@ -10,7 +16,7 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
    * Saves a place-mark
    * @param placeMark
    */
-  async create$(placeMark: IPlaceMarkCreateReadWriteDto): Promise<string> {
+  public async create$(placeMark: IPlaceMarkCreateReadWriteDto): Promise<string> {
     if (placeMark.createdById === null || placeMark.createdById === undefined) {
       throw new BusinessException("Category", "createdById is not set.");
     }
@@ -43,7 +49,7 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
    * Gets a place-mark by its id
    * @param id The id
    */
-  async getById$(id: string): Promise<IPlaceMarkReadOnlyDto | null> {
+  public async getById$(id: string): Promise<IPlaceMarkReadOnlyDto | null> {
     const placeMark: PlaceMarkReadOnlySelectType | null = await this.db.placeMark.findUnique({
       where: {
         id: id,
@@ -58,53 +64,62 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
    * Gets a paginated list of place-marks
    * @param listRequest List-Request
    */
-  async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IPlaceMarkReadOnlyDto>> {
-    const result = await this.paginate$(
-      undefined,
-      {
+  public async get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IPlaceMarkReadOnlyDto>> {
+    const total = await this.db.placeMark.count();
+    const data = await this.db.placeMark.findMany({
+      orderBy: {
         designation: "asc",
       },
-      placeMarkReadOnlyQuery.select,
-      placeMarkReadOnlyQuery.transform,
-      listRequest.skip,
-      listRequest.take
-    );
-
-    return result;
-  }
-
-  /**
-   * Gets a paginated and filtered list
-   * @param where Optional Where-Clause
-   * @param orderBy Optional OrderBy
-   * @param select Select-Clause
-   * @param transform Method to map the database response to dto
-   * @param skip The amount of records to skip
-   * @param take The amount of records to load
-   * @protected
-   */
-  protected async paginate$<TSelect extends Prisma.PlaceMarkSelect, TDto extends object>(
-    where: Prisma.PlaceMarkWhereInput | undefined,
-    orderBy: Prisma.Enumerable<Prisma.PlaceMarkOrderByWithRelationInput> | undefined,
-    select: TSelect,
-    transform: (entry: Prisma.PlaceMarkGetPayload<{ select: TSelect }>) => TDto,
-    skip?: number,
-    take?: number
-  ): Promise<IPaginatedListResponse<TDto>> {
-    const [total, data]: [number, Prisma.PlaceMarkGetPayload<{ select: TSelect }>[]] = await Promise.all([
-      this.db.placeMark.count({ where }),
-      this.db.placeMark.findMany({
-        where: where,
-        orderBy: orderBy,
-        select: select,
-        skip: skip || 0,
-        take: take || 25,
-      }),
-    ]);
+      select: placeMarkReadOnlyQuery.select,
+      skip: listRequest?.skip || 0,
+      take: listRequest?.take || 25,
+    });
 
     return {
       total: total,
-      data: data.map((x) => transform(x)),
+      data: data.map((x) => placeMarkReadOnlyQuery.transform(x)),
     };
+  }
+
+  /**
+   * Updates a place-mark
+   * @param placeMark The updated place-mark
+   */
+  public async update$(placeMark: IPlaceMarkReadWriteDto): Promise<void> {
+    const count = await this.db.placeMark.count({ where: { id: placeMark.id }});
+
+    if (!count) {
+      throw new BusinessException("PlaceMark", `PlaceMark not found: Id: ${placeMark.id}`);
+    }
+
+    await this.db.placeMark.update({
+      where: {
+        id: placeMark.id
+      },
+      data: {
+        designation: placeMark.designation,
+        description: placeMark.description,
+        latitude: placeMark.latitude,
+        longitude: placeMark.longitude,
+        categoryId: placeMark.categoryId
+      }
+    })
+  }
+
+  /**
+   * Delete a place-mark by its id
+   * @param id The id
+   */
+  public async deleteById$(id: string): Promise<void> {
+    // We need to check the existence first. See UserRepository
+    const count = await this.db.placeMark.count({ where: { id: id }});
+
+    if (count) {
+      await this.db.placeMark.delete({
+        where: {
+          id: id
+        }
+      });
+    }
   }
 }

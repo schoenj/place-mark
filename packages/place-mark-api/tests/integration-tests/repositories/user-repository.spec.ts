@@ -106,14 +106,14 @@ suite("UserRepository Integration Tests", () => {
     }
   });
 
-  test("deleteById$ should work", async () => {
-    const user = await fixture.createUser$(kermitTheFrogUser);
-    await fixture.repository.deleteById$(user.id);
-    const found = await fixture.prisma.user.findUnique({
-      where: {
-        id: user.id,
-      },
-    });
-    assert.isNull(found);
+  test("deleteById$ should work", async() => {
+    await fixture.testDeleteById$(
+      () => fixture.prisma.user.create({ data: cookieMonsterUser }),
+      (repo, id) => repo.deleteById$(id),
+      async (id) => {
+        const found = await fixture.prisma.user.count({ where: { id: id}});
+        return !!found;
+      }
+    );
   });
 });
