@@ -14,7 +14,7 @@
     "url": "git+https://github.com/schoenj/place-mark.git"
   },
   "engines": {
-    "npm": ">=16.x <=18.x"
+    "node": ">=16.x <=18.x"
   },
   "scripts": {
     "postinstall": "npm run generate-model",
