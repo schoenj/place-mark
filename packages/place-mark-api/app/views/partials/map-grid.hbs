@@ -27,6 +27,6 @@
     Object.keys(layers).forEach(layerName => {
        const map = L.map(`${layerName}-map`).setView([data.latitude, data.longitude], 13);
        layers[layerName].addTo(map);
-        L.marker([data.latitude, data.longitude]).addTo(map).bindPopup(data.designation).openPopup();
+       L.marker([data.latitude, data.longitude]).addTo(map).bindPopup(data.designation).openPopup();
     });
 </script>

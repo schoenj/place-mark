@@ -10,7 +10,8 @@ export class IndexController extends Controller {
       auth: { mode: "try", strategy: "session" },
     },
   })
-  public index(): ResponseObject {
-    return this.render(new IndexViewModel());
+  public async index$(): Promise<ResponseObject> {
+    const placeMarks = await this.container.placeMarkRepository.getLookup$();
+    return this.render(new IndexViewModel(placeMarks));
   }
 }
