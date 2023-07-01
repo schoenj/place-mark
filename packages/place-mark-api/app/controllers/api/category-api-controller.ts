@@ -1,22 +1,18 @@
 import { ResponseObject } from "@hapi/hapi";
-import {Controller, IValidationResult, Route} from "../../core/index.js";
+import { Controller, IValidationResult, Route } from "../../core/index.js";
 import {
   categoryCreateReadWriteSpec,
+  categoryDetailsSpec,
   categoryReadOnlySpec,
   categoryReadWriteSpec,
   emptySpec,
   idParamSpec,
   paginatedListRequestSpec,
-  validationResultSpec
+  validationResultSpec,
 } from "../../schemas/index.js";
 import { createResponseSpec, defaultFailAction } from "./utils.js";
-import {
-  ICategoryCreateReadWriteDto,
-  ICategoryReadOnlyDto,
-  ICategoryReadWriteDto,
-  IPaginatedListRequest
-} from "../../core/dtos/index.js";
-import {BusinessException} from "../../core/business-exception.js";
+import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, ICategoryReadWriteDto, IPaginatedListRequest } from "../../core/dtos/index.js";
+import { BusinessException } from "../../core/business-exception.js";
 
 export class CategoryApiController extends Controller {
   @Route({
@@ -32,7 +28,7 @@ export class CategoryApiController extends Controller {
       },
       response: {
         status: {
-          201: categoryReadOnlySpec,
+          201: categoryDetailsSpec,
           400: validationResultSpec,
           401: emptySpec,
         },
@@ -88,7 +84,7 @@ export class CategoryApiController extends Controller {
       },
       response: {
         status: {
-          200: categoryReadOnlySpec,
+          200: categoryDetailsSpec,
           404: emptySpec,
           401: emptySpec,
         },
@@ -114,22 +110,22 @@ export class CategoryApiController extends Controller {
       description: "Updates a category",
       validate: {
         payload: categoryReadWriteSpec,
-        failAction: defaultFailAction
+        failAction: defaultFailAction,
       },
       response: {
         status: {
-          200: categoryReadOnlySpec,
+          200: categoryDetailsSpec,
           404: emptySpec,
-          401: emptySpec
-        }
-      }
-    }
+          401: emptySpec,
+        },
+      },
+    },
   })
   public async updateById$(): Promise<ResponseObject> {
     const category = this.request.payload as ICategoryReadWriteDto;
     try {
       await this.container.categoryRepository.update$(category);
-    } catch(ex) {
+    } catch (ex) {
       if (ex instanceof BusinessException) {
         return this.h.response().code(404);
       }
@@ -149,29 +145,31 @@ export class CategoryApiController extends Controller {
       description: "Deletes a category by its id",
       validate: {
         params: idParamSpec,
-        failAction: defaultFailAction
+        failAction: defaultFailAction,
       },
       response: {
         status: {
           204: emptySpec,
           400: validationResultSpec,
-          401: emptySpec
-        }
-      }
-    }
+          401: emptySpec,
+        },
+      },
+    },
   })
   public async deleteById$(): Promise<ResponseObject> {
     const id = this.request.params.id as string;
     try {
       await this.container.categoryRepository.deleteById$(id);
-    } catch(e) {
+    } catch (e) {
       if (e instanceof BusinessException) {
-        return this.h.response([
-          {
-            property: "id",
-            message: e.message
-          }
-        ] as IValidationResult[]).code(400);
+        return this.h
+          .response([
+            {
+              property: "id",
+              message: e.message,
+            },
+          ] as IValidationResult[])
+          .code(400);
       }
 
       throw e;

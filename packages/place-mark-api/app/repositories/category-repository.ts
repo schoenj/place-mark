@@ -1,9 +1,18 @@
 import { Category } from "@prisma/client";
 import { Repository } from "./repository.js";
 import { ICategoryRepository } from "./interfaces/index.js";
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, ICategoryReadWriteDto, ILookupDto, IPaginatedListRequest, IPaginatedListResponse } from "../core/dtos/index.js";
-import { categoryReadOnlyQuery, CategoryReadOnlySelectType } from "./queries/category-read-only.js";
+import {
+  ICategoryCreateReadWriteDto,
+  ICategoryDetailsDto,
+  ICategoryReadOnlyDto,
+  ICategoryReadWriteDto,
+  ILookupDto,
+  IPaginatedListRequest,
+  IPaginatedListResponse,
+} from "../core/dtos/index.js";
+import { categoryReadOnlyQuery } from "./queries/category-read-only.js";
 import { BusinessException } from "../core/business-exception.js";
+import { categoryDetailsQuery } from "./queries/category-details.js";
 
 export class CategoryRepository extends Repository implements ICategoryRepository {
   /**
@@ -55,15 +64,15 @@ export class CategoryRepository extends Repository implements ICategoryRepositor
    * Gets a category by its id
    * @param id the id
    */
-  public async getById$(id: string): Promise<ICategoryReadOnlyDto | null> {
-    const category: CategoryReadOnlySelectType | null = await this.db.category.findUnique({
+  public async getById$(id: string): Promise<ICategoryDetailsDto | null> {
+    const category = await this.db.category.findUnique({
       where: {
         id: id,
       },
-      select: categoryReadOnlyQuery.select,
+      select: categoryDetailsQuery.select,
     });
 
-    return category ? categoryReadOnlyQuery.transform(category) : null;
+    return category ? categoryDetailsQuery.transform(category) : null;
   }
 
   /**

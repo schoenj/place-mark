@@ -5,7 +5,7 @@ import { categoryCreateReadWriteSpec, categoryReadWriteSpec, idParamSpec } from 
 import { ICategoryCreateReadWriteDto, ICategoryReadWriteDto, IConfirmDeleteRequest, IPagedListRequest } from "../core/dtos/index.js";
 import { pagedListRequestSpec } from "../schemas/paged-list-request-spec.js";
 import { createFailAction, pagedToPaginated, paginatedToPaged } from "./utils.js";
-import { CategoryCreateViewModel, CategoryEditViewModel, CategoryListViewModel } from "../view-models/index.js";
+import { CategoryCreateViewModel, CategoryDetailsViewModel, CategoryEditViewModel, CategoryListViewModel } from "../view-models/index.js";
 
 export class CategoryController extends Controller {
   @Route({
@@ -35,6 +35,26 @@ export class CategoryController extends Controller {
     category.createdById = this.user?.id;
     const id = await this.container.categoryRepository.create$(category);
     return this.h.redirect(`/category/${id}`);
+  }
+
+  @Route({
+    method: "GET",
+    path: "/category/{id}",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        params: idParamSpec,
+      },
+    },
+  })
+  public async getById$(): Promise<ResponseObject> {
+    const id = this.request.params.id as string;
+    const category = await this.container.categoryRepository.getById$(id);
+    if (category) {
+      return this.render(new CategoryDetailsViewModel(category));
+    }
+
+    throw Error(); // ToDo!
   }
 
   @Route({

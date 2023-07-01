@@ -15,3 +15,5 @@ export * from "./place-mark/place-mark-read-write-dto.js";
 export * from "./paged-list-request.js";
 export * from "./paged-list-response.js";
 export * from "./confirm-delete-request.js";
+export * from "./place-mark/place-mark-lookup-dto.js";
+export * from "./category/category-details-dto.js";

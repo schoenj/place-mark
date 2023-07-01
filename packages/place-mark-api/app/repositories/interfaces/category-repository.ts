@@ -1,4 +1,12 @@
-import { ICategoryCreateReadWriteDto, ICategoryReadOnlyDto, ICategoryReadWriteDto, ILookupDto, IPaginatedListRequest, IPaginatedListResponse } from "../../core/dtos/index.js";
+import {
+  ICategoryCreateReadWriteDto,
+  ICategoryDetailsDto,
+  ICategoryReadOnlyDto,
+  ICategoryReadWriteDto,
+  ILookupDto,
+  IPaginatedListRequest,
+  IPaginatedListResponse,
+} from "../../core/dtos/index.js";
 
 export interface ICategoryRepository {
   /**
@@ -11,7 +19,7 @@ export interface ICategoryRepository {
    * Gets a category by its id
    * @param id the id
    */
-  getById$(id: string): Promise<ICategoryReadOnlyDto | null>;
+  getById$(id: string): Promise<ICategoryDetailsDto | null>;
 
   /**
    * Get all categories as lookup

@@ -24,6 +24,7 @@ insecureHandlebars.registerHelper("forEach", (from: number, to: number, options)
 });
 
 insecureHandlebars.registerHelper("or", (value1, value2) => value1 || value2);
+insecureHandlebars.registerHelper("not", (value1) => !value1);
 
 insecureHandlebars.registerHelper("isEqual", (value1, value2) => value1 === value2);
 

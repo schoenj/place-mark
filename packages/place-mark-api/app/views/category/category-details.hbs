@@ -1,0 +1,11 @@
+<section class="section">
+    <h1 class="title">
+        {{title}}
+        {{#if admin}}
+            <a class="button is-primary is-small" href="/category/{{details.id}}/edit">
+                Edit
+            </a>
+        {{/if}}
+    </h1>
+    {{> tables/place-mark-table data=details.placeMarks admin=admin userId=user?.id lookupOnly=true }}
+</section>
