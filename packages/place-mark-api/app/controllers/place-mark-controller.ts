@@ -2,7 +2,7 @@ import { ResponseObject } from "@hapi/hapi";
 import { confirmDeleteSpec, Controller, createForm, createForm$, createPagedListFormDefinition, placeMarkCreateFormDefinition, Route } from "../core/index.js";
 import { pagedListRequestSpec } from "../schemas/paged-list-request-spec.js";
 import { createFailAction, pagedToPaginated, paginatedToPaged } from "./utils.js";
-import { PlaceMarkCreateViewModel, PlaceMarkEditViewModel, PlaceMarkListViewModel } from "../view-models/index.js";
+import { PlaceMarkCreateViewModel, PlaceMarkDetailsViewModel, PlaceMarkEditViewModel, PlaceMarkListViewModel } from "../view-models/index.js";
 import { IConfirmDeleteRequest, IPagedListRequest, IPlaceMarkCreateReadWriteDto, IPlaceMarkReadWriteDto } from "../core/dtos/index.js";
 import { idParamSpec, placeMarkCreateReadWriteSpec, placeMarkReadWriteSpec } from "../schemas/index.js";
 import { ConfirmDeleteViewModel } from "../view-models/general/confirm-delete-view-model.js";
@@ -37,6 +37,26 @@ export class PlaceMarkController extends Controller {
     category.createdById = this.user?.id;
     const id = await this.container.placeMarkRepository.create$(category);
     return this.h.redirect(`/place-mark/${id}`);
+  }
+
+  @Route({
+    method: "GET",
+    path: "/place-mark/{id}",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        params: idParamSpec,
+      },
+    },
+  })
+  public async getById$(): Promise<ResponseObject> {
+    const id = this.request.params.id as string;
+    const placeMark = await this.container.placeMarkRepository.getById$(id);
+    if (placeMark) {
+      return this.render(new PlaceMarkDetailsViewModel(placeMark));
+    }
+
+    throw Error(); // ToDo!
   }
 
   @Route({

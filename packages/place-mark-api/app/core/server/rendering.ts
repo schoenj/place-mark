@@ -30,6 +30,45 @@ insecureHandlebars.registerHelper("isEqual", (value1, value2) => value1 === valu
 
 insecureHandlebars.registerHelper("dateFormat", (value: Date) => new insecureHandlebars.SafeString(`${value.toLocaleDateString()} ${value.toLocaleTimeString()}`));
 
+function escape<T>(data: T): T {
+  if (data === undefined || data === null) {
+    return data;
+  }
+
+  if (typeof data === "string") {
+    let newStr = data as string;
+    // eslint-disable-next-line quotes
+    while (newStr.includes('"')) {
+      // eslint-disable-next-line quotes
+      newStr = newStr.replace('"', "&quot;");
+    }
+
+    return newStr as T;
+  }
+
+  if (Array.isArray(data)) {
+    const newData = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const el of data) {
+      newData.push(escape(el));
+    }
+    return newData as T;
+  }
+
+  if (typeof data === "object") {
+    const newData: { [key: string]: unknown } = {};
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of Object.keys(data)) {
+      newData[key] = escape((data as { [key: string]: unknown })[key]);
+    }
+    return newData as T;
+  }
+
+  return data;
+}
+
+insecureHandlebars.registerHelper("json", (value) => new insecureHandlebars.SafeString(JSON.stringify(escape(value))));
+
 /**
  * Registers Handlebars and integrates with @hapi/vision into a @hapi server
  * @param server The server that should be configured

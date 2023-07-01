@@ -1,0 +1,65 @@
+<section class="section">
+    <h1 class="title">
+        {{title}}
+        {{#if (or admin (isEqual details.createdBy.id user?.id)) }}
+            <a class="button is-primary is-small" href="/place-mark/{{details.id}}/edit">
+                Edit
+            </a>
+        {{/if}}
+    </h1>
+
+    <h2 class="subtitle">
+        Information
+    </h2>
+    <table class="table is-vertical">
+        <tr>
+            <th>Id</th>
+            <td>{{details.id}}</td>
+        </tr>
+        <tr>
+            <th>Designation</th>
+            <td>{{details.designation}}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{details.description}}</td>
+        </tr>
+        <tr>
+            <th>Latitude</th>
+            <td>{{details.latitude}}</td>
+        </tr>
+        <tr>
+            <th>Longitude</th>
+            <td>{{details.longitude}}</td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td>
+                <a href="/category/{{details.category.id}}">
+                    {{details.category.designation}}
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <th>Created By</th>
+            <td>
+                <a href="/user/{{details.createdBy.id}}">
+                    {{details.createdBy.designation}}
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <th>Created At</th>
+            <td>{{{dateFormat details.createdAt}}}</td>
+        </tr>
+        <tr>
+            <th>Updated At</th>
+            <td>{{{dateFormat details.updatedAt}}}</td>
+        </tr>
+    </table>
+
+    <h2 class="subtitle">
+        Maps
+    </h2>
+    {{> map-grid placeMark=details}}
+</section>
