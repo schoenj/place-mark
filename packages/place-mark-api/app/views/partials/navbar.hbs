@@ -34,6 +34,20 @@
             <div class="navbar-item">
                 <div class="buttons">
                     {{#if authenticated}}
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link" href="#">
+                                Account
+                            </a>
+
+                            <div class="navbar-dropdown">
+                                <a class="navbar-item" href="/account/email">
+                                    Change Email
+                                </a>
+                                <a class="navbar-item" href="/account/password">
+                                    Change Password
+                                </a>
+                            </div>
+                        </div>
                         <a class="button is-light" href="/account/logout">
                             Logout
                         </a>

@@ -95,6 +95,38 @@ export class UserRepository extends Repository implements IUserRepository {
   }
 
   /**
+   * Updates the Email of a user
+   * @param id the id of a user
+   * @param email the new email
+   */
+  public async updateEmail$(id: string, email: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        email: email.toLowerCase(),
+      },
+    });
+  }
+
+  /**
+   * Updates the Password of a user
+   * @param id the id of a user
+   * @param password the new password
+   */
+  public async updatePassword$(id: string, password: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: password,
+      },
+    });
+  }
+
+  /**
    * Deletes a user by its id
    * @param id The id
    */

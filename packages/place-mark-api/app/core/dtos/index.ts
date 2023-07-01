@@ -18,3 +18,5 @@ export * from "./confirm-delete-request.js";
 export * from "./place-mark/place-mark-lookup-dto.js";
 export * from "./category/category-details-dto.js";
 export * from "./user/user-details-dto.js";
+export * from "./user/user-update-email-request-dto.js";
+export * from "./user/user-update-password-request-dto.js";

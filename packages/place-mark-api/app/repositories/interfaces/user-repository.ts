@@ -27,6 +27,20 @@ export interface IUserRepository {
   get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>>;
 
   /**
+   * Updates the Password of a user
+   * @param id the id of a user
+   * @param password the new password
+   */
+  updatePassword$(id: string, password: string): Promise<void>;
+
+  /**
+   * Updates the Email of a user
+   * @param id the id of a user
+   * @param email the new email
+   */
+  updateEmail$(id: string, email: string): Promise<void>;
+
+  /**
    * Gets the details of a user
    * @param id The id
    */

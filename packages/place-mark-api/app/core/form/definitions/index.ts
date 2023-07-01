@@ -5,3 +5,5 @@ export * from "./category-create-form-definition.js";
 export * from "./category-edit-form-definition.js";
 export * from "./place-mark-create-form-definition.js";
 export * from "./create-confirm-delete-form-definition.js";
+export * from "./user-update-email-form-definition.js";
+export * from "./user-update-password-form-definition.js";

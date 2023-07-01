@@ -9,9 +9,13 @@ import {
   SignInUserRequestSpecification,
   signUpFormDefinition,
   SignUpUserRequestSpecification,
+  userUpdateEmailFormDefinition,
+  UserUpdateEmailRequestSpecification,
+  userUpdatePasswordFormDefinition,
+  UserUpdatePasswordRequestSpecification,
 } from "../core/index.js";
-import { ISignInUserRequestDto, ISignUpUserRequestDto } from "../core/dtos/index.js";
-import { SignUpViewModel, SignInViewModel } from "../view-models/index.js";
+import { ISignInUserRequestDto, ISignUpUserRequestDto, IUserUpdateEmailRequestDto, IUserUpdatePasswordRequestDto } from "../core/dtos/index.js";
+import { SignUpViewModel, SignInViewModel, UpdateEmailViewModel, UpdatePasswordViewModel } from "../view-models/index.js";
 import { createFailAction } from "./utils.js";
 
 export class AccountController extends Controller {
@@ -106,5 +110,85 @@ export class AccountController extends Controller {
   public logout(): ResponseObject {
     this.request.cookieAuth.clear();
     return this.h.redirect("/");
+  }
+
+  @Route({
+    method: "GET",
+    path: "/account/email",
+    options: {
+      auth: { strategy: "session" },
+    },
+  })
+  public async showUpdateEmail$(): Promise<ResponseObject> {
+    const user = await this.container.userRepository.getById$(this.user?.id as string);
+    return this.render(new UpdateEmailViewModel(createForm(userUpdateEmailFormDefinition, { email: user?.email })));
+  }
+
+  @Route({
+    method: "POST",
+    path: "/account/email",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        payload: UserUpdateEmailRequestSpecification,
+        failAction: createFailAction(userUpdateEmailFormDefinition, (form) => new UpdateEmailViewModel(form)),
+      },
+    },
+  })
+  public async updateEmail$(): Promise<ResponseObject> {
+    const dto = this.request.payload as IUserUpdateEmailRequestDto;
+    await this.container.userRepository.updateEmail$(this.user?.id as string, dto.email);
+    return this.h.redirect(`/user/${this.user?.id}`);
+  }
+
+  @Route({
+    method: "GET",
+    path: "/account/password",
+    options: {
+      auth: { strategy: "session" },
+    },
+  })
+  public async showUpdatePassword(): Promise<ResponseObject> {
+    return this.render(new UpdatePasswordViewModel(createForm(userUpdatePasswordFormDefinition)));
+  }
+
+  @Route({
+    method: "POST",
+    path: "/account/password",
+    options: {
+      auth: { strategy: "session" },
+      validate: {
+        payload: UserUpdatePasswordRequestSpecification,
+        failAction: createFailAction(userUpdatePasswordFormDefinition, (form) => new UpdatePasswordViewModel(form)),
+      },
+    },
+  })
+  public async updatePassword$(): Promise<ResponseObject> {
+    const dto = this.request.payload as IUserUpdatePasswordRequestDto;
+
+    const errors: ValidationErrorItem[] = [];
+
+    if (dto.password !== dto.passwordAgain) {
+      errors.push({
+        message: "Passwords do not match",
+        path: ["password"],
+      } as ValidationErrorItem);
+    }
+
+    const user = await this.container.userRepository.getByEmail$(this.user?.email as string);
+    if (user?.password !== dto.oldPassword) {
+      errors.push({
+        message: "Old password is not correct",
+        path: ["oldPassword"],
+      } as ValidationErrorItem);
+    }
+
+    if (errors.length) {
+      const model = new UpdatePasswordViewModel(createFailedForm(userUpdatePasswordFormDefinition, this.request.payload as IUserUpdatePasswordRequestDto, errors));
+      return this.h.view(model.view, model).code(400);
+    }
+
+    await this.container.userRepository.updatePassword$(this.user?.id as string, dto.password);
+    return this.h.redirect(`/user/${this.user?.id}`);
   }
 }
