@@ -30,7 +30,7 @@
                         <td>{{ createdBy.designation }}</td>
                         <td>{{dateFormat createdAt}}<br>{{dateFormat updatedAt}}</td>
                         <td>
-                            {{#if admin}}
+                            {{#if ../admin}}
                                 <a href="/category/{{id}}/edit">
                                     <i class="fas fa-pen"></i>
                                 </a>
