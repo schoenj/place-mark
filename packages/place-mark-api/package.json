@@ -13,6 +13,9 @@
     "type": "git",
     "url": "git+https://github.com/schoenj/place-mark.git"
   },
+  "engines": {
+    "npm": ">=16.x <=18.x"
+  },
   "scripts": {
     "postinstall": "npm run generate-model",
     "generate-model": "npx prisma generate",
@@ -25,7 +28,8 @@
     "integration-test": "ts-mocha -n loader=ts-node/esm tests/integration-tests/**/*.spec.ts -- --ui tdd --file tests/integration-tests/setup.ts --timeout 15s",
     "unit-test": "ts-mocha -n loader=ts-node/esm tests/unit-tests/**/*.spec.ts -- --ui tdd",
     "lint": "eslint .",
-    "lint-and-fix": "eslint . --fix"
+    "lint-and-fix": "eslint . --fix",
+    "seed": "prisma db seed"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.5",
@@ -71,5 +75,8 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "word-wrap": "^1.2.3"
+  },
+  "prisma": {
+    "seed": "ts-node --esm prisma/seed.ts"
   }
 }

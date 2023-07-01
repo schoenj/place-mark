@@ -6,6 +6,12 @@ import { Container } from "./app/dependencies/index.js";
 
 const config: IApplicationConfig = getConfig();
 const prisma = new PrismaClient();
-createServer$(config, () => new Container(config, prisma))
+prisma
+  .$connect()
+  .then(() => createServer$(config, () => new Container(config, prisma)))
   .then(({ start$ }) => start$())
-  .catch(() => prisma.$disconnect());
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
