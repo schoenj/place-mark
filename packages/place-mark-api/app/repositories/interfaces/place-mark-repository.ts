@@ -2,8 +2,9 @@ import {
   IPaginatedListRequest,
   IPaginatedListResponse,
   IPlaceMarkCreateReadWriteDto,
+  IPlaceMarkLookupDto,
   IPlaceMarkReadOnlyDto,
-  IPlaceMarkReadWriteDto
+  IPlaceMarkReadWriteDto,
 } from "../../core/dtos/index.js";
 
 export interface IPlaceMarkRepository {
@@ -18,6 +19,11 @@ export interface IPlaceMarkRepository {
    * @param id The id
    */
   getById$(id: string): Promise<IPlaceMarkReadOnlyDto | null>;
+
+  /**
+   * Get all place-marks as lookup
+   */
+  getLookup$(): Promise<IPlaceMarkLookupDto[]>;
 
   /**
    * Gets a paginated list of place-marks

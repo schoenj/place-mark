@@ -4,7 +4,7 @@ export const idSpec: Joi.StringSchema<string> = Joi.string().required().label("I
 
 export const designationSpec: Joi.StringSchema<string> = Joi.string().required().label("Designation").max(100);
 
-export const descriptionSpec: Joi.StringSchema<string> = Joi.string().optional().label("Description").max(500);
+export const descriptionSpec: Joi.StringSchema<string> = Joi.string().optional().label("Description").max(500).allow(null);
 
 export const createdAtSpec: Joi.DateSchema = Joi.date().required().description("The entry creation time");
 

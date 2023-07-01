@@ -5,11 +5,13 @@ import {
   IPaginatedListRequest,
   IPaginatedListResponse,
   IPlaceMarkCreateReadWriteDto,
+  IPlaceMarkLookupDto,
   IPlaceMarkReadOnlyDto,
-  IPlaceMarkReadWriteDto
+  IPlaceMarkReadWriteDto,
 } from "../core/dtos/index.js";
 import { placeMarkReadOnlyQuery, PlaceMarkReadOnlySelectType } from "./queries/place-mark-read-only.js";
 import { BusinessException } from "../core/business-exception.js";
+import { placeMarkLookupQuery } from "./queries/place-mark-lookup.js";
 
 export class PlaceMarkRepository extends Repository implements IPlaceMarkRepository {
   /**
@@ -43,6 +45,17 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
     });
 
     return result.id;
+  }
+
+  /**
+   * Get all place-marks as lookup
+   */
+  public async getLookup$(): Promise<IPlaceMarkLookupDto[]> {
+    const placeMarks = await this.db.placeMark.findMany({
+      select: placeMarkLookupQuery.select,
+    });
+
+    return placeMarks;
   }
 
   /**
@@ -86,7 +99,7 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
    * @param placeMark The updated place-mark
    */
   public async update$(placeMark: IPlaceMarkReadWriteDto): Promise<void> {
-    const count = await this.db.placeMark.count({ where: { id: placeMark.id }});
+    const count = await this.db.placeMark.count({ where: { id: placeMark.id } });
 
     if (!count) {
       throw new BusinessException("PlaceMark", `PlaceMark not found: Id: ${placeMark.id}`);
@@ -94,16 +107,16 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
 
     await this.db.placeMark.update({
       where: {
-        id: placeMark.id
+        id: placeMark.id,
       },
       data: {
         designation: placeMark.designation,
         description: placeMark.description,
         latitude: placeMark.latitude,
         longitude: placeMark.longitude,
-        categoryId: placeMark.categoryId
-      }
-    })
+        categoryId: placeMark.categoryId,
+      },
+    });
   }
 
   /**
@@ -112,13 +125,13 @@ export class PlaceMarkRepository extends Repository implements IPlaceMarkReposit
    */
   public async deleteById$(id: string): Promise<void> {
     // We need to check the existence first. See UserRepository
-    const count = await this.db.placeMark.count({ where: { id: id }});
+    const count = await this.db.placeMark.count({ where: { id: id } });
 
     if (count) {
       await this.db.placeMark.delete({
         where: {
-          id: id
-        }
+          id: id,
+        },
       });
     }
   }

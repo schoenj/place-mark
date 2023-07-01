@@ -3,7 +3,7 @@ import { assert } from "chai";
 import { CategoryRepository } from "../../../app/repositories/index.js";
 import { RepositoryTestFixture } from "./repository-test-fixture.js";
 import { cookieMonsterUser } from "../../fixtures.js";
-import {ICategoryReadOnlyDto, ICategoryReadWriteDto} from "../../../app/core/dtos/index.js";
+import { ICategoryReadOnlyDto, ICategoryReadWriteDto } from "../../../app/core/dtos/index.js";
 import { BusinessException } from "../../../app/core/business-exception.js";
 
 suite("CategoryRepository Integration Tests", () => {
@@ -78,10 +78,25 @@ suite("CategoryRepository Integration Tests", () => {
           data: {
             designation: "Bridge",
             createdById: user.id,
+            placeMarks: {
+              create: {
+                designation: "Tower Bridge",
+                latitude: 1,
+                longitude: 2,
+                createdById: user.id,
+              },
+            },
           },
         }),
       (repo, id) => repo.getById$(id),
-      cmp
+      (expected, actual) => {
+        cmp(expected, actual);
+        assert.equal(actual.placeMarks.length, 1);
+        const placeMark = actual.placeMarks[0];
+        assert.equal(placeMark.latitude, 1);
+        assert.equal(placeMark.longitude, 2);
+        assert.equal(placeMark.designation, "Tower Bridge");
+      }
     );
   });
 
@@ -107,35 +122,36 @@ suite("CategoryRepository Integration Tests", () => {
     );
   });
 
-  test("update$ should work", async() => {
+  test("update$ should work", async () => {
     await fixture.testUpdate$(
-      () => fixture.prisma.category.create({ data: { createdById: user.id, designation: "Bridge" }}),
+      () => fixture.prisma.category.create({ data: { createdById: user.id, designation: "Bridge" } }),
       "Category",
       { designation: "Bridge New" } as ICategoryReadWriteDto,
       (repo, dto) => repo.update$(dto),
-      id => fixture.prisma.category.findUnique({ where: { id: id }}),
+      (id) => fixture.prisma.category.findUnique({ where: { id: id } }),
       (created, updated, dto) => {
         assert.equal(updated.id, created.id);
         assert.equal(updated.createdById, created.createdById);
         assert.equal(updated.createdAt.toUTCString(), created.createdAt.toUTCString());
         assert.equal(updated.designation, dto.designation);
       }
-    )
+    );
   });
 
-  test("deleteById$ should work", async() => {
-    const create$ = () => fixture.prisma.category.create({
-      data: {
-        designation: "Bridge",
-        createdById: user.id,
-      }
-    });
+  test("deleteById$ should work", async () => {
+    const create$ = () =>
+      fixture.prisma.category.create({
+        data: {
+          designation: "Bridge",
+          createdById: user.id,
+        },
+      });
 
     await fixture.testDeleteById$(
       create$,
       (repo, id) => repo.deleteById$(id),
       async (id) => {
-        const found = await fixture.prisma.category.count({ where: { id: id}});
+        const found = await fixture.prisma.category.count({ where: { id: id } });
         return !!found;
       }
     );
@@ -149,11 +165,11 @@ suite("CategoryRepository Integration Tests", () => {
         longitude: -0.07539259117490767,
         createdById: user.id,
         categoryId: created.id,
-      }
+      },
     });
-    try{
+    try {
       await fixture.repository.deleteById$(created.id);
-      assert.fail("Should have thrown an exception")
+      assert.fail("Should have thrown an exception");
     } catch (ex) {
       assert.instanceOf(ex, BusinessException);
       const bEx = ex as BusinessException;

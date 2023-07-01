@@ -13,3 +13,5 @@ export * from "./category-create-read-write-spec.js";
 export * from "./place-mark-create-read-write-spec.js";
 export * from "./category-read-write-spec.js";
 export * from "./place-mark-read-write-spec.js";
+export * from "./place-mark-lookup-spec.js";
+export * from "./category-details-spec.js";

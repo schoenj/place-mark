@@ -1,5 +1,6 @@
 import { Request, ResponseObject, ResponseToolkit, UserCredentials } from "@hapi/hapi";
 import { IContainer } from "../../dependencies/interfaces/index.js";
+import { ViewModel } from "../../view-models/base/view-model.js";
 
 export abstract class Controller {
   protected request: Request;
@@ -15,7 +16,8 @@ export abstract class Controller {
     this.h = response;
   }
 
-  protected render<T extends { view: string }>(model: T): ResponseObject {
+  protected render<T extends ViewModel>(model: T): ResponseObject {
+    model.user = this.user || null;
     return this.h.view(model.view, model);
   }
 
@@ -23,7 +25,11 @@ export abstract class Controller {
     return this.request.auth.isAuthenticated;
   }
 
+  public get admin(): boolean {
+    return this.user?.admin || false;
+  }
+
   public get user(): UserCredentials | null | undefined {
-    return this.request.auth.credentials.user;
+    return this.request.auth.credentials?.user;
   }
 }

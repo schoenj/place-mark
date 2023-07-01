@@ -1,12 +1,41 @@
-{{> components/input-field
-    fieldName=formField.name
-    placeholder=formField.placeholder
-    max=formField.max
-    min=formField.min
-    value=formField.value
-    description=formField.description
-    required=formField.required
-    inputType=formField.inputType
-    success=formField.success
-    errors=formField.errors
-}}
+{{#if (isEqual formField.inputType "select")}}
+    {{> components/select-field
+        fieldName=formField.name
+        description=formField.description
+        options=formField.options
+    }}
+{{else if (isEqual formField.inputType "checkbox")}}
+    {{> components/checkbox
+        fieldName=formField.name
+        description=formField.description
+        options=formField.options
+        required=formField.required
+        value=formField.value
+    }}
+{{else if (isEqual formField.inputType "number")}}
+    {{> components/input-field
+        fieldName=formField.name
+        max=formField.max
+        min=formField.min
+        value=formField.value
+        description=formField.description
+        required=formField.required
+        inputType=formField.inputType
+        success=formField.success
+        errors=formField.errors
+        step=formField.step
+    }}
+{{else}}
+    {{> components/input-field
+        fieldName=formField.name
+        placeholder=formField.placeholder
+        max=formField.max
+        min=formField.min
+        value=formField.value
+        description=formField.description
+        required=formField.required
+        inputType=formField.inputType
+        success=formField.success
+        errors=formField.errors
+    }}
+{{/if}}

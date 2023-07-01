@@ -1,0 +1,7 @@
+<div class="section">
+    <h1>Do you really want to delete "{{designation}}" ({{id}})</h1>
+    <form action="{{form.action}}" method="{{form.method}}">
+        {{> components/form-field formField=form.fields.confirm }}
+        {{> components/submit-button designation="Delete" }}
+    </form>
+</div>
