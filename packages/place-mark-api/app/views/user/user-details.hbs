@@ -1,0 +1,45 @@
+<section class="section">
+    <h1 class="title">
+        {{title}}
+    </h1>
+
+    <h2 class="subtitle">
+        Information
+    </h2>
+    <table class="table is-vertical">
+        <tr>
+            <th>Id</th>
+            <td>{{details.id}}</td>
+        </tr>
+        <tr>
+            <th>FirstName</th>
+            <td>{{details.firstName}}</td>
+        </tr>
+        <tr>
+            <th>LastName</th>
+            <td>{{details.lastName}}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{details.email}}</td>
+        </tr>
+        <tr>
+            <th>Created At</th>
+            <td>{{{dateFormat details.createdAt}}}</td>
+        </tr>
+        <tr>
+            <th>Updated At</th>
+            <td>{{{dateFormat details.updatedAt}}}</td>
+        </tr>
+    </table>
+
+    <h2 class="subtitle">
+        Categories
+    </h2>
+    {{> tables/category-table data=details.categories admin=admin userId=user?.id lookupOnly=true }}
+
+    <h2 class="subtitle">
+        Place-Marks
+    </h2>
+    {{> tables/place-mark-table data=details.placeMarks admin=admin userId=user?.id lookupOnly=true }}
+</section>

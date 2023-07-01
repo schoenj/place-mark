@@ -1,0 +1,17 @@
+<div class="field">
+    <label class="label" for="page">
+        Page
+    </label>
+    <div class="control">
+        <div class="select">
+            <select
+                name="page"
+                id="page"
+            >
+                {{#forEach 1 totalPages}}
+                    <option value="{{this}}" {{attribute "selected" "selected" (isEqual 1 this)}}>{{this}}</option>
+                {{/forEach}}
+            </select>
+        </div>
+    </div>
+</div>

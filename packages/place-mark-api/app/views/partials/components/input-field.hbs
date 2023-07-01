@@ -9,9 +9,11 @@
             {{attribute "min" min min}}
             {{attribute "max" max max}}
             {{attribute "value" value value}}
+            {{attribute "step" step step}}
             type="{{choose inputType "text"}}"
             placeholder="{{placeholder}}"
             name="{{fieldName}}"
+            id="{{fieldName}}"
         >
         {{#each errors}}
             <p class="help is-danger">{{this}}</p>

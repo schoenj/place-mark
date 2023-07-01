@@ -1,8 +1,9 @@
 import { User } from "@prisma/client";
-import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto } from "../core/dtos/index.js";
+import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserDetailsDto, IUserReadOnlyDto } from "../core/dtos/index.js";
 import { Repository } from "./repository.js";
 import { userReadOnlyQuery, UserReadOnlySelectType } from "./queries/user-read-only.js";
 import { IUserRepository } from "./interfaces/index.js";
+import { userDetailsQuery } from "./queries/user-details.js";
 
 export class UserRepository extends Repository implements IUserRepository {
   /**
@@ -76,6 +77,53 @@ export class UserRepository extends Repository implements IUserRepository {
     });
 
     return user ? userReadOnlyQuery.transform(user) : null;
+  }
+
+  /**
+   * Gets the details of a user
+   * @param id The id
+   */
+  public async getDetailsById$(id: string): Promise<IUserDetailsDto | null> {
+    const user = await this.db.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: userDetailsQuery.select,
+    });
+
+    return user ? userDetailsQuery.transform(user) : null;
+  }
+
+  /**
+   * Updates the Email of a user
+   * @param id the id of a user
+   * @param email the new email
+   */
+  public async updateEmail$(id: string, email: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        email: email.toLowerCase(),
+      },
+    });
+  }
+
+  /**
+   * Updates the Password of a user
+   * @param id the id of a user
+   * @param password the new password
+   */
+  public async updatePassword$(id: string, password: string): Promise<void> {
+    await this.db.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: password,
+      },
+    });
   }
 
   /**

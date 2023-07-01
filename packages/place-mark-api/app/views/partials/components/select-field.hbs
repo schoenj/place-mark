@@ -1,0 +1,17 @@
+<div class="field">
+    <label class="label" for="{{fieldName}}">
+        {{description}}
+    </label>
+    <div class="control">
+        <div class="select">
+            <select
+                name="{{fieldName}}"
+                id="{{fieldName}}"
+            >
+                {{#each options}}
+                    <option value="{{value}}" {{attribute "selected" "selected" selected}}>{{designation}}</option>
+                {{/each}}
+            </select>
+        </div>
+    </div>
+</div>

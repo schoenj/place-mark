@@ -1,0 +1,18 @@
+<section class="section">
+    <h1 class="title">
+        Place-Marks
+        {{#if authenticated}}
+            <a class="button is-primary is-small" href="/place-mark/new">
+                New
+            </a>
+        {{/if}}
+    </h1>
+    <form action="{{tableForm.action}}" method="{{tableForm.method}}">
+        <div class="table-form">
+            {{> components/form-field formField=tableForm.fields.perPage }}
+            {{> components/page-input page=result.page totalPages=result.totalPages }}
+            {{> components/submit-button designation="Apply" }}
+        </div>
+        {{> tables/place-mark-table data=result.data admin=admin userId=user?.id lookupOnly=false }}
+    </form>
+</section>

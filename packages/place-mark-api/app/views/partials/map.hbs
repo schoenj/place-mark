@@ -1,0 +1,12 @@
+<div id="osm-map" style="height: 500px"></div>
+<script>
+    const json = '{{json placeMarks}}';
+    const data = JSON.parse(json);
+
+    const map = L.map(`osm-map`).setView([0, 0], 2);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 17,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    data.forEach(placeMark => L.marker([placeMark.latitude, placeMark.longitude]).addTo(map).bindPopup(`<a href="/place-mark/${placeMark.id}">${placeMark.designation}</a>`));
+</script>

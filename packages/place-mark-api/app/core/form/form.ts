@@ -1,8 +1,9 @@
 import { ValidationErrorItem } from "joi";
-import { FormDefinition } from "./abstraction/index.js";
+import { FormDefinition, IInputBase, ISelectInput, SelectOptionsLoader } from "./abstraction/index.js";
 import { createFormField, IFormField } from "./form-field.js";
 import { groupBy } from "../utils/index.js";
 import { KeyOf } from "../utils/types.js";
+import { IContainer } from "../../dependencies/interfaces/index.js";
 
 export interface IForm<T extends object> {
   action: string;
@@ -22,7 +23,7 @@ function createFormInternal<T extends object>(formDef: FormDefinition<T>, data: 
         formDef.fields[x],
         success,
         formFieldErrors.map((y) => y.message),
-        formDef.fields[x].type !== "password" ? value : null
+        !["password", "passwordAgain", "oldPassword"].includes(formDef.fields[x].type) ? value : null
       );
       return rv;
     }, {} as { [x in KeyOf<T>]: IFormField }),
@@ -31,8 +32,24 @@ function createFormInternal<T extends object>(formDef: FormDefinition<T>, data: 
   return result;
 }
 
-export function createForm<T extends object>(formDef: FormDefinition<T>): IForm<T> {
-  return createFormInternal(formDef, null, false, null);
+export function createForm<T extends object>(formDef: FormDefinition<T>, data?: T): IForm<T> {
+  return createFormInternal(formDef, data || null, false, null);
+}
+
+export async function createForm$<T extends object>(formDef: FormDefinition<T>, container: IContainer, data?: T): Promise<IForm<T>> {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const fieldName of Object.keys(formDef.fields) as KeyOf<T>[]) {
+    const field = formDef.fields[fieldName] as IInputBase;
+    if (field.type === "select") {
+      const selectField = field as ISelectInput;
+      if (typeof selectField.options === "function") {
+        // eslint-disable-next-line no-await-in-loop
+        selectField.options = await (selectField.options as SelectOptionsLoader)(container);
+      }
+    }
+  }
+
+  return createForm(formDef, data);
 }
 
 export function createFailedForm<T extends object>(formDef: FormDefinition<T>, data: T, errors: ValidationErrorItem[]): IForm<T> {

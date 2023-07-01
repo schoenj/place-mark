@@ -1,0 +1,36 @@
+<section class="section">
+    <h1 class="title">Edit Place-Mark</h1>
+    <form action="{{form.action}}" method="{{form.method}}">
+        <input type="hidden" name="id" value="{{id}}">
+        <div class="columns">
+            <div class="column">
+                {{> components/form-field formField=form.fields.designation }}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                {{> components/form-field formField=form.fields.description }}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                {{> components/form-field formField=form.fields.latitude }}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                {{> components/form-field formField=form.fields.longitude }}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                {{> components/form-field formField=form.fields.categoryId }}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                {{> components/submit-button designation="Save" }}
+            </div>
+        </div>
+    </form>
+</section>

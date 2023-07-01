@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserReadOnlyDto } from "../../core/dtos/index.js";
+import { ICreateUserReadWriteDto, IPaginatedListRequest, IPaginatedListResponse, IUserDetailsDto, IUserReadOnlyDto } from "../../core/dtos/index.js";
 
 export interface IUserRepository {
   /**
@@ -25,6 +25,26 @@ export interface IUserRepository {
    * @param listRequest The List-Request
    */
   get$(listRequest: IPaginatedListRequest): Promise<IPaginatedListResponse<IUserReadOnlyDto>>;
+
+  /**
+   * Updates the Password of a user
+   * @param id the id of a user
+   * @param password the new password
+   */
+  updatePassword$(id: string, password: string): Promise<void>;
+
+  /**
+   * Updates the Email of a user
+   * @param id the id of a user
+   * @param email the new email
+   */
+  updateEmail$(id: string, email: string): Promise<void>;
+
+  /**
+   * Gets the details of a user
+   * @param id The id
+   */
+  getDetailsById$(id: string): Promise<IUserDetailsDto | null>;
 
   /**
    * Deletes a user by its id

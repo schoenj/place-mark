@@ -6,8 +6,18 @@ import Inert from "@hapi/inert";
 import HapiSwagger, { RegisterOptions as SwaggerOptions } from "hapi-swagger";
 import { registerController, registerCookieAuthentication$, registerDependencyManagement, registerJwtAuthentication$, registerRenderingEngine$ } from "./core/index.js";
 import { IApplicationConfig } from "./config/interfaces/index.js";
-import { AccountController, IndexController, UserApiController, AuthApiController, PlaceMarkApiController, CategoryApiController } from "./controllers/index.js";
+import {
+  AccountController,
+  IndexController,
+  UserApiController,
+  AuthApiController,
+  PlaceMarkApiController,
+  CategoryApiController,
+  PlaceMarkController,
+  CategoryController,
+} from "./controllers/index.js";
 import { IContainer } from "./dependencies/interfaces/index.js";
+import { UserController } from "./controllers/user-controller.js";
 
 const filename: string = fileURLToPath(import.meta.url);
 const dirname: string = path.dirname(filename);
@@ -42,7 +52,7 @@ export async function createServer$(config: IApplicationConfig, containerFactory
   const server: Server = new Server({
     host: config.webServer.host,
     port: config.webServer.port,
-    // debug: { request: "*" },
+    debug: { request: "*", log: "*" },
   });
 
   registerDependencyManagement(server, containerFactory);
@@ -57,6 +67,9 @@ export async function createServer$(config: IApplicationConfig, containerFactory
   });
   registerController(server, IndexController, () => new IndexController());
   registerController(server, AccountController, () => new AccountController());
+  registerController(server, PlaceMarkController, () => new PlaceMarkController());
+  registerController(server, CategoryController, () => new CategoryController());
+  registerController(server, UserController, () => new UserController());
 
   registerController(server, AuthApiController, () => new AuthApiController());
   registerController(server, UserApiController, () => new UserApiController());
