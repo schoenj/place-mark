@@ -10,7 +10,7 @@ export class UserController extends Controller {
     method: "GET",
     path: "/user",
     options: {
-      auth: { strategy: "session" },
+      auth: { mode: "try", strategy: "session" },
       validate: {
         query: pagedListRequestSpec,
         failAction: async (request) => {
@@ -23,6 +23,13 @@ export class UserController extends Controller {
   public async get$(): Promise<ResponseObject> {
     const pagedRequest = this.request.query as IPagedListRequest;
     const result = await this.container.userRepository.get$(pagedToPaginated(pagedRequest));
+
+    if (this.user?.admin !== true) {
+      result.data.forEach((x) => {
+        x.email = "xxx@xxx.de";
+      });
+    }
+
     const model = new UserListViewModel(createForm(createPagedListFormDefinition("/user")), paginatedToPaged(result, pagedRequest));
     return this.render(model);
   }

@@ -20,7 +20,7 @@ export async function registerCookieAuthentication$(server: Server, config: IApp
       isSecure: config.cookie.isSecure,
       path: "/",
     },
-    redirectTo: "/",
+    redirectTo: "/account/sign-in",
     validate: async (request, session) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const authResult = await request!.container.authService.validate$(session);

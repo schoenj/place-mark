@@ -43,7 +43,7 @@ export class PlaceMarkController extends Controller {
     method: "GET",
     path: "/place-mark/{id}",
     options: {
-      auth: { strategy: "session" },
+      auth: { mode: "try", strategy: "session" },
       validate: {
         params: idParamSpec,
       },
@@ -96,7 +96,7 @@ export class PlaceMarkController extends Controller {
     method: "GET",
     path: "/place-mark",
     options: {
-      auth: { strategy: "session" },
+      auth: { mode: "try", strategy: "session" },
       validate: {
         query: pagedListRequestSpec,
         failAction: async (request) => {
@@ -118,10 +118,9 @@ export class PlaceMarkController extends Controller {
     path: "/place-mark/{id}/delete",
     options: {
       auth: { strategy: "session" },
-      // validate: {
-      //   params: idParamSpec,
-      //   failAction: createFailAction()
-      // },
+      validate: {
+        params: idParamSpec,
+      },
     },
   })
   public async showDelete$(): Promise<ResponseObject> {

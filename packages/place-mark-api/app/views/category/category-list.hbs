@@ -27,7 +27,11 @@
                 {{#each result.data}}
                     <tr>
                         <td>{{ designation }}</td>
-                        <td>{{ createdBy.designation }}</td>
+                        <td>
+                            <a href="/user/{{id}}">
+                                {{ createdBy.designation }}
+                            </a>
+                        </td>
                         <td>{{ dateFormat createdAt }}<br>{{ dateFormat updatedAt }}</td>
                         <td>
                             <a href="/category/{{id}}">

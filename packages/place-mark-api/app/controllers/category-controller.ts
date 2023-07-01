@@ -41,7 +41,7 @@ export class CategoryController extends Controller {
     method: "GET",
     path: "/category/{id}",
     options: {
-      auth: { strategy: "session" },
+      auth: { mode: "try", strategy: "session" },
       validate: {
         params: idParamSpec,
       },
@@ -94,7 +94,7 @@ export class CategoryController extends Controller {
     method: "GET",
     path: "/category",
     options: {
-      auth: { strategy: "session" },
+      auth: { mode: "try", strategy: "session" },
       validate: {
         query: pagedListRequestSpec,
         failAction: async (request) => {
