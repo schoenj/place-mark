@@ -2,11 +2,9 @@
     <thead>
     <tr>
         <th>Designation</th>
-        <th>Coordinates</th>
         {{#if (not lookupOnly) }}
-            <th>Description</th>
             <th>Created By</th>
-            <th>CreatedAt/UpdatedAt</th>
+            <th>Created At/UpdatedAt</th>
         {{/if}}
         <th>Actions</th>
     </tr>
@@ -16,25 +14,24 @@
         {{#each data}}
             <tr>
                 <td>{{ designation }}</td>
-                <td>
-                    Latitude: {{ latitude }}<br>
-                    Longitude: {{ longitude }}
-                </td>
                 {{#if (not ../lookupOnly) }}
-                    <td>{{ description }}</td>
-                    <td>{{ createdBy.designation }}</td>
+                    <td>
+                        <a href="/user/{{id}}">
+                            {{ createdBy.designation }}
+                        </a>
+                    </td>
                     <td>{{ dateFormat createdAt }}<br>{{ dateFormat updatedAt }}</td>
                 {{/if}}
                 <td>
-                    <a href="/place-mark/{{id}}">
+                    <a href="/category/{{id}}">
                         <i class="fas fa-eye"></i>
                     </a>
                     {{#if (not ../lookupOnly)}}
                         {{#if (or ../admin (isEqual createdBy.id ../userId)) }}
-                            <a href="/place-mark/{{id}}/edit">
+                            <a href="/category/{{id}}/edit">
                                 <i class="fas fa-pen"></i>
                             </a>
-                            <a href="/place-mark/{{id}}/delete">
+                            <a href="/category/{{id}}/delete">
                                 <i class="fas fa-trash"></i>
                             </a>
                         {{/if}}
@@ -44,7 +41,7 @@
         {{/each}}
     {{else}}
         <tr>
-            <td colspan="{{#if lookupOnly}}3{{else}}6{{/if}}" class="has-text-centered">No entries found</td>
+            <td colspan="{{#if lookupOnly}}2{{else}}4{{/if}}" class="has-text-centered">No entries found</td>
         </tr>
     {{/if}}
     </tbody>

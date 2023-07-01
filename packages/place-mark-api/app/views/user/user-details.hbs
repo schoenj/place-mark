@@ -1,11 +1,6 @@
 <section class="section">
     <h1 class="title">
         {{title}}
-        {{#if (or admin (isEqual details.createdBy.id user?.id)) }}
-            <a class="button is-primary is-small" href="/category/{{details.id}}/edit">
-                Edit
-            </a>
-        {{/if}}
     </h1>
 
     <h2 class="subtitle">
@@ -17,16 +12,16 @@
             <td>{{details.id}}</td>
         </tr>
         <tr>
-            <th>Designation</th>
-            <td>{{details.designation}}</td>
+            <th>FirstName</th>
+            <td>{{details.firstName}}</td>
         </tr>
         <tr>
-            <th>Created By</th>
-            <td>
-                <a href="/user/{{details.createdBy.id}}">
-                    {{details.createdBy.designation}}
-                </a>
-            </td>
+            <th>LastName</th>
+            <td>{{details.lastName}}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{details.email}}</td>
         </tr>
         <tr>
             <th>Created At</th>
@@ -37,6 +32,11 @@
             <td>{{{dateFormat details.updatedAt}}}</td>
         </tr>
     </table>
+
+    <h2 class="subtitle">
+        Categories
+    </h2>
+    {{> tables/category-table data=details.categories admin=admin userId=user?.id lookupOnly=true }}
 
     <h2 class="subtitle">
         Place-Marks

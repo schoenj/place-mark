@@ -25,6 +25,10 @@ export abstract class Controller {
     return this.request.auth.isAuthenticated;
   }
 
+  public get admin(): boolean {
+    return this.user?.admin || false;
+  }
+
   public get user(): UserCredentials | null | undefined {
     return this.request.auth.credentials?.user;
   }

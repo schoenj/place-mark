@@ -26,6 +26,6 @@ export abstract class ViewModel {
   }
 
   public get admin(): boolean {
-    return this._authenticatedUser?.admin || false;
+    return (this.authenticated && this._authenticatedUser?.admin) || false;
   }
 }

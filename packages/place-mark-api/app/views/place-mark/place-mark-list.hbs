@@ -1,9 +1,11 @@
 <section class="section">
     <h1 class="title">
         Place-Marks
-        <a class="button is-primary is-small" href="/place-mark/new">
-            New
-        </a>
+        {{#if authenticated}}
+            <a class="button is-primary is-small" href="/place-mark/new">
+                New
+            </a>
+        {{/if}}
     </h1>
     <form action="{{tableForm.action}}" method="{{tableForm.method}}">
         <div class="table-form">

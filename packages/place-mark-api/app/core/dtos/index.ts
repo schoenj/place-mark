@@ -17,3 +17,4 @@ export * from "./paged-list-response.js";
 export * from "./confirm-delete-request.js";
 export * from "./place-mark/place-mark-lookup-dto.js";
 export * from "./category/category-details-dto.js";
+export * from "./user/user-details-dto.js";

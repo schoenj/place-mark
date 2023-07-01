@@ -10,3 +10,4 @@ export * from "./place-mark/place-mark-edit-view-model.js";
 export * from "./user/user-list-view-model.js";
 export * from "./category/category-details-view-model.js";
 export * from "./place-mark/place-mark-details-view-model.js";
+export * from "./user/user-detail-view-model.js";
